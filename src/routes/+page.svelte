@@ -20,7 +20,13 @@
 		<p class="hero-subtitle">
 			Where every curve becomes a straight line,<br />and calculus becomes algebra.
 		</p>
-		<p class="hero-begin">A complete foundation for understanding change — built on a single axiom.</p>
+		<p class="hero-motivation">
+			For over two centuries, calculus has been taught through limits — an unintuitive machinery
+			of epsilons and deltas that obscures the geometric simplicity underneath. But there is another way.
+			Modern mathematics has shown that calculus can be rebuilt from a single, elegant axiom: that
+			infinitesimal quantities exist, and their squares vanish. No limits. No hand-waving. Just algebra.
+			This is that calculus.
+		</p>
 	</div>
 	<nav class="toc" aria-label="Table of contents">
 		<ol>
@@ -113,10 +119,13 @@
 		margin-bottom: 1rem;
 	}
 
-	.hero-begin {
-		font-family: var(--font-sans);
-		font-size: 0.85rem;
+	.hero-motivation {
+		font-family: var(--font-serif);
+		font-size: clamp(0.9rem, 1.8vw, 1.05rem);
 		color: var(--color-ink-faint);
+		line-height: 1.7;
+		max-width: 38rem;
+		margin-top: 1.2rem;
 	}
 
 	/* ── Table of Contents ── */

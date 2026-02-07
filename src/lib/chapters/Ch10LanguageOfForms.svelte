@@ -157,6 +157,32 @@
 			</svg>
 		</Figure>
 
+		<div class="neo-prose" use:reveal>
+			<h3>The Principle of Least Action</h3>
+			<p>Differential forms don't just unify the theorems of calculus — they unlock the deepest principle of physics. The <strong>principle of least action</strong> says that nature always chooses the path that minimizes (or makes stationary) a quantity called the <em>action</em>.</p>
+			<p>The action is an integral of a function called the <strong>Lagrangian</strong> <Katex math={r`L(x, \dot{x}, t)`} /> over time:</p>
+		</div>
+
+		<div class="key-equation" use:reveal>
+			<Katex math={r`S[x] = \int_{t_0}^{t_1} L\bigl(x(t),\, \dot{x}(t),\, t\bigr)\, dt`} display />
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>In SDG, we can derive the equation that nature's path must satisfy — the <strong>Euler-Lagrange equation</strong> — by nudging the path by an infinitesimal variation. If <Katex math={r`x(t)`} /> is the true path and <Katex math={r`x(t) + d \cdot \eta(t)`} /> is a nearby path (where <Katex math={r`\eta`} /> vanishes at the endpoints), then stationarity of the action requires:</p>
+		</div>
+
+		<div class="derivation" use:reveal>
+			<div class="derivation-title">The Euler-Lagrange Equation</div>
+			<div class="step"><div class="step-math"><Katex math={r`S[x + d\eta] = S[x] + d\int_{t_0}^{t_1}\!\left(\frac{\partial L}{\partial x}\eta + \frac{\partial L}{\partial \dot{x}}\dot{\eta}\right) dt`} display /></div><span class="step-note">expand to first order in d</span></div>
+			<div class="step"><div class="step-math"><Katex math={r`\text{Integrate } \frac{\partial L}{\partial \dot{x}}\dot{\eta} \text{ by parts: boundary terms vanish}`} display /></div><span class="step-note">η = 0 at endpoints</span></div>
+			<div class="step"><div class="step-math"><Katex math={r`d\int_{t_0}^{t_1}\!\left(\frac{\partial L}{\partial x} - \frac{d}{dt}\frac{\partial L}{\partial \dot{x}}\right)\eta\, dt = 0`} display /></div><span class="step-note">for all η</span></div>
+			<div class="step step-result"><div class="step-math"><Katex math={r`\frac{\partial L}{\partial x} - \frac{d}{dt}\frac{\partial L}{\partial \dot{x}} = 0`} display /></div><span class="step-note">the Euler-Lagrange equation ✓</span></div>
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>This single equation generates all of classical mechanics. With <Katex math={r`L = \tfrac{1}{2}m\dot{x}^2 - V(x)`} />, it gives Newton's <Katex math={r`F = ma`} />. With different Lagrangians, it gives the equations for electromagnetism, general relativity, and quantum field theory. The principle of least action is the language physics is written in — and SDG makes it algebraically transparent.</p>
+		</div>
+
 		<Callout type="key-idea" title="The Grand Unification">
 			<p>All of calculus — from the derivative of <Katex math="x^2" /> to the Divergence Theorem in three dimensions — rests on a single principle: <strong>the infinitesimal determines the global</strong>. The derivative captures infinitesimal change; integration accumulates it. Stokes' theorem says these are the same operation, viewed from different angles.</p>
 			<p>And all of it flows from one axiom: <Katex math="d^2 = 0" />.</p>
