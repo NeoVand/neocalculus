@@ -3,9 +3,58 @@
 	import Callout from '$lib/components/Callout.svelte';
 	import Figure from '$lib/components/Figure.svelte';
 	import Exercise from '$lib/components/Exercise.svelte';
+	import HistoryBox from '$lib/components/HistoryBox.svelte';
+	import JSXGraphBoard from '$lib/components/JSXGraphBoard.svelte';
 	import PerfectZoom from '$lib/components/demos/PerfectZoom.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
+
+	function setupCurveVsTangent(JXG: any, board: any) {
+		// A circle — the classic curve
+		board.create('circle', [[0, 0], 2], {
+			strokeColor: '#1a1a2e', strokeWidth: 2.5, highlight: false,
+			fillColor: 'none'
+		});
+
+		// Point on the circle at ~40 degrees
+		const theta = 0.7; // radians
+		const px = 2 * Math.cos(theta);
+		const py = 2 * Math.sin(theta);
+
+		const P = board.create('point', [px, py], {
+			size: 5, fillColor: '#a855f7', strokeColor: '#a855f7',
+			name: '', fixed: true, highlight: false
+		});
+
+		// Tangent line at P (perpendicular to radius)
+		// Tangent direction: (-sin(theta), cos(theta))
+		const tx = -Math.sin(theta);
+		const ty = Math.cos(theta);
+		const tLen = 1.8;
+		board.create('segment', [
+			[px - tLen * tx, py - tLen * ty],
+			[px + tLen * tx, py + tLen * ty]
+		], {
+			strokeColor: '#a855f7', strokeWidth: 2.5, dash: 2,
+			highlight: false
+		});
+
+		// Label
+		board.create('text', [px + 0.3, py + 0.3, 'tangent = curve\nat infinitesimal scale'], {
+			fontSize: 11, color: '#a855f7', highlight: false, anchorX: 'left'
+		});
+
+		// Small "zoom region" rectangle around P
+		const rSize = 0.35;
+		board.create('polygon', [
+			[px - rSize, py - rSize], [px + rSize, py - rSize],
+			[px + rSize, py + rSize], [px - rSize, py + rSize]
+		], {
+			fillColor: 'rgba(168,85,247,0.06)', strokeColor: '#a855f7',
+			strokeWidth: 1, dash: 2, highlight: false,
+			vertices: { visible: false }, borders: { highlight: false }
+		});
+	}
 </script>
 
 <section class="chapter" id="ch1">
@@ -32,28 +81,16 @@
 
 	<div class="content-width">
 		<!-- Conceptual figure: classical vs neocalculus zoom -->
-		<Figure number="1.1" caption="Left: in classical math, a curve is always curved no matter how far you zoom. Right: in Neocalculus, at infinitesimal scale the curve becomes exactly straight — the tangent.">
-			<svg viewBox="0 0 520 180" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:520px">
-				<!-- Left: classical -->
-				<rect x="0" y="0" width="240" height="170" rx="8" fill="white" stroke="#e5e1d8"/>
-				<text x="120" y="18" text-anchor="middle" font-size="11" font-family="Inter,sans-serif" fill="#94919b" font-weight="600">CLASSICAL</text>
-				<circle cx="120" cy="95" r="55" stroke="#1a1a2e" stroke-width="2" fill="none"/>
-				<rect x="85" y="55" width="30" height="30" rx="2" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,2"/>
-				<line x1="115" y1="70" x2="170" y2="35" stroke="#ef4444" stroke-width="0.8" stroke-dasharray="2,2"/>
-				<rect x="165" y="25" width="60" height="35" rx="3" fill="#fef2f2" stroke="#ef4444" stroke-width="1"/>
-				<path d="M170 50 Q185 35 220 42" stroke="#1a1a2e" stroke-width="1.5" fill="none"/>
-				<text x="195" y="20" text-anchor="middle" font-size="8" font-family="Inter,sans-serif" fill="#ef4444">still curved!</text>
-				<!-- Right: neocalculus -->
-				<rect x="280" y="0" width="240" height="170" rx="8" fill="white" stroke="#e5e1d8"/>
-				<text x="400" y="18" text-anchor="middle" font-size="11" font-family="Inter,sans-serif" fill="#a855f7" font-weight="600">NEOCALCULUS</text>
-				<circle cx="400" cy="95" r="55" stroke="#1a1a2e" stroke-width="2" fill="none"/>
-				<rect x="365" y="55" width="30" height="30" rx="2" fill="none" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="3,2"/>
-				<line x1="395" y1="70" x2="450" y2="35" stroke="#a855f7" stroke-width="0.8" stroke-dasharray="2,2"/>
-				<rect x="445" y="25" width="60" height="35" rx="3" fill="#faf5ff" stroke="#a855f7" stroke-width="1"/>
-				<line x1="450" y1="45" x2="500" y2="38" stroke="#a855f7" stroke-width="2"/>
-				<text x="475" y="20" text-anchor="middle" font-size="8" font-family="Inter,sans-serif" fill="#a855f7">straight!</text>
-			</svg>
-		</Figure>
+		<div use:reveal>
+			<JSXGraphBoard
+				setup={setupCurveVsTangent}
+				boundingbox={[-3, 3, 3.8, -3]}
+				aspectRatio={(3.8 - -3) / (3 - -3)}
+				axes={false}
+				number="1.1"
+				caption="A circle with its tangent line at a point. In Neocalculus, at infinitesimal scale within the dashed region, the curve and the tangent are identical."
+			/>
+		</div>
 
 		<div class="neo-prose" use:reveal>
 			<p>What you see above is the core insight: at the infinitesimal scale, every smooth curve is indistinguishable from a straight line. The tangent doesn't just <em>touch</em> the curve — it <em>is</em> the curve, for an infinitesimal moment.</p>
@@ -108,13 +145,36 @@
 			<p>From this single principle, we will rebuild all of calculus.</p>
 		</div>
 
-		<details class="dig-deeper" use:reveal>
-			<summary>Why can d² = 0 without d = 0?</summary>
-			<div class="dig-content">
-				<p>In everyday logic, if something squared is zero, the thing itself must be zero. But Neocalculus operates in a subtler logical world called <strong>constructive logic</strong>, where we can only assert what we can directly construct or prove. We can't "sort" infinitesimals into "zero" and "non-zero" — they exist in a kind of mathematical twilight.</p>
-				<p>The payoff is enormous: in this world, every function is automatically smooth and differentiable. There are no discontinuities, no pathological exceptions. The mathematical world is <em>safe by design</em>.</p>
-			</div>
-		</details>
+		<div class="neo-prose" use:reveal>
+			<h3>How can d² = 0 without d = 0?</h3>
+			<p>This is the question everyone asks, and it deserves a real answer — not a hand-wave.</p>
+			<p>In everyday algebra, the argument goes like this: "If <Katex math="d^2 = 0" />, then <Katex math="d = 0" />. Done." And in the number system you're used to, that's correct. But the argument relies on a hidden assumption: that for every number, we can <em>decide</em> whether it equals zero or not.</p>
+			<p>Neocalculus operates in a world called <strong>constructive logic</strong>, where we can only assert what we can directly construct or verify. In this world, we lose one principle that most people take for granted:</p>
+		</div>
+
+		<Callout type="warning" title="What We Give Up: The Law of Excluded Middle">
+			<p>In classical logic, every statement is either true or false: <Katex math={r`P \lor \neg P`} /> always holds. In constructive logic, we can only claim <Katex math={r`P \lor \neg P`} /> when we have a <em>procedure</em> to determine which one it is.</p>
+			<p>For infinitesimals, we <strong>cannot decide</strong> whether <Katex math="d = 0" /> or <Katex math={r`d \neq 0`} />. They exist in a mathematical twilight — not provably zero, yet not provably nonzero either.</p>
+		</Callout>
+
+		<div class="neo-prose" use:reveal>
+			<p>This might sound like a loss, but it's actually a <em>feature</em>. Here's what we gain:</p>
+		</div>
+
+		<Callout type="key-idea" title="What We Gain: A Smooth World">
+			<p><strong>Every function is continuous.</strong> You can't build a discontinuous step function because you'd need to sort each number into "zero" or "nonzero" — and that sorting is exactly what constructive logic prevents.</p>
+			<p><strong>Every function is infinitely differentiable.</strong> Since the slope equation gives every function a derivative, and the derivative is itself a function, you can differentiate forever. There are no corners, no cusps, no pathological exceptions.</p>
+			<p><strong>The mathematical world is safe by design.</strong> All the ugly edge cases of classical analysis — functions that are continuous but nowhere differentiable, sets that can be rearranged to double their volume — simply cannot exist here.</p>
+		</Callout>
+
+		<div class="neo-prose" use:reveal>
+			<p>Think of it this way: in the classical world, mathematicians spent the 19th century building walls (epsilon-delta definitions, Riemann integrals, Lebesgue measures) to keep out pathological monsters. In Neocalculus, the monsters never existed in the first place. The logic of the world prevents them from forming.</p>
+			<p>This is why <Katex math="d^2 = 0" /> can hold without forcing <Katex math="d = 0" />: the proof that "<Katex math="d^2 = 0" /> implies <Katex math="d = 0" />" relies on the law of excluded middle, which we choose not to assume. And by making that choice, we get a universe where calculus is simple, clean, and everything works.</p>
+		</div>
+
+		<HistoryBox name="Gottfried Wilhelm Leibniz" years="1646–1716">
+			<p>Leibniz invented calculus using infinitesimals — quantities "infinitely small" that he manipulated algebraically. For 200 years, mathematicians used his notation (dx, dy, ∫) but couldn't justify the infinitesimals rigorously. Neocalculus vindicates Leibniz: his infinitesimals were nilpotent quantities all along.</p>
+		</HistoryBox>
 
 		<!-- Exercises -->
 		<div class="exercises-group" use:reveal>

@@ -3,8 +3,60 @@
 	import Callout from '$lib/components/Callout.svelte';
 	import Figure from '$lib/components/Figure.svelte';
 	import Exercise from '$lib/components/Exercise.svelte';
+	import JSXGraphBoard from '$lib/components/JSXGraphBoard.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
+
+	function setupPartialDerivatives(JXG: any, board: any) {
+		// Contour lines of f(x,y) = x² + y² (circles)
+		for (let r = 0.8; r <= 3.2; r += 0.6) {
+			board.create('circle', [[0, 0], r], {
+				strokeColor: '#e5e1d8', strokeWidth: 1, fixed: true,
+				fillColor: 'none', highlight: false, dash: 0
+			});
+		}
+
+		// Point (x₀, y₀) where we evaluate partials
+		const x0 = 1.5, y0 = 1;
+		const pt = board.create('point', [x0, y0], {
+			size: 5, fillColor: '#1a1a2e', strokeColor: '#1a1a2e',
+			name: '(x, y)', label: { fontSize: 13, offset: [8, 8] },
+			fixed: true, highlight: false
+		});
+
+		// d₁ direction (along x-axis from the point)
+		board.create('arrow', [[x0, y0], [x0 + 1.2, y0]], {
+			strokeColor: '#3b82f6', strokeWidth: 3, highlight: false
+		});
+		board.create('text', [x0 + 1.35, y0, 'd₁'], {
+			fontSize: 14, color: '#3b82f6', fontStyle: 'italic',
+			fontWeight: 'bold', highlight: false
+		});
+
+		// d₂ direction (along y-axis from the point)
+		board.create('arrow', [[x0, y0], [x0, y0 + 1.2]], {
+			strokeColor: '#059669', strokeWidth: 3, highlight: false
+		});
+		board.create('text', [x0 - 0.05, y0 + 1.4, 'd₂'], {
+			fontSize: 14, color: '#059669', fontStyle: 'italic',
+			fontWeight: 'bold', anchorX: 'middle', highlight: false
+		});
+
+		// Gradient vector (points radially outward for f = x²+y²)
+		const gradLen = 1.3;
+		const norm = Math.sqrt(x0 * x0 + y0 * y0);
+		board.create('arrow', [[x0, y0], [x0 + gradLen * x0 / norm, y0 + gradLen * y0 / norm]], {
+			strokeColor: '#a855f7', strokeWidth: 2.5, dash: 2, highlight: false
+		});
+		board.create('text', [x0 + gradLen * x0 / norm + 0.15, y0 + gradLen * y0 / norm + 0.15, '∇f'], {
+			fontSize: 14, color: '#a855f7', fontWeight: 'bold', highlight: false
+		});
+
+		// Labels
+		board.create('text', [0, -3.2, 'Contours of f(x,y) = x² + y². Gradient ∇f points radially outward.'], {
+			fontSize: 10, color: '#94919b', anchorX: 'middle', highlight: false
+		});
+	}
 </script>
 
 <section class="chapter" id="ch9">
@@ -28,25 +80,15 @@
 		</div>
 
 		<!-- D(2) cross figure -->
-		<Figure number="9.1" caption="The infinitesimal cross D(2): two infinitesimal directions d₁ and d₂ where not only d₁² = d₂² = 0, but also d₁d₂ = 0. This isolates each partial derivative.">
-			<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:300px">
-				<!-- surface sketch -->
-				<path d="M 30 140 Q 80 100 150 80 Q 220 60 280 90" stroke="#e5e1d8" stroke-width="1.5" fill="none"/>
-				<path d="M 80 160 Q 130 120 200 100 Q 240 90 270 100" stroke="#e5e1d8" stroke-width="1" fill="none"/>
-				<!-- point -->
-				<circle cx="150" cy="80" r="4" fill="#1a1a2e"/>
-				<!-- d1 direction -->
-				<line x1="150" y1="80" x2="210" y2="65" stroke="#3b82f6" stroke-width="2.5" marker-end="url(#arr2)"/>
-				<text x="215" y="58" font-size="11" font-family="Crimson Pro,serif" fill="#3b82f6" font-style="italic">d₁</text>
-				<!-- d2 direction -->
-				<line x1="150" y1="80" x2="170" y2="130" stroke="#059669" stroke-width="2.5" marker-end="url(#arr2)"/>
-				<text x="178" y="135" font-size="11" font-family="Crimson Pro,serif" fill="#059669" font-style="italic">d₂</text>
-				<!-- labels -->
-				<text x="150" y="170" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#94919b">d₁² = d₂² = d₁d₂ = 0</text>
-				<text x="137" y="72" font-size="11" font-family="Crimson Pro,serif" fill="#1a1a2e">(x, y)</text>
-				<defs><marker id="arr2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="currentColor"/></marker></defs>
-			</svg>
-		</Figure>
+		<div use:reveal>
+			<JSXGraphBoard
+				setup={setupPartialDerivatives}
+				boundingbox={[-3.5, 3.5, 3.5, -3.5]}
+				aspectRatio={1}
+				number="9.1"
+				caption="Contour plot of f(x,y) = x²+y². At the point (x,y), the infinitesimal directions d₁ (blue, along x) and d₂ (green, along y) capture each partial derivative. The gradient ∇f (purple dashed) points perpendicular to the contours."
+			/>
+		</div>
 
 		<Callout type="definition" title="The Infinitesimal Cross D(2)">
 			<p><Katex math={r`D(2) = \{(d_1, d_2) \in \mathcal{R}^2 : d_1^2 = d_2^2 = d_1 d_2 = 0\}`} /></p>

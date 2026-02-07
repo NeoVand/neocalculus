@@ -114,21 +114,46 @@
 		</div>
 
 		<!-- Cancellation figure -->
-		<Figure number="10.2" caption="Why Stokes works: when you sum d(ω) over adjacent infinitesimal squares, shared interior boundaries cancel, leaving only the outer boundary.">
-			<svg viewBox="0 0 360 160" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:360px">
-				<!-- grid of tiny squares -->
-				{#each Array(4) as _, i}
-					{#each Array(3) as _, j}
-						<rect x={60 + i * 60} y={20 + j * 40} width="60" height="40" fill={i === 1 && j === 1 ? 'rgba(168,85,247,0.08)' : 'rgba(168,85,247,0.03)'} stroke="#e5e1d8" stroke-width="0.8"/>
-					{/each}
-				{/each}
-				<!-- interior arrows (canceling) -->
-				<line x1="120" y1="40" x2="120" y2="100" stroke="#ef4444" stroke-width="1.5" opacity="0.4"/>
-				<line x1="180" y1="40" x2="180" y2="100" stroke="#ef4444" stroke-width="1.5" opacity="0.4"/>
-				<text x="150" y="75" text-anchor="middle" font-size="8" font-family="Inter,sans-serif" fill="#ef4444">cancel</text>
-				<!-- outer boundary -->
-				<rect x="60" y="20" width="240" height="120" fill="none" stroke="#a855f7" stroke-width="2.5"/>
-				<text x="180" y="155" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#a855f7" font-weight="500">only the outer boundary survives</text>
+		<Figure number="10.2" caption="Why Stokes works: when you sum d(ω) over adjacent squares, shared edges have opposite orientations and cancel. Only the outer boundary survives.">
+			<svg viewBox="0 0 420 210" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:420px">
+				<!-- 4×3 grid -->
+				<rect x="60" y="20" width="75" height="50" fill="rgba(168,85,247,0.04)" stroke="#d8d5ce" stroke-width="0.8"/>
+				<rect x="135" y="20" width="75" height="50" fill="rgba(168,85,247,0.04)" stroke="#d8d5ce" stroke-width="0.8"/>
+				<rect x="210" y="20" width="75" height="50" fill="rgba(168,85,247,0.04)" stroke="#d8d5ce" stroke-width="0.8"/>
+				<rect x="285" y="20" width="75" height="50" fill="rgba(168,85,247,0.04)" stroke="#d8d5ce" stroke-width="0.8"/>
+				<rect x="60" y="70" width="75" height="50" fill="rgba(168,85,247,0.04)" stroke="#d8d5ce" stroke-width="0.8"/>
+				<rect x="135" y="70" width="75" height="50" fill="rgba(168,85,247,0.07)" stroke="#d8d5ce" stroke-width="0.8"/>
+				<rect x="210" y="70" width="75" height="50" fill="rgba(168,85,247,0.07)" stroke="#d8d5ce" stroke-width="0.8"/>
+				<rect x="285" y="70" width="75" height="50" fill="rgba(168,85,247,0.04)" stroke="#d8d5ce" stroke-width="0.8"/>
+				<rect x="60" y="120" width="75" height="50" fill="rgba(168,85,247,0.04)" stroke="#d8d5ce" stroke-width="0.8"/>
+				<rect x="135" y="120" width="75" height="50" fill="rgba(168,85,247,0.04)" stroke="#d8d5ce" stroke-width="0.8"/>
+				<rect x="210" y="120" width="75" height="50" fill="rgba(168,85,247,0.04)" stroke="#d8d5ce" stroke-width="0.8"/>
+				<rect x="285" y="120" width="75" height="50" fill="rgba(168,85,247,0.04)" stroke="#d8d5ce" stroke-width="0.8"/>
+				<!-- interior opposing arrows on a shared vertical edge -->
+				<line x1="210" y1="78" x2="210" y2="92" stroke="#ef4444" stroke-width="2.5"/>
+				<polygon points="210,78 207,83 213,83" fill="#ef4444"/>
+				<line x1="210" y1="108" x2="210" y2="94" stroke="#3b82f6" stroke-width="2.5"/>
+				<polygon points="210,108 207,103 213,103" fill="#3b82f6"/>
+				<!-- X mark showing cancellation -->
+				<line x1="205" y1="88" x2="215" y2="98" stroke="#ef4444" stroke-width="1.5" opacity="0.7"/>
+				<line x1="215" y1="88" x2="205" y2="98" stroke="#ef4444" stroke-width="1.5" opacity="0.7"/>
+				<!-- interior opposing arrows on a shared horizontal edge -->
+				<line x1="165" y1="70" x2="179" y2="70" stroke="#ef4444" stroke-width="2.5"/>
+				<polygon points="179,70 174,67 174,73" fill="#ef4444"/>
+				<line x1="205" y1="70" x2="191" y2="70" stroke="#3b82f6" stroke-width="2.5"/>
+				<polygon points="191,70 196,67 196,73" fill="#3b82f6"/>
+				<line x1="183" y1="65" x2="193" y2="75" stroke="#ef4444" stroke-width="1.5" opacity="0.7"/>
+				<line x1="193" y1="65" x2="183" y2="75" stroke="#ef4444" stroke-width="1.5" opacity="0.7"/>
+				<!-- label -->
+				<text x="250" y="96" font-size="10" font-family="Inter,sans-serif" fill="#ef4444" font-weight="600">opposite → cancel</text>
+				<!-- outer boundary (thick, purple) -->
+				<rect x="60" y="20" width="300" height="150" fill="none" stroke="#a855f7" stroke-width="3" rx="2"/>
+				<!-- arrows on outer boundary showing net orientation -->
+				<polygon points="210,18 207,13 213,13" fill="#a855f7"/>
+				<polygon points="210,172 207,177 213,177" fill="#a855f7"/>
+				<polygon points="58,95 53,92 53,98" fill="#a855f7"/>
+				<polygon points="362,95 367,92 367,98" fill="#a855f7"/>
+				<text x="210" y="195" text-anchor="middle" font-size="11" font-family="Inter,sans-serif" fill="#a855f7" font-weight="600">only the outer boundary survives</text>
 			</svg>
 		</Figure>
 

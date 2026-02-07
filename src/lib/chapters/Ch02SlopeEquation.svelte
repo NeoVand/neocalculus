@@ -3,10 +3,14 @@
 	import Callout from '$lib/components/Callout.svelte';
 	import Figure from '$lib/components/Figure.svelte';
 	import Exercise from '$lib/components/Exercise.svelte';
+	import HistoryBox from '$lib/components/HistoryBox.svelte';
 	import InlinePlot from '$lib/components/InlinePlot.svelte';
+	import InfinitesimalTrig from '$lib/components/demos/InfinitesimalTrig.svelte';
 	import AlgebraMachine from '$lib/components/demos/AlgebraMachine.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
+
+	// (Infinitesimal triangle is now the interactive InfinitesimalTrig demo)
 </script>
 
 <section class="chapter" id="ch2">
@@ -94,26 +98,9 @@
 			<p>Here's where Neocalculus shines with a beautiful geometric argument.</p>
 		</div>
 
-		<!-- Infinitesimal triangle figure -->
-		<Figure number="2.1" caption="A right triangle with infinitesimal angle d and hypotenuse 1. Since d² = 0, the base cos(d) = √(1-d²) = 1 exactly, and sin(d) = d exactly.">
-			<svg viewBox="0 0 340 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:340px">
-				<!-- triangle -->
-				<line x1="60" y1="160" x2="280" y2="160" stroke="#1a1a2e" stroke-width="2"/>
-				<line x1="280" y1="160" x2="280" y2="50" stroke="#1a1a2e" stroke-width="2"/>
-				<line x1="60" y1="160" x2="280" y2="50" stroke="#a855f7" stroke-width="2.5"/>
-				<!-- right angle -->
-				<polyline points="265,160 265,145 280,145" fill="none" stroke="#1a1a2e" stroke-width="1.2"/>
-				<!-- labels -->
-				<text x="170" y="180" text-anchor="middle" font-size="13" font-family="Crimson Pro,serif" fill="#1a1a2e" font-style="italic">cos(d) = 1</text>
-				<text x="300" y="110" text-anchor="start" font-size="13" font-family="Crimson Pro,serif" fill="#a855f7" font-style="italic">sin(d) = d</text>
-				<text x="150" y="100" text-anchor="middle" font-size="13" font-family="Crimson Pro,serif" fill="#a855f7" font-weight="600">1</text>
-				<!-- angle arc -->
-				<path d="M 90 160 A 30 30 0 0 0 85 145" stroke="#a855f7" stroke-width="1.5" fill="none"/>
-				<text x="100" y="148" font-size="12" font-family="Crimson Pro,serif" fill="#a855f7" font-style="italic">d</text>
-				<!-- note -->
-				<text x="170" y="25" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#94919b">Since d² = 0: base = √(1 − d²) = √1 = 1</text>
-			</svg>
-		</Figure>
+		<div use:reveal>
+			<InfinitesimalTrig />
+		</div>
 
 		<!-- sin(x) -->
 		<div class="derivation" use:reveal>
@@ -210,6 +197,14 @@
 			</table>
 			<p style="font-size:0.9rem;margin-top:0.5rem;">Every one of these was derived from a single rule: <Katex math="d^2 = 0" />.</p>
 		</Callout>
+
+		<HistoryBox name="F. William Lawvere" years="1937–2023">
+			<p>Lawvere envisioned a mathematical universe where infinitesimals exist naturally within "smooth toposes." His insight — that the right logical framework makes infinitesimals rigorous — is the foundation on which Neocalculus is built.</p>
+		</HistoryBox>
+
+		<HistoryBox name="Anders Kock" years="born 1938">
+			<p>Kock developed the axiomatic framework of Synthetic Differential Geometry, including the axiom that bears his name. His work showed that all of differential calculus and geometry can be rebuilt on the simple principle that infinitesimal segments cannot bend.</p>
+		</HistoryBox>
 
 		<div class="neo-prose" use:reveal>
 			<p>Try any of these interactively — pick a function, step through the algebra, and verify numerically:</p>

@@ -28,15 +28,21 @@
 
 		<!-- Nested neighborhoods figure -->
 		<Figure number="7.1" caption="Nested infinitesimal neighborhoods: D ⊂ D₂ ⊂ D₃. On D, functions are linear. On D₂, quadratic. On D₃, cubic. Each gives an exact expansion.">
-			<svg viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:400px">
-				<ellipse cx="200" cy="60" rx="170" ry="45" fill="rgba(168,85,247,0.04)" stroke="#a855f7" stroke-width="0.8" stroke-dasharray="4,3"/>
-				<text x="370" y="25" font-size="10" font-family="Inter,sans-serif" fill="#a855f7">D₃: cubic</text>
-				<ellipse cx="200" cy="60" rx="115" ry="35" fill="rgba(168,85,247,0.07)" stroke="#a855f7" stroke-width="1" stroke-dasharray="4,3"/>
-				<text x="315" y="42" font-size="10" font-family="Inter,sans-serif" fill="#a855f7">D₂: quadratic</text>
-				<ellipse cx="200" cy="60" rx="60" ry="22" fill="rgba(168,85,247,0.12)" stroke="#a855f7" stroke-width="1.5"/>
-				<text x="260" y="57" font-size="10" font-family="Inter,sans-serif" fill="#a855f7" font-weight="600">D: linear</text>
-				<circle cx="200" cy="60" r="3" fill="#1a1a2e"/>
-				<text x="200" y="95" text-anchor="middle" font-size="11" font-family="Crimson Pro,serif" fill="#1a1a2e">0</text>
+			<svg viewBox="0 0 460 150" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:460px">
+				<!-- D₃: outermost -->
+				<ellipse cx="210" cy="72" rx="195" ry="55" fill="rgba(168,85,247,0.03)" stroke="#a855f7" stroke-width="0.8" stroke-dasharray="5,3"/>
+				<text x="408" y="32" font-size="11" font-family="Inter,sans-serif" fill="#a855f7">D₃: cubic</text>
+				<!-- D₂: middle -->
+				<ellipse cx="210" cy="72" rx="130" ry="42" fill="rgba(168,85,247,0.06)" stroke="#a855f7" stroke-width="1" stroke-dasharray="5,3"/>
+				<text x="342" y="50" font-size="11" font-family="Inter,sans-serif" fill="#a855f7">D₂: quadratic</text>
+				<!-- D: innermost -->
+				<ellipse cx="210" cy="72" rx="65" ry="26" fill="rgba(168,85,247,0.12)" stroke="#a855f7" stroke-width="1.8"/>
+				<text x="278" y="70" font-size="11" font-family="Inter,sans-serif" fill="#a855f7" font-weight="600">D: linear</text>
+				<!-- center point -->
+				<circle cx="210" cy="72" r="3.5" fill="#1a1a2e"/>
+				<text x="210" y="115" text-anchor="middle" font-size="12" font-family="Crimson Pro,serif" fill="#1a1a2e">0</text>
+				<!-- annotations -->
+				<text x="210" y="142" text-anchor="middle" font-size="9" font-family="Inter,sans-serif" fill="#94919b">each neighborhood gives an exact polynomial expansion</text>
 			</svg>
 		</Figure>
 

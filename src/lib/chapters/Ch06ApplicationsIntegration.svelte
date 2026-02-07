@@ -4,8 +4,61 @@
 	import Figure from '$lib/components/Figure.svelte';
 	import Exercise from '$lib/components/Exercise.svelte';
 	import InlinePlot from '$lib/components/InlinePlot.svelte';
+	import JSXGraphBoard from '$lib/components/JSXGraphBoard.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
+
+	function setupVolumeOfRevolution(JXG: any, board: any) {
+		const f = (x: number) => 0.6 * Math.sqrt(x) + 0.3;
+
+		// Top profile curve
+		board.create('functiongraph', [f, 0.1, 5], {
+			strokeColor: '#1a1a2e', strokeWidth: 2.5, highlight: false
+		});
+		// Bottom profile (reflected)
+		board.create('functiongraph', [(x: number) => -f(x), 0.1, 5], {
+			strokeColor: '#1a1a2e', strokeWidth: 1.5, strokeOpacity: 0.3, highlight: false
+		});
+		// x-axis
+		board.create('segment', [[0, 0], [5.5, 0]], {
+			strokeColor: '#ccc8bf', strokeWidth: 1, highlight: false
+		});
+
+		// Highlighted disk at x=3
+		const x0 = 3;
+		const r0 = f(x0);
+		// Ellipse representing the disk
+		board.create('ellipse', [[x0, 0], [x0, r0], [x0, 0.01]], {
+			strokeColor: '#a855f7', strokeWidth: 2, fillColor: 'rgba(168,85,247,0.12)',
+			highlight: false
+		});
+		// Radius line
+		board.create('segment', [[x0, 0], [x0, r0]], {
+			strokeColor: '#a855f7', strokeWidth: 1.5, dash: 2, highlight: false
+		});
+		board.create('point', [x0, 0], {
+			size: 2, fillColor: '#a855f7', strokeColor: '#a855f7',
+			name: '', fixed: true, highlight: false
+		});
+		board.create('point', [x0, r0], {
+			size: 3, fillColor: '#a855f7', strokeColor: '#a855f7',
+			name: '', fixed: true, highlight: false
+		});
+		// Labels
+		board.create('text', [x0 + 0.15, r0 / 2, 'f(x)'], {
+			fontSize: 14, color: '#a855f7', fontStyle: 'italic', highlight: false
+		});
+		board.create('text', [x0, -0.22, 'x'], {
+			fontSize: 13, color: '#1a1a2e', anchorX: 'middle', fontStyle: 'italic', highlight: false
+		});
+		board.create('text', [5.3, 0.15, 'x'], {
+			fontSize: 13, color: '#1a1a2e', fontStyle: 'italic', highlight: false
+		});
+		// Thickness bracket
+		board.create('text', [x0 + 0.2, -r0 - 0.2, 'd'], {
+			fontSize: 13, color: '#a855f7', fontStyle: 'italic', anchorX: 'middle', highlight: false
+		});
+	}
 </script>
 
 <section class="chapter" id="ch6">
@@ -25,24 +78,16 @@
 		</div>
 
 		<!-- Volume of revolution figure -->
-		<Figure number="6.1" caption="Rotating y = f(x) around the x-axis. Each infinitesimal slice is a circular disk of radius f(x) and thickness d.">
-			<svg viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:400px">
-				<!-- axis -->
-				<line x1="40" y1="100" x2="370" y2="100" stroke="#1a1a2e" stroke-width="1"/>
-				<!-- curve (top half) -->
-				<path d="M 80 100 Q 120 30 200 50 Q 280 70 340 40" stroke="#1a1a2e" stroke-width="2" fill="none"/>
-				<!-- curve (bottom half, reflected) -->
-				<path d="M 80 100 Q 120 170 200 150 Q 280 130 340 160" stroke="#1a1a2e" stroke-width="2" fill="none" stroke-dasharray="5,3" opacity="0.4"/>
-				<!-- disk slice -->
-				<ellipse cx="220" cy="100" rx="8" ry="40" fill="rgba(168,85,247,0.15)" stroke="#a855f7" stroke-width="1.5"/>
-				<!-- radius label -->
-				<line x1="220" y1="100" x2="220" y2="60" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,2"/>
-				<text x="230" y="78" font-size="11" font-family="Crimson Pro,serif" fill="#a855f7" font-style="italic">f(x)</text>
-				<!-- thickness label -->
-				<line x1="216" y1="145" x2="224" y2="145" stroke="#a855f7" stroke-width="1.5"/>
-				<text x="220" y="160" text-anchor="middle" font-size="10" font-family="Crimson Pro,serif" fill="#a855f7" font-style="italic">d</text>
-			</svg>
-		</Figure>
+		<div use:reveal>
+			<JSXGraphBoard
+				setup={setupVolumeOfRevolution}
+				boundingbox={[-0.5, 2.2, 5.8, -2.2]}
+				aspectRatio={(5.8 - -0.5) / (2.2 - -2.2)}
+				axes={false}
+				number="6.1"
+				caption="Rotating y = f(x) around the x-axis. The highlighted ellipse represents an infinitesimal disk of radius f(x) and thickness d."
+			/>
+		</div>
 
 		<div class="derivation" use:reveal>
 			<div class="derivation-title">Volume of Revolution (Disk Method)</div>

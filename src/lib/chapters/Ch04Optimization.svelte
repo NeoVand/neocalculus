@@ -4,8 +4,64 @@
 	import Figure from '$lib/components/Figure.svelte';
 	import Exercise from '$lib/components/Exercise.svelte';
 	import InlinePlot from '$lib/components/InlinePlot.svelte';
+	import JSXGraphBoard from '$lib/components/JSXGraphBoard.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
+
+	function setupOptimization(JXG: any, board: any) {
+		// f(x) = -x^3 + 3x  has max at x=1, min at x=-1
+		const f = (x: number) => -x * x * x + 3 * x;
+		const fp = (x: number) => -3 * x * x + 3;
+
+		// Function curve
+		board.create('functiongraph', [f, -2.5, 2.5], {
+			strokeColor: '#1a1a2e', strokeWidth: 2.5, highlight: false
+		});
+
+		// Maximum at x=1
+		const maxPt = board.create('point', [1, f(1)], {
+			size: 4, fillColor: '#a855f7', strokeColor: '#a855f7',
+			name: '', fixed: true, highlight: false
+		});
+		// Horizontal tangent at max
+		board.create('segment', [[-0.2, f(1)], [2.2, f(1)]], {
+			strokeColor: '#a855f7', strokeWidth: 2, dash: 2,
+			fixed: true, highlight: false
+		});
+		board.create('text', [1, f(1) + 0.35, "maximum: f'= 0"], {
+			fontSize: 12, color: '#a855f7', anchorX: 'middle', highlight: false, fontWeight: 'bold'
+		});
+
+		// Minimum at x=-1
+		const minPt = board.create('point', [-1, f(-1)], {
+			size: 4, fillColor: '#a855f7', strokeColor: '#a855f7',
+			name: '', fixed: true, highlight: false
+		});
+		// Horizontal tangent at min
+		board.create('segment', [[-2.2, f(-1)], [0.2, f(-1)]], {
+			strokeColor: '#a855f7', strokeWidth: 2, dash: 2,
+			fixed: true, highlight: false
+		});
+		board.create('text', [-1, f(-1) - 0.4, "minimum: f' = 0"], {
+			fontSize: 12, color: '#a855f7', anchorX: 'middle', highlight: false, fontWeight: 'bold'
+		});
+
+		// Infinitesimal neighborhoods (small rectangles)
+		board.create('polygon', [[0.7, f(1) - 0.15], [1.3, f(1) - 0.15], [1.3, f(1) + 0.15], [0.7, f(1) + 0.15]], {
+			fillColor: 'rgba(168,85,247,0.08)', strokeColor: '#a855f7',
+			strokeWidth: 1, dash: 2, highlight: false,
+			vertices: { visible: false }, borders: { highlight: false }
+		});
+		board.create('polygon', [[-1.3, f(-1) - 0.15], [-0.7, f(-1) - 0.15], [-0.7, f(-1) + 0.15], [-1.3, f(-1) + 0.15]], {
+			fillColor: 'rgba(168,85,247,0.08)', strokeColor: '#a855f7',
+			strokeWidth: 1, dash: 2, highlight: false,
+			vertices: { visible: false }, borders: { highlight: false }
+		});
+
+		board.create('text', [0, -2.8, 'flat neighborhoods → stationary points'], {
+			fontSize: 11, color: '#94919b', anchorX: 'middle', highlight: false
+		});
+	}
 </script>
 
 <section class="chapter" id="ch4">
@@ -29,24 +85,15 @@
 			<p>By the slope equation: <Katex math={r`f(a) + f'(a)\,d = f(a)`} />, so <Katex math={r`f'(a)\,d = 0`} /> for all <span class="d-highlight">d</span>, hence <Katex math={r`f'(a) = 0`} />.</p>
 		</Callout>
 
-		<!-- Optimization figure -->
-		<Figure number="4.1" caption="At a maximum or minimum, the infinitesimal neighborhood is flat — the tangent is horizontal, meaning f'(a) = 0.">
-			<svg viewBox="0 0 420 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:420px">
-				<!-- curve -->
-				<path d="M 40 150 Q 100 150 140 60 Q 170 -10 210 100 Q 250 190 280 130 Q 330 30 400 80" stroke="#1a1a2e" stroke-width="2" fill="none"/>
-				<!-- max tangent -->
-				<line x1="110" y1="55" x2="175" y2="55" stroke="#a855f7" stroke-width="2" stroke-dasharray="5,3"/>
-				<circle cx="142" cy="55" r="4" fill="#a855f7"/>
-				<text x="142" y="42" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#a855f7" font-weight="600">max: f'=0</text>
-				<!-- infinitesimal neighborhood -->
-				<rect x="130" y="48" width="25" height="14" rx="3" fill="rgba(168,85,247,0.1)" stroke="#a855f7" stroke-width="0.8" stroke-dasharray="2,2"/>
-				<!-- min tangent -->
-				<line x1="180" y1="105" x2="245" y2="105" stroke="#a855f7" stroke-width="2" stroke-dasharray="5,3"/>
-				<circle cx="212" cy="105" r="4" fill="#a855f7"/>
-				<text x="212" y="125" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#a855f7" font-weight="600">min: f'=0</text>
-				<rect x="200" y="98" width="25" height="14" rx="3" fill="rgba(168,85,247,0.1)" stroke="#a855f7" stroke-width="0.8" stroke-dasharray="2,2"/>
-			</svg>
-		</Figure>
+		<div use:reveal>
+			<JSXGraphBoard
+				setup={setupOptimization}
+				boundingbox={[-2.8, 3.2, 2.8, -3.2]}
+				aspectRatio={(2.8 - -2.8) / (3.2 - -3.2)}
+				number="4.1"
+				caption="At a maximum or minimum, the infinitesimal neighborhood is flat — the tangent is horizontal, meaning f'(a) = 0."
+			/>
+		</div>
 
 		<div class="neo-prose" use:reveal>
 			<h3>Worked Example: Maximizing Area</h3>

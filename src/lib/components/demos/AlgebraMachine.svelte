@@ -193,30 +193,12 @@
 		};
 
 	let selectedFn = $state<string>('x²');
-	let visibleSteps = $state(0);
 
 	function selectFn(key: string) {
 		selectedFn = key;
-		visibleSteps = 0;
-	}
-
-	function nextStep() {
-		const maxSteps = derivations[selectedFn].steps.length;
-		if (visibleSteps < maxSteps) {
-			visibleSteps++;
-		}
-	}
-
-	function showAll() {
-		visibleSteps = derivations[selectedFn].steps.length;
-	}
-
-	function reset() {
-		visibleSteps = 0;
 	}
 
 	let currentDerivation = $derived(derivations[selectedFn]);
-	let allShown = $derived(visibleSteps >= currentDerivation.steps.length);
 
 	// Verification with dual numbers
 	let verifyPoint = $state(2);
@@ -231,7 +213,7 @@
 	});
 </script>
 
-<div class="demo-container wide-width">
+<div class="demo-container content-width">
 	<div class="demo-label">Interactive — The Algebra Machine</div>
 
 	<div class="flex flex-wrap gap-2 mb-5" role="tablist">
@@ -248,42 +230,30 @@
 		{/each}
 	</div>
 
+	{#key selectedFn}
 	<div class="algebra-display">
 		{#each currentDerivation.steps as step, i}
-			{#if i < visibleSteps}
-				<div
-					class="algebra-step"
-					class:is-vanish={step.isVanish}
-					class:is-result={step.isResult}
-					style="animation-delay: {i * 0.05}s"
-				>
-					<div class="step-equation">
-						<Katex math={step.latex} display />
-					</div>
-					{#if step.note}
-						<div class="step-annotation">{step.note}</div>
-					{/if}
+			<div
+				class="algebra-step"
+				class:is-vanish={step.isVanish}
+				class:is-result={step.isResult}
+				style="animation-delay: {i * 0.06}s"
+			>
+				<div class="step-equation">
+					<Katex math={step.latex} display />
 				</div>
-			{/if}
-		{/each}
-
-		{#if visibleSteps === 0}
-			<div class="empty-state">
-				Click <strong>Next Step</strong> to begin the derivation.
+				{#if step.note}
+					<div class="step-annotation">{step.note}</div>
+				{/if}
 			</div>
-		{/if}
+		{/each}
 	</div>
+	{/key}
 
-	<div class="algebra-controls">
-		<button class="btn btn-primary" onclick={nextStep} disabled={allShown}>
-			{visibleSteps === 0 ? 'Begin' : 'Next Step'}
-		</button>
-		<button class="btn btn-secondary" onclick={showAll} disabled={allShown}>Show All</button>
-		<button class="btn btn-ghost" onclick={reset} disabled={visibleSteps === 0}>Reset</button>
-
-		{#if allShown && currentDerivation.verifyFn}
+	{#if currentDerivation.verifyFn}
+		<div class="algebra-controls">
 			<div class="verify-box">
-				<span class="verify-label">Verify at x =</span>
+				<span class="verify-label">Verify numerically at x =</span>
 				<input
 					type="number"
 					bind:value={verifyPoint}
@@ -295,8 +265,8 @@
 					→ f'({verifyPoint}) = <strong>{verifiedDerivative()?.toFixed(4)}</strong>
 				</span>
 			</div>
-		{/if}
-	</div>
+		</div>
+	{/if}
 </div>
 
 <style>

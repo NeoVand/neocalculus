@@ -3,9 +3,77 @@
 	import Callout from '$lib/components/Callout.svelte';
 	import Figure from '$lib/components/Figure.svelte';
 	import Exercise from '$lib/components/Exercise.svelte';
+	import HistoryBox from '$lib/components/HistoryBox.svelte';
 	import InlinePlot from '$lib/components/InlinePlot.svelte';
+	import JSXGraphBoard from '$lib/components/JSXGraphBoard.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
+
+	function setupKepler(JXG: any, board: any) {
+		// Elliptical orbit
+		const a = 3, b = 2; // semi-axes
+		board.create('curve', [
+			(t: number) => a * Math.cos(t),
+			(t: number) => b * Math.sin(t),
+			0, 2 * Math.PI
+		], {
+			strokeColor: '#1a1a2e', strokeWidth: 2, highlight: false
+		});
+
+		// Focus (sun) at (-c, 0) where c = sqrt(a²-b²)
+		const c = Math.sqrt(a * a - b * b);
+		const O = board.create('point', [-c, 0], {
+			size: 5, fillColor: '#f59e0b', strokeColor: '#d97706',
+			name: 'O', label: { fontSize: 14, offset: [-15, -5] },
+			fixed: true, highlight: false
+		});
+
+		// Point P on the orbit
+		const theta1 = 0.6;
+		const P = board.create('point', [a * Math.cos(theta1), b * Math.sin(theta1)], {
+			size: 4, fillColor: '#1a1a2e', strokeColor: '#1a1a2e',
+			name: 'P', label: { fontSize: 14, offset: [5, 5] },
+			fixed: true, highlight: false
+		});
+
+		// Point Q (infinitesimally close to P on the orbit)
+		const theta2 = theta1 + 0.25;
+		const Q = board.create('point', [a * Math.cos(theta2), b * Math.sin(theta2)], {
+			size: 4, fillColor: '#a855f7', strokeColor: '#a855f7',
+			name: 'Q', label: { fontSize: 14, offset: [5, 5], color: '#a855f7' },
+			fixed: true, highlight: false
+		});
+
+		// Triangle OPQ
+		board.create('polygon', [O, P, Q], {
+			fillColor: 'rgba(168,85,247,0.12)', strokeWidth: 0,
+			highlight: false, vertices: { visible: false },
+			borders: { strokeColor: '#a855f7', strokeWidth: 1.5, highlight: false }
+		});
+
+		// Radius lines
+		board.create('segment', [O, P], { strokeColor: '#1a1a2e', strokeWidth: 1.5, highlight: false });
+		board.create('segment', [O, Q], { strokeColor: '#a855f7', strokeWidth: 1.5, highlight: false });
+
+		// Radius label
+		const mx = (-c + a * Math.cos(theta1)) / 2;
+		const my = (0 + b * Math.sin(theta1)) / 2;
+		board.create('text', [mx - 0.15, my + 0.2, 'r'], {
+			fontSize: 15, color: '#1a1a2e', fontStyle: 'italic', highlight: false
+		});
+
+		// Area label
+		board.create('text', [0.2, 0.8, 'area = ½r²dθ'], {
+			fontSize: 13, color: '#a855f7', anchorX: 'middle', highlight: false, fontWeight: '500'
+		});
+
+		// Angle arc at O
+		board.create('angle', [P, O, Q], {
+			radius: 0.5, name: 'dθ', strokeColor: '#a855f7',
+			fillColor: 'rgba(168,85,247,0.08)', highlight: false,
+			label: { fontSize: 13, color: '#a855f7', offset: [0, 0] }
+		});
+	}
 </script>
 
 <section class="chapter" id="ch8">
@@ -52,7 +120,13 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>Velocity is the slope of the position function. Acceleration is the slope of velocity. These are literal infinitesimal displacements — not limits.</p>
+		</div>
 
+		<HistoryBox name="Isaac Newton" years="1643–1727">
+			<p>Newton called infinitesimals "fluxions" and used them to derive the laws of motion and universal gravitation. His methods were essentially the same algebra we use here — expand, drop vanishing terms, read off the answer. The epsilon-delta formalism came 150 years later.</p>
+		</HistoryBox>
+
+		<div class="neo-prose" use:reveal>
 			<h3>Newton's Second Law</h3>
 		</div>
 
@@ -93,28 +167,16 @@
 		</div>
 
 		<!-- Kepler figure -->
-		<Figure number="8.2" caption="Under central force, the infinitesimal sector OPQ is exactly a triangle (microstraightness). Its area is ½r²·dθ.">
-			<svg viewBox="0 0 300 220" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:300px">
-				<circle cx="80" cy="150" r="3" fill="#1a1a2e"/>
-				<text x="70" y="168" font-size="12" font-family="Crimson Pro,serif" fill="#1a1a2e">O</text>
-				<!-- orbit arc -->
-				<path d="M 140 50 Q 200 80 240 140 Q 260 190 220 200" stroke="#1a1a2e" stroke-width="1.5" fill="none"/>
-				<!-- radius to P -->
-				<line x1="80" y1="150" x2="200" y2="85" stroke="#1a1a2e" stroke-width="1.2"/>
-				<text x="210" y="80" font-size="12" font-family="Crimson Pro,serif" fill="#1a1a2e">P</text>
-				<!-- radius to Q -->
-				<line x1="80" y1="150" x2="230" y2="120" stroke="#1a1a2e" stroke-width="1.2"/>
-				<text x="240" y="118" font-size="12" font-family="Crimson Pro,serif" fill="#a855f7">Q</text>
-				<!-- triangle fill -->
-				<path d="M 80 150 L 200 85 L 230 120 Z" fill="rgba(168,85,247,0.1)" stroke="#a855f7" stroke-width="1"/>
-				<!-- labels -->
-				<text x="140" y="110" font-size="11" font-family="Crimson Pro,serif" fill="#1a1a2e" font-style="italic">r</text>
-				<text x="155" y="140" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#a855f7">area = ½r²dθ</text>
-				<!-- angle arc -->
-				<path d="M 110 140 A 30 30 0 0 0 115 133" stroke="#a855f7" stroke-width="1" fill="none"/>
-				<text x="120" y="128" font-size="10" font-family="Crimson Pro,serif" fill="#a855f7" font-style="italic">dθ</text>
-			</svg>
-		</Figure>
+		<div use:reveal>
+			<JSXGraphBoard
+				setup={setupKepler}
+				boundingbox={[-4.5, 3, 4.5, -3]}
+				aspectRatio={(4.5 - -4.5) / (3 - -3)}
+				axes={false}
+				number="8.2"
+				caption="Kepler's areal law: the infinitesimal sector OPQ is exactly a triangle (by microstraightness). Its area is ½r²·dθ. Equal areas in equal times."
+			/>
+		</div>
 
 		<div class="derivation" use:reveal>
 			<div class="derivation-title">Kepler's Areal Law</div>

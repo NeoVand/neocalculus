@@ -3,9 +3,72 @@
 	import Callout from '$lib/components/Callout.svelte';
 	import Figure from '$lib/components/Figure.svelte';
 	import Exercise from '$lib/components/Exercise.svelte';
+	import HistoryBox from '$lib/components/HistoryBox.svelte';
 	import InlinePlot from '$lib/components/InlinePlot.svelte';
+	import JSXGraphBoard from '$lib/components/JSXGraphBoard.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
+
+	function setupFTCStrip(JXG: any, board: any) {
+		const f = (x: number) => 0.15 * x * x + 0.8; // simple positive curve
+
+		// Function curve
+		board.create('functiongraph', [f, 0, 6], {
+			strokeColor: '#1a1a2e', strokeWidth: 2.5, highlight: false
+		});
+
+		// Shaded area under curve from 0.5 to x0
+		const x0 = 3.5;
+		const dx = 0.5; // visible "infinitesimal" strip width
+		const pts: [number, number][] = [[0.5, 0]];
+		for (let t = 0.5; t <= x0; t += 0.05) pts.push([t, f(t)]);
+		pts.push([x0, 0]);
+		board.create('polygon', pts, {
+			fillColor: 'rgba(168,85,247,0.1)', strokeWidth: 0,
+			highlight: false, vertices: { visible: false }, borders: { strokeWidth: 0, highlight: false }
+		});
+
+		// The infinitesimal strip (rectangle)
+		board.create('polygon', [
+			[x0, 0], [x0 + dx, 0], [x0 + dx, f(x0)], [x0, f(x0)]
+		], {
+			fillColor: 'rgba(59,130,246,0.2)', strokeColor: '#3b82f6', strokeWidth: 1.5,
+			highlight: false, vertices: { visible: false }, borders: { highlight: false }
+		});
+
+		// The vanishing triangle on top of the strip
+		board.create('polygon', [
+			[x0, f(x0)], [x0 + dx, f(x0)], [x0 + dx, f(x0 + dx)]
+		], {
+			fillColor: 'rgba(239,68,68,0.2)', strokeColor: '#ef4444', strokeWidth: 1.2,
+			highlight: false, vertices: { visible: false }, borders: { highlight: false }
+		});
+
+		// Dot at (x0, f(x0))
+		board.create('point', [x0, f(x0)], {
+			size: 3, fillColor: '#3b82f6', strokeColor: '#3b82f6',
+			name: '', fixed: true, highlight: false
+		});
+
+		// Labels
+		board.create('text', [x0 + dx / 2, f(x0) / 2, 'f(x)·d'], {
+			fontSize: 13, color: '#2563eb', anchorX: 'middle', highlight: false, fontWeight: '600'
+		});
+		board.create('text', [x0 + dx + 0.3, f(x0) + 0.15, 'area = 0'], {
+			fontSize: 11, color: '#ef4444', anchorX: 'left', highlight: false, fontWeight: '600'
+		});
+		board.create('text', [x0 + dx + 0.3, f(x0) - 0.05, '(d² = 0)'], {
+			fontSize: 10, color: '#ef4444', anchorX: 'left', highlight: false
+		});
+
+		// x-axis labels
+		board.create('text', [x0, -0.18, 'x'], {
+			fontSize: 13, color: '#1a1a2e', anchorX: 'middle', highlight: false, fontStyle: 'italic'
+		});
+		board.create('text', [x0 + dx, -0.18, 'x+d'], {
+			fontSize: 13, color: '#a855f7', anchorX: 'middle', highlight: false, fontStyle: 'italic'
+		});
+	}
 </script>
 
 <section class="chapter" id="ch5">
@@ -23,28 +86,15 @@
 		</div>
 
 		<!-- FTC Figure -->
-		<Figure number="5.1" caption="The sliver of new area from x to x+d: a rectangle of area f(x)·d, plus a triangle of area ½f'(x)·d² = 0.">
-			<svg viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:400px">
-				<!-- axes -->
-				<line x1="50" y1="170" x2="370" y2="170" stroke="#1a1a2e" stroke-width="1.2"/>
-				<line x1="50" y1="170" x2="50" y2="20" stroke="#1a1a2e" stroke-width="1.2"/>
-				<!-- curve -->
-				<path d="M 60 120 Q 120 40 200 70 Q 280 100 350 50" stroke="#1a1a2e" stroke-width="2" fill="none"/>
-				<!-- shaded area -->
-				<path d="M 60 170 L 60 120 Q 120 40 200 70 Q 240 82 260 80 L 260 170 Z" fill="rgba(168,85,247,0.1)" stroke="none"/>
-				<!-- infinitesimal strip -->
-				<rect x="220" y="76" width="18" height="94" fill="rgba(59,130,246,0.2)" stroke="#3b82f6" stroke-width="1.5"/>
-				<!-- triangle on top -->
-				<path d="M 220 76 L 238 76 L 238 72 Z" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="1"/>
-				<!-- labels -->
-				<text x="229" y="140" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#2563eb" font-weight="500">f(x)·d</text>
-				<text x="252" y="68" text-anchor="start" font-size="9" font-family="Inter,sans-serif" fill="#ef4444">= 0</text>
-				<text x="220" y="185" text-anchor="middle" font-size="10" font-family="Crimson Pro,serif" fill="#1a1a2e">x</text>
-				<text x="238" y="185" text-anchor="middle" font-size="10" font-family="Crimson Pro,serif" fill="#a855f7">x+d</text>
-				<text x="40" y="18" font-size="11" font-family="Crimson Pro,serif" fill="#1a1a2e" font-style="italic">y</text>
-				<text x="370" y="185" font-size="11" font-family="Crimson Pro,serif" fill="#1a1a2e" font-style="italic">x</text>
-			</svg>
-		</Figure>
+		<div use:reveal>
+			<JSXGraphBoard
+				setup={setupFTCStrip}
+				boundingbox={[-0.3, 2.8, 6.5, -0.5]}
+				aspectRatio={(6.5 - -0.3) / (2.8 - -0.5)}
+				number="5.1"
+				caption="The infinitesimal strip from x to x+d: a blue rectangle of area f(x)·d, plus a red triangle whose area is ½f'(x)·d² = 0. Only the rectangle counts."
+			/>
+		</div>
 
 		<div class="derivation" use:reveal>
 			<div class="derivation-title">The Fundamental Theorem of Calculus</div>
@@ -65,6 +115,10 @@
 		</Callout>
 
 		<InlinePlot fn={x => x*x} domain={[0, 3]} areaFrom={0.5} areaTo={2.5} caption="The area under x² from 0.5 to 2.5 = x³/3 evaluated at the endpoints." />
+
+		<HistoryBox name="John L. Bell" years="1945–2024">
+			<p>Bell wrote "A Primer of Infinitesimal Analysis" — the most accessible book on this approach. His geometric proof of the Fundamental Theorem (the vanishing triangle argument above) shows how microstraightness makes integration beautifully simple.</p>
+		</HistoryBox>
 
 		<div class="neo-prose" use:reveal>
 			<h3>Notation</h3>
