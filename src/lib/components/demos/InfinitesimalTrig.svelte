@@ -269,11 +269,11 @@
 	</div>
 
 	<div class="slider-row" style="margin-bottom: 1rem;">
-		<label class="slider-label">
+		<label class="slider-label" for="infinitesimal-trig-angle">
 			<span>Angle <strong style="color: var(--color-d)">d</strong></span>
 			<span class="slider-value">{angle < 0.01 ? angle.toExponential(1) : angle.toFixed(3)} rad</span>
 		</label>
-		<input type="range" min="0" max="100" step="0.5" bind:value={angleSlider} class="slider" />
+		<input id="infinitesimal-trig-angle" type="range" min="0" max="100" step="0.5" bind:value={angleSlider} class="slider" />
 		<div class="slider-labels">
 			<span>← infinitesimal</span>
 			<span>large →</span>

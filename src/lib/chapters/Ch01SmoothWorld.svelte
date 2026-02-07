@@ -4,7 +4,14 @@
 	import Figure from '$lib/components/Figure.svelte';
 	import Exercise from '$lib/components/Exercise.svelte';
 	import HistoryBox from '$lib/components/HistoryBox.svelte';
+	import DigDeeper from '$lib/components/DigDeeper.svelte';
+	import ChapterSummary from '$lib/components/ChapterSummary.svelte';
+	import LookingAhead from '$lib/components/LookingAhead.svelte';
+	import StandardCalcBox from '$lib/components/StandardCalcBox.svelte';
+	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
+	import NextChapter from '$lib/components/NextChapter.svelte';
 	import PerfectZoom from '$lib/components/demos/PerfectZoom.svelte';
+	import FunctionMachine from '$lib/components/demos/FunctionMachine.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
 </script>
@@ -21,53 +28,109 @@
 		<!-- ═══ SECTION: What is a function? ═══ -->
 		<div class="neo-prose" use:reveal>
 			<h3>What is a function?</h3>
-			<p>Before we talk about calculus, we need one idea: the <strong>function</strong>.</p>
-			<p>A function is a machine. You put a number in, and a number comes out. That's it. You give it an input, it gives you an output — always the same output for the same input, reliably, every time.</p>
+			<p>A function is a machine: something goes in, something comes out — always the same output for the same input. Functions are far more general than "plug in a number, get a number." They are the universal language of transformation:</p>
 		</div>
 
-		<!-- Simple function-machine SVG -->
-		<Figure caption="A function is a machine: one input, one output.">
-			<svg viewBox="0 0 360 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:360px">
-				<!-- Input arrow -->
-				<line x1="30" y1="50" x2="105" y2="50" stroke="#94919b" stroke-width="1.5"/>
-				<polygon points="105,50 99,46 99,54" fill="#94919b"/>
-				<text x="65" y="40" text-anchor="middle" font-size="12" font-family="Crimson Pro,serif" fill="#94919b" font-style="italic">input x</text>
-				<!-- Box -->
-				<rect x="110" y="22" width="140" height="56" rx="10" fill="#faf5ff" stroke="#a855f7" stroke-width="1.5"/>
-				<text x="180" y="55" text-anchor="middle" font-size="16" font-family="Crimson Pro,serif" fill="#a855f7" font-style="italic" font-weight="600">f</text>
-				<!-- Output arrow -->
-				<line x1="255" y1="50" x2="330" y2="50" stroke="#94919b" stroke-width="1.5"/>
-				<polygon points="330,50 324,46 324,54" fill="#94919b"/>
-				<text x="295" y="40" text-anchor="middle" font-size="12" font-family="Crimson Pro,serif" fill="#94919b" font-style="italic">output f(x)</text>
-			</svg>
-		</Figure>
+	</div>
 
+	<!-- Function Machine Demo — full width -->
+	<div class="content-width" use:reveal>
+		<FunctionMachine />
+	</div>
+
+	<div class="content-width">
 		<div class="neo-prose" use:reveal>
-			<p>When we write <Katex math={r`f(x) = x^2`} />, we mean: "put in any number <Katex math="x" />, and the machine squares it." Put in 3, get 9. Put in -2, get 4. The function is completely described by its rule.</p>
-			<p>Functions are everywhere. The height of a thrown ball at time <Katex math="t" /> is a function. The temperature at each point along a metal rod is a function. The balance in your bank account on each day is a function. Calculus is the study of <em>how functions change</em> — how the output responds when you nudge the input.</p>
+			<p>A function can square a number, measure the length of a word, take the derivative of another function, or compute the divergence of a vector field. In every case the contract is the same: one input, one output, deterministic. In calculus we focus on functions from numbers to numbers — like <Katex math={r`f(x) = x^2`} /> — but the deeper idea is universal.</p>
+			<p>Calculus studies <em>how functions change</em>: how the output responds when you nudge the input. To do that cleanly, we need to be precise about what kind of functions we allow.</p>
 		</div>
 
 		<!-- ═══ SECTION: Smoothness ═══ -->
 		<div class="neo-prose" use:reveal>
-			<h3>Smoothness: a world without breaks</h3>
-			<p>Not all functions are created equal. Some change gently — a ball arcing through the sky traces a smooth curve. Others jump suddenly — a light switch is either on or off, with no in-between.</p>
-			<p>In the physical world, almost everything is smooth. Temperature doesn't teleport from 20°C to 100°C in zero distance. A moving car doesn't instantly jump from 0 to 60 mph. The real world <em>flows</em>.</p>
-			<p>In Neocalculus, we build our mathematics to match this reality. We work in a world where <strong>every function is smooth</strong> — no sudden jumps, no sharp corners, no breaks. Everything flows continuously, and every curve can be followed without lifting your pen.</p>
-			<p>This isn't a limitation. It's a <em>feature</em>. By starting with smoothness as a given, we avoid all the messy edge cases that plague classical mathematics, and we unlock a version of calculus that is simpler, more intuitive, and more powerful.</p>
+			<h3>Smoothness</h3>
+			<p>Not all functions change the same way. Some flow gently — a ball arcing through the sky traces a smooth curve. Others break. There are two ways a function can fail to be smooth:</p>
+			<ul>
+				<li><strong>A corner</strong> — like <Katex math={r`|x|`} /> at the origin, where the slope changes abruptly.</li>
+				<li><strong>A jump</strong> — like a step function that leaps from 0 to 1, with no intermediate values.</li>
+			</ul>
+			<p>In Neocalculus, we work exclusively with <strong>smooth</strong> functions: no corners, no jumps, no breaks of any kind. This matches the physical world — temperature doesn't teleport, velocity doesn't snap — and it makes calculus algebraic.</p>
 		</div>
 
+		<!-- ═══ FIGURE 1.1: Three-panel comparison ═══ -->
+		<Figure number="1.1" caption="Three kinds of functions. Left: x² is smooth — at every point, zooming in reveals a straight tangent line. Center: |x| has a corner at x = 0 that persists at every zoom level. Right: a step function has a jump discontinuity — the output teleports.">
+			<svg viewBox="0 0 690 210" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:690px">
+				<!-- ──── Panel 1: SMOOTH (x²) ──── -->
+				<rect x="6" y="6" width="210" height="198" rx="8" fill="white" stroke="#e5e1d8" stroke-width="1"/>
+				<text x="111" y="25" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#059669" font-weight="700" letter-spacing="0.04em">SMOOTH</text>
+				<!-- axes crossing at origin (111, 150) -->
+				<line x1="22" y1="150" x2="200" y2="150" stroke="#d4d0c8" stroke-width="0.7"/>
+				<line x1="111" y1="32" x2="111" y2="195" stroke="#d4d0c8" stroke-width="0.7"/>
+				<!-- x² parabola: vertex at origin (111, 150), scaled so f(±2)≈ top -->
+				<!-- Points: x=-2→y=4 at (31,38), x=-1→y=1 at (71,122), x=0→y=0 at (111,150), x=1→y=1 at (151,122), x=2→y=4 at (191,38) -->
+				<path d="M 31 38 C 51 100, 91 150, 111 150 C 131 150, 171 100, 191 38" stroke="#1a1a2e" stroke-width="2" fill="none"/>
+				<!-- tangent line at x=1 → slope=2, touching at (151, 122) -->
+				<line x1="121" y1="156" x2="181" y2="88" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="5,3"/>
+				<circle cx="151" cy="122" r="3" fill="#a855f7"/>
+				<!-- label -->
+				<text x="111" y="190" text-anchor="middle" font-size="10" font-family="var(--font-mono)" fill="#1a1a2e">f(x) = x²</text>
+				<!-- "straight" annotation pointing to tangent -->
+				<text x="182" y="82" font-size="8.5" font-family="Inter,sans-serif" fill="#a855f7" font-weight="600">tangent</text>
+
+				<!-- ──── Panel 2: CORNER (|x|) ──── -->
+				<rect x="240" y="6" width="210" height="198" rx="8" fill="white" stroke="#e5e1d8" stroke-width="1"/>
+				<text x="345" y="25" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#f59e0b" font-weight="700" letter-spacing="0.04em">CORNER</text>
+				<!-- axes crossing at origin (345, 150) -->
+				<line x1="256" y1="150" x2="434" y2="150" stroke="#d4d0c8" stroke-width="0.7"/>
+				<line x1="345" y1="32" x2="345" y2="195" stroke="#d4d0c8" stroke-width="0.7"/>
+				<!-- |x|: vertex at origin (345, 150) going up both sides -->
+				<!-- f(±2.5)=2.5 → at top. scale: 40px per unit → f(2)→(425,70), f(-2)→(265,70) -->
+				<line x1="265" y1="70" x2="345" y2="150" stroke="#1a1a2e" stroke-width="2"/>
+				<line x1="345" y1="150" x2="425" y2="70" stroke="#1a1a2e" stroke-width="2"/>
+				<!-- corner dot -->
+				<circle cx="345" cy="150" r="3.5" fill="#f59e0b"/>
+				<!-- two conflicting tangent directions at the corner -->
+				<line x1="310" y1="178" x2="345" y2="150" stroke="#f59e0b" stroke-width="1.3" stroke-dasharray="4,3"/>
+				<line x1="345" y1="150" x2="380" y2="178" stroke="#f59e0b" stroke-width="1.3" stroke-dasharray="4,3"/>
+				<text x="286" y="176" font-size="7.5" font-family="Inter,sans-serif" fill="#f59e0b" font-weight="500">slope −1</text>
+				<text x="382" y="176" font-size="7.5" font-family="Inter,sans-serif" fill="#f59e0b" font-weight="500">slope +1</text>
+				<!-- label -->
+				<text x="345" y="193" text-anchor="middle" font-size="10" font-family="var(--font-mono)" fill="#1a1a2e">f(x) = |x|</text>
+
+				<!-- ──── Panel 3: JUMP (step function) ──── -->
+				<rect x="474" y="6" width="210" height="198" rx="8" fill="white" stroke="#e5e1d8" stroke-width="1"/>
+				<text x="579" y="25" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#ef4444" font-weight="700" letter-spacing="0.04em">JUMP</text>
+				<!-- axes crossing at origin (579, 130) -->
+				<line x1="490" y1="130" x2="668" y2="130" stroke="#d4d0c8" stroke-width="0.7"/>
+				<line x1="579" y1="32" x2="579" y2="195" stroke="#d4d0c8" stroke-width="0.7"/>
+				<!-- Step function: 0 for x<0, 1 for x≥0 -->
+				<!-- y=0 line from left to origin -->
+				<line x1="496" y1="130" x2="579" y2="130" stroke="#1a1a2e" stroke-width="2"/>
+				<!-- y=1 line from origin to right, at y=70 (60px above axis) -->
+				<line x1="579" y1="70" x2="662" y2="70" stroke="#1a1a2e" stroke-width="2"/>
+				<!-- vertical gap — dashed to show the jump -->
+				<line x1="579" y1="130" x2="579" y2="70" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
+				<!-- open circle at bottom, filled at top -->
+				<circle cx="579" cy="130" r="3.5" fill="white" stroke="#1a1a2e" stroke-width="1.5"/>
+				<circle cx="579" cy="70" r="3.5" fill="#1a1a2e"/>
+				<!-- jump annotation -->
+				<text x="595" y="104" font-size="8" font-family="Inter,sans-serif" fill="#ef4444" font-weight="600">teleports!</text>
+				<!-- y-axis labels -->
+				<text x="572" y="134" text-anchor="end" font-size="8" font-family="Inter,sans-serif" fill="#94919b">0</text>
+				<text x="572" y="74" text-anchor="end" font-size="8" font-family="Inter,sans-serif" fill="#94919b">1</text>
+				<!-- label -->
+				<text x="579" y="190" text-anchor="middle" font-size="10" font-family="var(--font-mono)" fill="#1a1a2e">step function</text>
+			</svg>
+		</Figure>
+
 		<Callout type="key-idea" title="The Smooth World">
-			<p>In Neocalculus, every function is <strong>smooth</strong>: continuous, infinitely differentiable, with no jumps or corners. The mathematical world matches the physical world — things flow, they don't break.</p>
+			<p>In Neocalculus, every function is <strong>smooth</strong> — infinitely differentiable, with no corners and no jumps. This is not a limitation; it is a design choice that eliminates pathological edge cases and makes calculus algebraic.</p>
 		</Callout>
 
 		<!-- ═══ SECTION: Zooming in ═══ -->
 		<div class="neo-prose" use:reveal>
 			<h3>Zooming in: the key insight</h3>
-			<p>Here is the single most important observation in all of calculus, and everything else follows from it.</p>
-			<p>Take any smooth curve. Pick any point on it. Now zoom in — closer and closer, deeper and deeper. What happens?</p>
-			<p>The curve begins to flatten. The bends straighten out. And at the very bottom of the zoom — at a scale so small we call it <strong>infinitesimal</strong> — the curve becomes a perfectly straight line.</p>
-			<p>Not approximately straight. Not "almost" straight. <strong>Perfectly, exactly straight.</strong></p>
-			<p>This is called <strong>microstraightness</strong>. Try it yourself with any function you like:</p>
+			<p>Take any smooth curve. Pick any point. Now zoom in. What happens?</p>
+			<p>The curve flattens. The bends straighten out. And at the very bottom of the zoom — at a scale we call <strong>infinitesimal</strong> — the curve becomes a perfectly straight line. Not approximately straight. <strong>Exactly straight.</strong></p>
+			<p>This is <strong>microstraightness</strong>. Try it yourself:</p>
 		</div>
 	</div>
 
@@ -78,15 +141,13 @@
 
 	<div class="content-width">
 		<div class="neo-prose" use:reveal>
-			<p>No matter which function you chose, no matter where you placed the point — when you zoom far enough, the curve and its tangent become identical. This isn't a coincidence or an approximation. It is the foundational truth about how smooth functions behave.</p>
-			<p>This insight is the engine of everything that follows. The slope of that straight line <em>is</em> the derivative. The area under the curve accumulates from infinitesimal rectangles that are <em>exactly right</em>. Every formula in calculus flows from this one idea.</p>
-			<p>But to work with it, we need to give these infinitesimal quantities a name and a rule.</p>
+			<p>No matter which function you chose, no matter where you placed the point — when you zoom far enough, the curve and its tangent become identical. That infinitesimal straight segment has a tiny width we call <span class="d-highlight"><strong>d</strong></span>, and its slope is what we will call the <strong>derivative</strong>.</p>
 		</div>
 
 		<!-- ═══ SECTION: Meet d ═══ -->
 		<div class="neo-prose" use:reveal>
 			<h3>Meet <span class="d-highlight">d</span></h3>
-			<p>We call these infinitesimal quantities <span class="d-highlight"><strong>d</strong></span>. They live on the number line, just like 1 or ½ or π. But they obey one special rule:</p>
+			<p>Infinitesimals live on the number line alongside 1, ½, and π. They obey one special rule:</p>
 		</div>
 
 		<div class="key-equation" use:reveal>
@@ -94,13 +155,12 @@
 		</div>
 
 		<div class="neo-prose" use:reveal>
-			<p>That's it. That's the one rule. When you multiply an infinitesimal by itself, you get exactly zero. Not "approximately zero." Not "approaches zero." <strong>Zero.</strong></p>
-			<p>But <span class="d-highlight">d</span> itself is not zero. It has direction, slope, meaning. It's too small to measure directly, but large enough to carry information. Think of it as the mathematical atom of change — the smallest possible nudge.</p>
-			<p>This is what microstraightness means algebraically: over a distance of <span class="d-highlight">d</span>, every function is linear — a straight line — because any curvature would require a <Katex math="d^2" /> term, and <Katex math="d^2 = 0" />.</p>
+			<p>When you multiply an infinitesimal by itself, you get exactly zero. But <span class="d-highlight">d</span> itself is <em>not</em> zero — it has direction and slope. It is the mathematical atom of change: too small to measure, but large enough to carry information.</p>
+			<p>This is microstraightness stated algebraically: over a distance of <span class="d-highlight">d</span>, every function is linear, because curvature requires a <Katex math="d^2" /> term, and <Katex math="d^2 = 0" />.</p>
 		</div>
 
-		<!-- Figure: the number line with infinitesimal cloud -->
-		<Figure number="1.1" caption="The number line in Neocalculus. Around every point there is an infinitesimal neighborhood — a tiny 'cloud' of quantities d where d² = 0.">
+		<!-- Number line figure — placed here, near "Meet d" where it belongs -->
+		<Figure number="1.2" caption="The Neocalculus number line. Around every point sits an infinitesimal neighborhood D — a 'cloud' of quantities d where d² = 0.">
 			<svg viewBox="0 0 460 90" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:460px">
 				<line x1="30" y1="50" x2="430" y2="50" stroke="#1a1a2e" stroke-width="1.5"/>
 				<polygon points="430,50 424,46 424,54" fill="#1a1a2e"/>
@@ -119,87 +179,218 @@
 			</svg>
 		</Figure>
 
+		<div class="neo-prose" use:reveal>
+			<p>We write <Katex math={r`D = \{d \in \mathcal{R} : d^2 = 0\}`} /> for the set of all infinitesimals — the infinitesimal neighborhood of zero. Our number line <Katex math={r`\mathcal{R}`} /> contains everything you already know (integers, fractions, irrationals) plus these infinitesimals.</p>
+		</div>
+
+		<!-- ═══ SECTION: Infinitesimal arithmetic ═══ -->
+		<div class="neo-prose" use:reveal>
+			<h3>Arithmetic with infinitesimals</h3>
+			<p>The only new rule is <Katex math="d^2 = 0" />. Everything else is ordinary algebra.</p>
+			<ul>
+				<li><strong>Constant multiples:</strong> <Katex math="(3d)^2 = 9d^2 = 0" />, so any multiple of an infinitesimal is infinitesimal.</li>
+				<li><strong>Higher powers vanish:</strong> <Katex math="d^3 = d \cdot d^2 = 0" />, and <Katex math="d^4 = 0" />, and so on.</li>
+			</ul>
+		</div>
+
+		<div class="derivation" use:reveal>
+			<div class="derivation-title">Example: simplifying with d² = 0</div>
+			<div class="step">
+				<div class="step-math"><Katex math={r`(3 + d)^2 = 9 + 6d + d^2`} display /></div>
+				<div class="step-note">expand</div>
+			</div>
+			<div class="step step-result">
+				<div class="step-math"><Katex math={r`= 9 + 6d`} display /></div>
+				<div class="step-note"><Katex math="d^2 = 0" /> ✓</div>
+			</div>
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>Expand normally, kill every <Katex math="d^2" /> and higher, done. The result is always a number plus something times <Katex math="d" />.</p>
+		</div>
+
+		<!-- ═══ SECTION: A first taste ═══ -->
+		<div class="neo-prose" use:reveal>
+			<h3>A first taste: the slope of <Katex math="x^2" /></h3>
+			<p>Take <Katex math={r`f(x) = x^2`} /> and nudge its input by an infinitesimal:</p>
+		</div>
+
+		<div class="derivation" use:reveal>
+			<div class="derivation-title">Finding the slope of x²</div>
+			<div class="step">
+				<div class="step-math"><Katex math={r`f(x + d) = (x + d)^2 = x^2 + 2xd + d^2`} display /></div>
+				<div class="step-note">expand</div>
+			</div>
+			<div class="step">
+				<div class="step-math"><Katex math={r`= x^2 + 2xd`} display /></div>
+				<div class="step-note"><Katex math="d^2 = 0" /></div>
+			</div>
+			<div class="step step-result">
+				<div class="step-math"><Katex math={r`= f(x) + \underbrace{2x}_{\text{the slope}} \cdot d`} display /></div>
+				<div class="step-note">read off coefficient of d</div>
+			</div>
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>The slope of <Katex math="x^2" /> at any point <Katex math="x" /> is <Katex math="2x" />. At <Katex math="x = 3" />, the slope is 6. At <Katex math="x = -1" />, it's &minus;2. We just computed the derivative — and all we did was algebra. No limits, no epsilon-delta, no "approaching zero."</p>
+		</div>
+
+		<SDGAdvantage>
+			<p>In standard calculus, this requires defining a limit: <Katex math={r`\lim_{h \to 0} \frac{(x+h)^2 - x^2}{h}`} />. In Neocalculus, it's three lines of algebra. Same answer, simpler path.</p>
+		</SDGAdvantage>
+
 		<!-- ═══ SECTION: The axiom ═══ -->
 		<Callout type="definition" title="The Kock-Lawvere Axiom">
-			<p>Every function <Katex math={r`f \colon D \to \mathcal{R}`} />, where <Katex math={r`D = \{d \in \mathcal{R} : d^2 = 0\}`} />, can be written <strong>uniquely</strong> as</p>
+			<p>For any function <Katex math={r`f`} /> and any infinitesimal <Katex math="d" />, there is a <strong>unique</strong> number <Katex math="s" /> such that</p>
 			<Katex math={r`f(d) = f(0) + s \cdot d`} display />
-			<p>for some number <Katex math="s" />. In other words, every function on the infinitesimals is a straight line. No exceptions.</p>
+			<p>Every function on the infinitesimals is exactly linear. The unique slope <Katex math="s" /> is the derivative.</p>
 		</Callout>
 
 		<div class="neo-prose" use:reveal>
-			<p>This axiom is the engine of everything that follows. It tells us that infinitesimals are too short to bend — they can be translated and rotated but never curved. A curve, when restricted to an infinitesimal segment, <em>must</em> be straight.</p>
-			<p>From this single principle, we will rebuild all of calculus.</p>
+			<p>The word <em>uniquely</em> is the key. It means there is exactly one slope that works — and that uniqueness is what lets us extract the derivative by "reading off the coefficient of <Katex math="d" />."</p>
+		</div>
+
+		<!-- ═══ SECTION: Microcancellation ═══ -->
+		<Callout type="theorem" title="Microcancellation">
+			<p>If <Katex math="a \cdot d = b \cdot d" /> for all infinitesimal <Katex math="d" />, then <Katex math="a = b" />.</p>
+			<p>We "cancel" the <Katex math="d" /> — <strong>not by dividing</strong> (you cannot divide by an infinitesimal!) — but by the uniqueness of the Kock-Lawvere decomposition.</p>
+		</Callout>
+
+		<div class="neo-prose" use:reveal>
+			<p>This is the workhorse of every derivation in this book. Expand <Katex math="f(x+d)" />, apply <Katex math="d^2 = 0" />, and match the coefficients of <Katex math="d" /> on both sides.</p>
 		</div>
 
 		<!-- ═══ SECTION: How can d² = 0 without d = 0? ═══ -->
 		<div class="neo-prose" use:reveal>
-			<h3>How can d² = 0 without d = 0?</h3>
-			<p>This is the question everyone asks, and it deserves a real answer.</p>
-			<p>In everyday algebra, the argument goes: "If <Katex math="d^2 = 0" />, then <Katex math="d = 0" />. Done." And in the number system you're used to, that's correct. But the argument relies on a hidden assumption: that for every number, we can <em>decide</em> whether it equals zero or not.</p>
-			<p>Neocalculus operates in a world called <strong>constructive logic</strong>, where we can only assert what we can directly construct or verify. In this world, we give up one principle that most people take for granted:</p>
+			<h3>How can <Katex math="d^2 = 0" /> without <Katex math="d = 0" />?</h3>
+			<p>In ordinary algebra, <Katex math="d^2 = 0" /> forces <Katex math="d = 0" />. The proof goes: "Suppose <Katex math={r`d \neq 0`} />. Divide both sides of <Katex math="d \cdot d = 0" /> by <Katex math="d" />. Then <Katex math="d = 0" />. Contradiction." But this argument assumes you can always decide whether <Katex math="d = 0" /> or <Katex math={r`d \neq 0`} /> — that is, it uses the <strong>law of excluded middle</strong>.</p>
 		</div>
 
-		<Callout type="warning" title="What We Give Up: The Law of Excluded Middle">
-			<p>In classical logic, every statement is either true or false: <Katex math={r`P \lor \neg P`} /> always holds. In constructive logic, we can only claim <Katex math={r`P \lor \neg P`} /> when we have a <em>procedure</em> to determine which one it is.</p>
-			<p>For infinitesimals, we <strong>cannot decide</strong> whether <Katex math="d = 0" /> or <Katex math={r`d \neq 0`} />. They exist in a mathematical twilight — not provably zero, yet not provably nonzero either.</p>
+		<Callout type="warning" title="Constructive Logic">
+			<p>Neocalculus operates in <strong>constructive logic</strong>, where we only assert what we can directly verify. For infinitesimals, we <em>cannot</em> decide whether <Katex math="d = 0" /> — they are too small to measure. So the classical proof breaks down, and <Katex math="d^2 = 0" /> is compatible with <Katex math="d" /> being nonzero.</p>
+			<p>This is a feature: it prevents constructing pathological objects (step functions, nowhere-differentiable curves) that require case-splitting on "is this number zero?" Every function in our world is automatically smooth.</p>
 		</Callout>
 
-		<div class="neo-prose" use:reveal>
-			<p>This might sound like a loss, but it's actually a <em>feature</em>. Here's what we gain:</p>
-		</div>
+		<DigDeeper title="Why the classical proof fails">
+			<p>The classical argument has two steps. <strong>Step 1:</strong> Assume <Katex math={r`d \neq 0`} />, divide <Katex math="d \cdot d = 0" /> by <Katex math="d" />, get <Katex math="d = 0" />. Contradiction. <strong>Step 2:</strong> Since <Katex math={r`d \neq 0`} /> is impossible, conclude <Katex math="d = 0" />.</p>
+			<p>Step 2 uses the law of excluded middle: "not (<Katex math={r`d \neq 0`} />) therefore <Katex math="d = 0" />." In constructive logic, this inference is not valid — a number might be neither provably zero nor provably nonzero. Infinitesimals live in this twilight.</p>
+		</DigDeeper>
 
-		<Callout type="key-idea" title="What We Gain: A World Without Monsters">
-			<p><strong>Every function is continuous.</strong> You can't build a discontinuous step function because you'd need to sort each number into "zero" or "nonzero" — and that sorting is exactly what constructive logic prevents.</p>
-			<p><strong>Every function is infinitely differentiable.</strong> Since the slope equation gives every function a derivative, and the derivative is itself a function, you can differentiate forever. No corners, no cusps, no pathological exceptions.</p>
-			<p><strong>The mathematical world is safe by design.</strong> All the ugly edge cases of classical analysis — functions that are continuous but nowhere differentiable, sets that can be rearranged to double their volume — simply cannot exist here.</p>
-		</Callout>
+		<StandardCalcBox>
+			<p>In standard calculus, the derivative is defined as a limit: <Katex math={r`f'(x) = \lim_{h \to 0} \frac{f(x+h)-f(x)}{h}`} />. The epsilon-delta machinery exists precisely because the real numbers have no infinitesimals. Neocalculus adds infinitesimals to the number line and skips the limit entirely.</p>
+		</StandardCalcBox>
 
-		<!-- ═══ SECTION: What smoothness really means ═══ -->
-		<div class="neo-prose" use:reveal>
-			<h3>What smoothness really means</h3>
-			<p>Let's step back and appreciate what we've done. We haven't just chosen a mathematical convention — we've chosen to build our mathematics to match the physical world.</p>
-			<p>In the real world, physical quantities flow. Temperature changes gradually. Objects move along smooth paths. Forces vary continuously. Nature doesn't have step functions or nowhere-differentiable curves.</p>
-			<p>Classical mathematics built a number system (the real numbers) that <em>does</em> allow all those pathological objects, and then spent centuries building walls to keep them out. The epsilon-delta definition of limits, the Riemann integral, Lebesgue measure theory — all of these are, at their core, tools for taming mathematical monsters.</p>
-			<p>In Neocalculus, we take a different path. We start with a world where the monsters never existed. Every function is smooth. Every curve is infinitesimally straight. And the calculus that emerges is simple, algebraic, and clean.</p>
-			<p>This is why <Katex math="d^2 = 0" /> can hold without forcing <Katex math="d = 0" />: the proof that "<Katex math="d^2 = 0" /> implies <Katex math="d = 0" />" relies on the law of excluded middle, which we choose not to assume. By making that choice, we get a universe where calculus is algebra and everything works.</p>
-		</div>
-
+		<!-- ═══ HISTORY ═══ -->
 		<HistoryBox name="Gottfried Wilhelm Leibniz" years="1646–1716">
-			<p>Leibniz invented calculus using infinitesimals — quantities "infinitely small" that he manipulated algebraically. For 200 years, mathematicians used his notation (dx, dy, ∫) but couldn't justify the infinitesimals rigorously. Neocalculus vindicates Leibniz: his infinitesimals were nilpotent quantities all along.</p>
+			<p>Leibniz co-invented calculus using infinitesimals, writing <Katex math="dx" />, <Katex math="dy" />, and <Katex math={r`\textstyle\int`} />. His notation was brilliant, but his infinitesimals lacked rigorous foundations. Bishop Berkeley mocked them as "ghosts of departed quantities" in 1734. For 200 years, mathematicians used Leibniz's notation while replacing his ideas with limits. Neocalculus vindicates Leibniz: his infinitesimals were nilpotent (<Katex math="d^2 = 0" />) all along.</p>
 		</HistoryBox>
+
+		<HistoryBox name="L. E. J. Brouwer" years="1881–1966">
+			<p>Brouwer founded <strong>intuitionism</strong>, arguing that mathematical existence requires construction, not just proof by contradiction. He rejected the law of excluded middle. His ideas, once controversial, became the foundation of constructive mathematics — the logical framework that makes Neocalculus possible.</p>
+		</HistoryBox>
+
+		<!-- ═══ CHAPTER SUMMARY ═══ -->
+		<ChapterSummary>
+			<ul>
+				<li><strong>Smoothness:</strong> In Neocalculus, every function is smooth — no jumps, no corners.</li>
+				<li><strong>Microstraightness:</strong> Zoom into any smooth curve far enough and it becomes perfectly straight.</li>
+				<li><strong>Infinitesimals:</strong> Quantities <Katex math="d" /> where <Katex math="d^2 = 0" /> but <Katex math={r`d \neq 0`} />.</li>
+				<li><strong>Kock-Lawvere axiom:</strong> Every function on <Katex math="D" /> is uniquely of the form <Katex math="f(0) + s \cdot d" />.</li>
+				<li><strong>Microcancellation:</strong> <Katex math="ad = bd" /> for all <Katex math="d" /> implies <Katex math="a = b" />.</li>
+				<li><strong>Constructive logic:</strong> We don't assume the law of excluded middle, which is why <Katex math="d^2 = 0" /> doesn't force <Katex math="d = 0" />.</li>
+			</ul>
+		</ChapterSummary>
 
 		<!-- ═══ EXERCISES ═══ -->
 		<div class="exercises-group" use:reveal>
 			<div class="exercises-group-title">Exercises</div>
 
 			<Exercise number={1}>
-				If <Katex math="d" /> is infinitesimal (so <Katex math="d^2 = 0" />), simplify <Katex math="(3 + d)^2" />.
+				<p><strong>Warm-up.</strong> Simplify <Katex math="(3 + d)^2" /> using <Katex math="d^2 = 0" />.</p>
 				{#snippet solution()}
 					<Katex math={r`(3+d)^2 = 9 + 6d + d^2 = 9 + 6d`} display />
 				{/snippet}
 			</Exercise>
 
 			<Exercise number={2}>
-				If <Katex math="d^2 = 0" />, what is <Katex math="(1 + d)(1 - d)" />?
+				<p><strong>Warm-up.</strong> Simplify <Katex math="(1 + d)(1 - d)" />.</p>
 				{#snippet solution()}
 					<Katex math={r`(1+d)(1-d) = 1 - d^2 = 1`} display />
-					<p>The product is exactly 1.</p>
+					<p>So <Katex math="1-d" /> is the multiplicative inverse of <Katex math="1+d" />.</p>
 				{/snippet}
 			</Exercise>
 
 			<Exercise number={3}>
-				Explain in your own words why, in the Neocalculus world, every curve must be "infinitesimally straight."
+				<p><strong>Warm-up.</strong> Simplify <Katex math="(5 + d)^3" />.</p>
 				{#snippet solution()}
-					<p>The Kock-Lawvere axiom says every function on the infinitesimals is affine (a straight line). Since a curve restricted to an infinitesimal neighborhood is such a function, it must be straight in that neighborhood. Curves are made of infinitesimal straight segments joined together — too short to bend.</p>
+					<Katex math={r`(5+d)^3 = 125 + 75d + 15d^2 + d^3 = 125 + 75d`} display />
 				{/snippet}
 			</Exercise>
 
 			<Exercise number={4}>
-				Why can't you define a step function (f(x) = 0 for x &lt; 0, f(x) = 1 for x ≥ 0) in the Neocalculus world?
+				<p><strong>Core.</strong> Simplify <Katex math={r`\frac{1}{1+d}`} /> by multiplying top and bottom by <Katex math="(1 - d)" />.</p>
 				{#snippet solution()}
-					<p>To define this function, you'd need to decide for every number whether it's less than 0 or not. But for infinitesimals near 0, this decision cannot be made — they exist in a twilight zone. So the step function simply cannot be defined on all numbers, and therefore doesn't exist as a function on the full number line.</p>
+					<Katex math={r`\frac{1}{1+d} = \frac{1-d}{(1+d)(1-d)} = \frac{1-d}{1} = 1-d`} display />
+				{/snippet}
+			</Exercise>
+
+			<Exercise number={5}>
+				<p><strong>Core.</strong> True or false: <Katex math="d^2 = 0" /> implies <Katex math="d^3 = 0" />.</p>
+				{#snippet solution()}
+					<p><strong>True.</strong> <Katex math="d^3 = d \cdot d^2 = d \cdot 0 = 0" />.</p>
+				{/snippet}
+			</Exercise>
+
+			<Exercise number={6}>
+				<p><strong>Core.</strong> Simplify <Katex math="(2+d)^4" />.</p>
+				{#snippet solution()}
+					<Katex math={r`(2+d)^4 = 16 + 4 \cdot 8 \cdot d + \cdots = 16 + 32d`} display />
+					<p>All terms with <Katex math="d^2" /> or higher vanish.</p>
+				{/snippet}
+			</Exercise>
+
+			<Exercise number={7}>
+				<p><strong>Core.</strong> Compute <Katex math="(x+d)^3" />, apply <Katex math="d^2 = 0" />, and read off the coefficient of <Katex math="d" />. What is the slope of <Katex math="x^3" />?</p>
+				{#snippet solution()}
+					<Katex math={r`(x+d)^3 = x^3 + 3x^2 d + 3xd^2 + d^3 = x^3 + 3x^2 d`} display />
+					<p>The slope of <Katex math="x^3" /> at <Katex math="x" /> is <Katex math="3x^2" />.</p>
+				{/snippet}
+			</Exercise>
+
+			<Exercise number={8}>
+				<p><strong>Core.</strong> Explain in your own words why every smooth curve must be "infinitesimally straight."</p>
+				{#snippet solution()}
+					<p>The Kock-Lawvere axiom says every function on D is affine: <Katex math="f(d) = f(0) + s \cdot d" />. A curve restricted to an infinitesimal interval is such a function, so it must be a straight line. Curves are built from infinitesimal segments too short to bend.</p>
+				{/snippet}
+			</Exercise>
+
+			<Exercise number={9}>
+				<p><strong>Challenge.</strong> Why can't you define a step function (<Katex math="f(x) = 0" /> for <Katex math="x < 0" />, <Katex math="f(x) = 1" /> for <Katex math={r`x \geq 0`} />) in the Neocalculus world?</p>
+				{#snippet solution()}
+					<p>The definition requires deciding whether each number is negative or non-negative. For infinitesimals near 0, this decision cannot be made — constructive logic does not provide a procedure to determine their sign. The function is undefined on these numbers and so does not exist on the full number line.</p>
+				{/snippet}
+			</Exercise>
+
+			<Exercise number={10}>
+				<p><strong>Challenge.</strong> List three physical quantities that change smoothly. For each, explain what "infinitesimally straight" means physically.</p>
+				{#snippet solution()}
+					<p>(1) <strong>Temperature along a rod:</strong> over an infinitesimal length, temperature changes linearly: <Katex math="T(x+d) = T(x) + T'(x) \cdot d" />. (2) <strong>Height of a ball:</strong> over an infinitesimal time, height changes at constant velocity: <Katex math="h(t+d) = h(t) + v(t) \cdot d" />. (3) <strong>Population:</strong> over an infinitesimal time, growth is proportional: <Katex math="P(t+d) = P(t)(1 + r \cdot d)" />.</p>
+				{/snippet}
+			</Exercise>
+
+			<Exercise number={11}>
+				<p><strong>Exploration.</strong> Is <Katex math="3d^2" /> zero? What about <Katex math={r`\sqrt{d^2}`} />? Can you take <Katex math={r`\sqrt{d}`} />?</p>
+				{#snippet solution()}
+					<p><Katex math="3d^2 = 0" /> — any multiple of <Katex math="d^2" /> is zero. <Katex math={r`\sqrt{d^2} = \sqrt{0} = 0`} />. As for <Katex math={r`\sqrt{d}`} />: this is not defined in standard SDG, because <Katex math="d" /> is not provably non-negative.</p>
 				{/snippet}
 			</Exercise>
 		</div>
+
+		<!-- ═══ LOOKING AHEAD ═══ -->
+		<LookingAhead>
+			<p>In the next chapter, we'll use <Katex math="d^2 = 0" /> to find the slope of every function you've ever seen — polynomials, trig, exponentials, logarithms — and the algebra will be shockingly simple. The key formula: <Katex math={r`f(x + d) = f(x) + f'(x) \cdot d`} />.</p>
+		</LookingAhead>
+
+		<NextChapter href="ch2" title="The Slope Equation" number="2" />
 	</div>
 </section>

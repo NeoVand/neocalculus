@@ -348,14 +348,6 @@
 		font-weight: 600;
 	}
 
-	.empty-state {
-		text-align: center;
-		color: var(--color-ink-faint);
-		font-family: var(--font-sans);
-		font-size: 0.9rem;
-		padding: 3rem 0;
-	}
-
 	.algebra-controls {
 		display: flex;
 		flex-wrap: wrap;
@@ -363,50 +355,6 @@
 		align-items: center;
 		padding-top: 1rem;
 		border-top: 1px solid var(--color-border-light);
-	}
-
-	.btn {
-		font-family: var(--font-sans);
-		font-size: 0.82rem;
-		font-weight: 500;
-		padding: 0.45rem 1rem;
-		border-radius: 0.4rem;
-		cursor: pointer;
-		transition: all 0.15s ease;
-		border: 1px solid transparent;
-	}
-
-	.btn:disabled {
-		opacity: 0.35;
-		cursor: not-allowed;
-	}
-
-	.btn-primary {
-		background: var(--color-d);
-		color: white;
-	}
-
-	.btn-primary:hover:not(:disabled) {
-		background: #9333ea;
-	}
-
-	.btn-secondary {
-		background: white;
-		color: var(--color-d);
-		border-color: var(--color-d);
-	}
-
-	.btn-secondary:hover:not(:disabled) {
-		background: rgba(168, 85, 247, 0.05);
-	}
-
-	.btn-ghost {
-		background: transparent;
-		color: var(--color-ink-faint);
-	}
-
-	.btn-ghost:hover:not(:disabled) {
-		color: var(--color-ink-light);
 	}
 
 	.verify-box {

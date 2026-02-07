@@ -31,8 +31,8 @@
 		PR = 12,
 		PT = 12,
 		PB = 22;
-	const pW = width - PL - PR;
-	const pH = height - PT - PB;
+	let pW = $derived(width - PL - PR);
+	let pH = $derived(height - PT - PB);
 
 	let computedRange = $derived.by(() => {
 		if (range) return range;

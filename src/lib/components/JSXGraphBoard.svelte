@@ -29,6 +29,7 @@
 
 	let container: HTMLDivElement;
 	let board: any = null;
+	let jxgModule: any = null;
 	let boardId = `jsx-${Math.random().toString(36).slice(2, 9)}`;
 
 	onMount(async () => {
@@ -42,9 +43,9 @@
 			document.head.appendChild(link);
 		}
 
-		const JXG = await import('jsxgraph');
+		jxgModule = await import('jsxgraph');
 
-		board = JXG.JSXGraph.initBoard(boardId, {
+		board = jxgModule.JSXGraph.initBoard(boardId, {
 			boundingbox,
 			keepAspectRatio: true,
 			axis: axes,
@@ -75,14 +76,13 @@
 			}
 		});
 
-		setup(JXG, board);
+		setup(jxgModule, board);
 	});
 
 	onDestroy(() => {
-		if (board) {
+		if (board && jxgModule) {
 			try {
-				// @ts-ignore
-				JXG?.JSXGraph?.freeBoard?.(board);
+				jxgModule.JSXGraph.freeBoard(board);
 			} catch {
 				/* ignore cleanup errors */
 			}

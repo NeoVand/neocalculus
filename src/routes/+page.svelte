@@ -9,6 +9,7 @@
 	import Ch08 from '$lib/chapters/Ch08Physics.svelte';
 	import Ch09 from '$lib/chapters/Ch09ManyDimensions.svelte';
 	import Ch10 from '$lib/chapters/Ch10LanguageOfForms.svelte';
+	import ChapterNav from '$lib/components/ChapterNav.svelte';
 	import Katex from '$lib/components/Katex.svelte';
 	import { reveal } from '$lib/utils/scroll';
 </script>
@@ -46,6 +47,9 @@
 		<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7" /></svg>
 	</div>
 </section>
+
+<!-- ═══ CHAPTER NAVIGATION ═══ -->
+<ChapterNav />
 
 <!-- ═══ CHAPTERS ═══ -->
 <div class="page-wrapper">

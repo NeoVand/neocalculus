@@ -400,51 +400,6 @@
 		background: rgba(250, 245, 255, 0.9);
 	}
 
-	/* old tab style kept for compat but unused */
-	.curve-tab {
-		font-family: var(--font-mono);
-		font-size: 0.82rem;
-		padding: 0.35rem 0.85rem;
-		border-radius: 999px;
-		border: 1px solid var(--color-border);
-		background: white;
-		color: var(--color-ink-light);
-		cursor: pointer;
-		transition: all 0.15s ease;
-	}
-
-	.curve-tab:hover {
-		border-color: var(--color-d);
-		color: var(--color-d);
-	}
-
-	.curve-tab.active {
-		background: var(--color-d);
-		color: white;
-		border-color: var(--color-d);
-	}
-
-	.zoom-message {
-		font-family: var(--font-sans);
-		font-size: 0.85rem;
-		margin-top: 1rem;
-		padding: 0.75rem 1rem;
-		border-radius: 0.5rem;
-		animation: float-down 0.4s var(--ease-out-expo);
-	}
-
-	.zoom-message.converging {
-		background: rgba(168, 85, 247, 0.06);
-		color: var(--color-ink-light);
-		border: 1px solid rgba(168, 85, 247, 0.15);
-	}
-
-	.zoom-message.converged {
-		background: rgba(168, 85, 247, 0.1);
-		color: var(--color-d);
-		border: 1px solid rgba(168, 85, 247, 0.25);
-		font-weight: 500;
-	}
 
 	@keyframes float-down {
 		from {

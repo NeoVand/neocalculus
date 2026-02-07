@@ -646,3 +646,62 @@ h1, h2, h3, h4 {
 
 	html { scroll-behavior: auto; }
 }
+
+/* ═══════════════════════════════════════════
+   PRINT STYLES
+   ═══════════════════════════════════════════ */
+@media print {
+	body {
+		background: white;
+		color: black;
+		font-size: 11pt;
+		line-height: 1.5;
+	}
+
+	.progress-bar,
+	.chapter-sidebar,
+	.chapter-mobile-toggle,
+	.chapter-mobile-drawer,
+	.chapter-mobile-backdrop,
+	.scroll-hint,
+	.next-chapter-nav,
+	.back-to-top,
+	.exercise-toggle {
+		display: none !important;
+	}
+
+	.chapter {
+		page-break-before: always;
+		border-top: none;
+		padding-top: 1cm;
+	}
+
+	.chapter:first-of-type {
+		page-break-before: auto;
+	}
+
+	.demo-container {
+		border: 1px solid #ccc;
+		break-inside: avoid;
+	}
+
+	.callout,
+	.derivation,
+	.key-equation,
+	.exercise,
+	.history-box {
+		break-inside: avoid;
+	}
+
+	.key-equation {
+		background: #f5f0ff !important;
+		border-left-color: #888 !important;
+	}
+
+	a { color: inherit; text-decoration: none; }
+
+	.hero {
+		min-height: auto !important;
+		padding: 2cm 1cm;
+	}
+}
