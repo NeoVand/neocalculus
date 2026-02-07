@@ -101,6 +101,7 @@ h1, h2, h3, h4 {
 	padding-top: var(--space-xl);
 	padding-bottom: var(--space-lg);
 	border-top: 1px solid var(--color-border-light);
+	scroll-margin-top: 1rem;
 }
 
 .chapter-number {
@@ -241,7 +242,7 @@ h1, h2, h3, h4 {
 	border: 1px solid var(--color-border);
 	border-radius: 1rem;
 	padding: var(--space-md);
-	margin: var(--space-lg) 0;
+	margin: var(--space-lg) auto;
 }
 
 .demo-label {
@@ -257,13 +258,8 @@ h1, h2, h3, h4 {
 	gap: 0.5rem;
 }
 
-.demo-label::before {
-	content: '';
-	display: inline-block;
-	width: 7px;
-	height: 7px;
-	border-radius: 50%;
-	background: var(--color-d);
+.demo-label svg {
+	flex-shrink: 0;
 }
 
 /* ═══════════════════════════════════════════
@@ -569,7 +565,6 @@ h1, h2, h3, h4 {
 	}
 
 	.demo-container {
-		margin-inline: -0.25rem;
 		border-radius: 0.75rem;
 	}
 
@@ -594,7 +589,6 @@ h1, h2, h3, h4 {
 	}
 
 	.derivation { padding: 1.75rem 2rem; }
-	.demo-container { padding: 2rem; }
 }
 
 /* ═══════════════════════════════════════════

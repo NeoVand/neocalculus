@@ -109,6 +109,16 @@
 			<Katex math={r`\int_a^b f(x)\,dx = F(b) - F(a)`} display />
 		</Callout>
 
+		<details class="dig-deeper" use:reveal>
+			<summary>The telescoping perspective</summary>
+			<div class="dig-content neo-prose">
+				<p>There's another beautiful way to see the FTC. Think of the interval <Katex math={r`[a, b]`} /> as composed of infinitely many infinitesimal segments. Over each segment, the change in <Katex math="F" /> is exactly <Katex math={r`F'(x) \cdot d = f(x) \cdot d`} />.</p>
+				<p>Summing all these infinitesimal changes across the continuum gives a telescoping sum:</p>
+				<Katex math={r`\sum F(x + d) - F(x) = F(b) - F(a)`} display />
+				<p>Every internal point cancels — it's the end of one segment and the start of the next. Only the boundary values <Katex math={r`F(b)`} /> and <Katex math={r`F(a)`} /> survive. This is the most transparent possible justification: the integral is the accumulation of infinitesimal differences, and it telescopes to the boundary.</p>
+			</div>
+		</details>
+
 		<Callout type="key-idea" title="The Constancy Principle">
 			<p>If <Katex math={r`f'(x) = 0`} /> for all <Katex math="x" /> in an interval, then <Katex math="f" /> is constant. This bridges the infinitesimal and the global: infinitesimal flatness everywhere implies global constancy.</p>
 			<p>Consequence: two functions with the same derivative differ by at most a constant.</p>
@@ -141,7 +151,9 @@
 
 		<div class="neo-prose" use:reveal>
 			<h3>Integration by Parts</h3>
-			<p>The product rule in reverse. Since <Katex math={r`(fg)' = f'g + fg'`} />, integrating both sides gives:</p>
+			<p>This technique follows immediately from the product rule. In SDG, the product rule gives us the identity <Katex math={r`(fg)' = f'g + fg'`} />. Integrate both sides over <Katex math={r`[a, b]`} />:</p>
+			<Katex math={r`\int_a^b (fg)'\,dx = \int_a^b f'g\,dx + \int_a^b fg'\,dx`} display />
+			<p>By the FTC, the left side is <Katex math={r`f(b)g(b) - f(a)g(a)`} />. Rearranging:</p>
 		</div>
 
 		<div class="key-equation" use:reveal>

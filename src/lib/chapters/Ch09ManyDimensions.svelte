@@ -122,6 +122,20 @@
 		</div>
 
 		<div class="neo-prose" use:reveal>
+			<h3>The Jacobian: How Maps Distort Infinitesimal Volume</h3>
+			<p>When a map <Katex math={r`\mathbf{g} \colon \mathcal{R}^2 \to \mathcal{R}^2`} /> transforms a region, it distorts infinitesimal areas. An infinitesimal square with sides <Katex math={r`d_1, d_2`} /> gets mapped to a parallelogram whose area is scaled by the <strong>Jacobian determinant</strong>:</p>
+		</div>
+
+		<div class="key-equation" use:reveal>
+			<Katex math={r`\text{area ratio} = \left|\det \begin{pmatrix} \partial g_1/\partial x & \partial g_1/\partial y \\ \partial g_2/\partial x & \partial g_2/\partial y \end{pmatrix}\right|`} display />
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>In SDG, this is completely transparent: the infinitesimal parallelogram has sides <Katex math={r`\mathbf{g}(x + d_1, y) - \mathbf{g}(x,y)`} /> and <Katex math={r`\mathbf{g}(x, y + d_2) - \mathbf{g}(x,y)`} />, which are the columns of the Jacobian matrix times the infinitesimals. The area of a parallelogram is the determinant of the matrix of its sides.</p>
+			<p>This gives the <strong>change of variables formula</strong> for multiple integrals: when substituting <Katex math={r`(x,y) = \mathbf{g}(u,v)`} />, you multiply by <Katex math={r`|\det J_{\mathbf{g}}|`} /> — the Jacobian tells you how much each infinitesimal area element is stretched or compressed.</p>
+		</div>
+
+		<div class="neo-prose" use:reveal>
 			<h3>Tangent Vectors as Microsegments</h3>
 			<p>In Neocalculus, a <strong>tangent vector</strong> at a point <Katex math="m" /> on a space <Katex math="M" /> is simply a map <Katex math={r`t \colon D \to M`} /> with <Katex math={r`t(0) = m`} />. It's an infinitesimal path — a microsegment placed on the space, too short to bend. The collection of all tangent vectors at <Katex math="m" /> forms the <strong>tangent space</strong> <Katex math={r`T_m M`} />.</p>
 		</div>

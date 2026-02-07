@@ -33,15 +33,16 @@
 
 	onMount(async () => {
 		// Dynamic import — JSXGraph is browser-only (needs DOM)
-		const JXG = await import('jsxgraph');
-
-		// Import CSS once
-		if (!document.querySelector('link[href*="jsxgraph"]')) {
+		// Load JSXGraph CSS from static
+		if (!document.querySelector('link[data-jsxgraph-css]')) {
 			const link = document.createElement('link');
 			link.rel = 'stylesheet';
-			link.href = '/node_modules/jsxgraph/distrib/jsxgraph.css';
+			link.href = '/jsxgraph.css';
+			link.setAttribute('data-jsxgraph-css', '');
 			document.head.appendChild(link);
 		}
+
+		const JXG = await import('jsxgraph');
 
 		board = JXG.JSXGraph.initBoard(boardId, {
 			boundingbox,

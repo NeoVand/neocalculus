@@ -217,56 +217,58 @@
 	});
 </script>
 
-<div class="pz-root content-width">
-	<div class="demo-container">
-		<div class="demo-label">Interactive — The Perfect Zoom</div>
+<div class="demo-container content-width">
+	<!-- Friendly label with hand icon -->
+	<div class="demo-label">
+		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v0M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 0 1 2 2v7.4a4 4 0 0 1-.6 2.1L17.5 22H8.8a2 2 0 0 1-1.7-1l-3.5-6A2 2 0 0 1 6 12h0"/></svg>
+		Explore: zoom into any curve
+	</div>
 
-		<!-- Function picker: bento grid with KaTeX labels -->
-		<div class="fn-grid">
-			{#each Object.entries(curves) as [key, c]}
-				<button
-					class="fn-cell"
-					class:active={selectedCurve === key}
-					onclick={() => {
+	<!-- Function picker: bento grid with KaTeX labels -->
+	<div class="fn-grid">
+		{#each Object.entries(curves) as [key, c]}
+			<button
+				class="fn-cell"
+				class:active={selectedCurve === key}
+				onclick={() => {
 					selectedCurve = key;
 					zoomSlider = 0;
-					const c = curves[key];
-					pointSlider = Math.round(((c.cx - c.xRange[0]) / (c.xRange[1] - c.xRange[0])) * 1000);
+					const cv = curves[key];
+					pointSlider = Math.round(((cv.cx - cv.xRange[0]) / (cv.xRange[1] - cv.xRange[0])) * 1000);
 				}}
-				>{@html renderTex(c.tex)}</button>
-			{/each}
-		</div>
+			>{@html renderTex(c.tex)}</button>
+		{/each}
+	</div>
 
-		<!-- Zoom control -->
-		<div class="toolbar">
-			<span class="toolbar-lbl">Zoom</span>
-			<input type="range" min="0" max="100" step="0.5" bind:value={zoomSlider} class="toolbar-slider" />
-			<span class="toolbar-val">{zoom.toFixed(zoom < 10 ? 1 : 0)}×</span>
-		</div>
+	<!-- Zoom control -->
+	<div class="toolbar">
+		<span class="toolbar-lbl">Zoom</span>
+		<input type="range" min="0" max="100" step="0.5" bind:value={zoomSlider} class="toolbar-slider" />
+		<span class="toolbar-val">{zoom.toFixed(zoom < 10 ? 1 : 0)}×</span>
+	</div>
 
-		<!-- Canvas -->
-		<div bind:this={container} class="canvas-wrapper">
-			<canvas bind:this={canvas}></canvas>
-			{#if zoom >= 80}
-				<div class="canvas-overlay" class:converged={zoom >= 400}>
-					{#if zoom < 400}
-						Converging...
-					{:else}
-						<em>Microstraightness.</em>
-					{/if}
-				</div>
-			{/if}
-		</div>
+	<!-- Canvas -->
+	<div bind:this={container} class="canvas-wrapper">
+		<canvas bind:this={canvas}></canvas>
+		{#if zoom >= 80}
+			<div class="canvas-overlay" class:converged={zoom >= 400}>
+				{#if zoom < 400}
+					Converging...
+				{:else}
+					<em>Microstraightness.</em>
+				{/if}
+			</div>
+		{/if}
+	</div>
 
-		<!-- Point + tangent controls -->
-		<div class="toolbar" style="margin-top: 0.5rem;">
-			<span class="toolbar-lbl">Point <em>x</em> =</span>
-			<input type="range" min="0" max="1000" step="1" bind:value={pointSlider} class="toolbar-slider" />
-			<span class="toolbar-val">{centerX.toFixed(2)}</span>
-			<button class="tangent-btn" class:active={showTangent} onclick={() => showTangent = !showTangent}>
-				Tangent {showTangent ? 'on' : 'off'}
-			</button>
-		</div>
+	<!-- Point + tangent controls -->
+	<div class="toolbar">
+		<span class="toolbar-lbl">Point <em>x</em> =</span>
+		<input type="range" min="0" max="1000" step="1" bind:value={pointSlider} class="toolbar-slider" />
+		<span class="toolbar-val">{centerX.toFixed(2)}</span>
+		<button class="tangent-btn" class:active={showTangent} onclick={() => showTangent = !showTangent}>
+			Tangent {showTangent ? 'on' : 'off'}
+		</button>
 	</div>
 </div>
 
@@ -314,8 +316,8 @@
 	.toolbar {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		margin-bottom: 0.5rem;
+		gap: 0.6rem;
+		margin-bottom: 0.6rem;
 	}
 
 	.toolbar-lbl {

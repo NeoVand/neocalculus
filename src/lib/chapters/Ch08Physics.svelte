@@ -186,6 +186,28 @@
 			<div class="step step-result"><div class="step-math"><Katex math={r`A'(t) = \text{constant} \implies \text{equal areas in equal times}`} display /></div><span class="step-note">Kepler's law ✓</span></div>
 		</div>
 
+		<div class="neo-prose" use:reveal>
+			<h3>Exponential Growth and Decay</h3>
+			<p>Many natural processes change at a rate proportional to their current value. A population grows faster when it's large. A radioactive sample decays faster when there's more of it. The defining equation is:</p>
+		</div>
+
+		<div class="key-equation" use:reveal>
+			<Katex math={r`f'(t) = k \cdot f(t)`} display />
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>We already know the solution: <Katex math={r`f(t) = f(0) \cdot e^{kt}`} />. This is because <Katex math="e^x" /> is the unique function that equals its own derivative. When <Katex math="k > 0" />, the quantity grows exponentially. When <Katex math="k < 0" />, it decays.</p>
+		</div>
+
+		<div class="derivation" use:reveal>
+			<div class="derivation-title">Example — Radioactive Decay</div>
+			<div class="step"><div class="step-math"><Katex math={r`N'(t) = -\lambda N(t), \quad N(0) = N_0`} display /></div><span class="step-note">decay rate ∝ amount</span></div>
+			<div class="step"><div class="step-math"><Katex math={r`N(t) = N_0 \, e^{-\lambda t}`} display /></div><span class="step-note">solution</span></div>
+			<div class="step step-result"><div class="step-math"><Katex math={r`\text{Half-life: } t_{1/2} = \frac{\ln 2}{\lambda}`} display /></div><span class="step-note">set N = N₀/2 ✓</span></div>
+		</div>
+
+		<InlinePlot fn={t => Math.exp(-0.3*t)} domain={[0, 8]} caption="Exponential decay: N(t) = N₀·e^(−λt). The quantity halves at regular intervals." />
+
 		<div class="exercises-group" use:reveal>
 			<div class="exercises-group-title">Exercises</div>
 			<Exercise number={1}>
@@ -195,6 +217,10 @@
 			<Exercise number={2}>
 				Verify that <Katex math={r`x(t) = \cos(\omega t)`} /> satisfies <Katex math={r`x''(t) = -\omega^2 x(t)`} />.
 				{#snippet solution()}<p><Katex math={r`x'(t) = -\omega\sin(\omega t)`} />, <Katex math={r`x''(t) = -\omega^2\cos(\omega t) = -\omega^2 x(t)`} />. ✓</p>{/snippet}
+			</Exercise>
+			<Exercise number={3}>
+				A population doubles every 5 years. Find the growth constant <Katex math="k" />.
+				{#snippet solution()}<p><Katex math={r`2 = e^{5k} \implies k = \frac{\ln 2}{5} \approx 0.1386`} /> per year.</p>{/snippet}
 			</Exercise>
 		</div>
 	</div>
