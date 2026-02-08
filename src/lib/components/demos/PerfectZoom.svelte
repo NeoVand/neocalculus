@@ -76,10 +76,18 @@
 
 		const curve = curveData;
 		const cx = centerX;
-		const cy = curve.fn(cx);
+		let cy = curve.fn(cx);
 
-		// Guard: center is valid if the function value itself is finite
-		// (derivative can be infinite — that means a vertical tangent, which we handle)
+		// Guard: if function is undefined/infinite at cx, nudge slightly to find a valid nearby point
+		if (!isFinite(cy)) {
+			const nudge = 0.001;
+			const cyPlus = curve.fn(cx + nudge);
+			const cyMinus = curve.fn(cx - nudge);
+			if (isFinite(cyPlus)) cy = cyPlus;
+			else if (isFinite(cyMinus)) cy = cyMinus;
+			else cy = 0; // last resort
+		}
+
 		const validCenter = isFinite(cy);
 
 		const rangeX = 4 / zoom;
@@ -99,9 +107,9 @@
 		ctx.fillStyle = '#FDFBF7';
 		ctx.fillRect(0, 0, w, h);
 
-		// Grid
-		ctx.strokeStyle = '#eee9e0';
-		ctx.lineWidth = 1 * dpr;
+		// Grid — subtle, thin lines
+		ctx.strokeStyle = '#f0ece4';
+		ctx.lineWidth = 0.5 * dpr;
 		const gridStep = getGridStep(rangeX * 2);
 		const gridXStart = Math.floor(xMin / gridStep) * gridStep;
 		const gridYStart = Math.floor(yMin / gridStep) * gridStep;
@@ -121,16 +129,16 @@
 
 		// Axes
 		if (xMin <= 0 && xMax >= 0) {
-			ctx.strokeStyle = '#ccc8bf';
-			ctx.lineWidth = 1.5 * dpr;
+			ctx.strokeStyle = '#d4d0c8';
+			ctx.lineWidth = 1 * dpr;
 			ctx.beginPath();
 			ctx.moveTo(toX(0), 0);
 			ctx.lineTo(toX(0), h);
 			ctx.stroke();
 		}
 		if (yMin <= 0 && yMax >= 0) {
-			ctx.strokeStyle = '#ccc8bf';
-			ctx.lineWidth = 1.5 * dpr;
+			ctx.strokeStyle = '#d4d0c8';
+			ctx.lineWidth = 1 * dpr;
 			ctx.beginPath();
 			ctx.moveTo(0, toY(0));
 			ctx.lineTo(w, toY(0));
@@ -263,7 +271,7 @@
 
 	<!-- Point + tangent controls -->
 	<div class="toolbar">
-		<span class="toolbar-lbl">Point <em>x</em> =</span>
+		<span class="toolbar-lbl"><em>x</em> =</span>
 		<input type="range" min="0" max="1000" step="1" bind:value={pointSlider} class="toolbar-slider" />
 		<span class="toolbar-val">{centerX.toFixed(2)}</span>
 		<button class="tangent-btn" class:active={showTangent} onclick={() => showTangent = !showTangent}>
@@ -276,19 +284,19 @@
 	/* ── Bento function grid ── */
 	.fn-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
-		gap: 0.3rem;
-		margin-bottom: 0.6rem;
+		grid-template-columns: repeat(auto-fill, minmax(5.8rem, 1fr));
+		gap: 0.35rem;
+		margin-bottom: 1rem;
 	}
 
 	.fn-cell {
-		padding: 0.32rem 0.2rem;
-		border-radius: 0.4rem;
+		padding: 0.38rem 0.3rem;
+		border-radius: 0.5rem;
 		border: 1px solid var(--color-border-light);
-		background: var(--color-paper);
+		background: white;
 		color: var(--color-ink-light);
 		cursor: pointer;
-		transition: all 0.1s ease;
+		transition: all 0.12s ease;
 		text-align: center;
 		line-height: 1.2;
 	}
@@ -300,6 +308,7 @@
 	.fn-cell:hover {
 		border-color: var(--color-d);
 		color: var(--color-d);
+		background: var(--color-d-soft);
 	}
 
 	.fn-cell.active {
@@ -317,12 +326,12 @@
 		display: flex;
 		align-items: center;
 		gap: 0.6rem;
-		margin-bottom: 0.6rem;
+		padding: 0.4rem 0;
 	}
 
 	.toolbar-lbl {
 		font-family: var(--font-sans);
-		font-size: 0.72rem;
+		font-size: 0.75rem;
 		color: var(--color-ink-faint);
 		white-space: nowrap;
 	}
@@ -331,30 +340,36 @@
 		flex: 1;
 		accent-color: var(--color-d);
 		cursor: pointer;
+		height: 4px;
 	}
 
 	.toolbar-val {
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
+		font-family: var(--font-sans);
+		font-size: 0.75rem;
 		font-weight: 600;
 		color: var(--color-d);
-		min-width: 3.5em;
+		min-width: 3.2em;
 		text-align: right;
 		font-variant-numeric: tabular-nums;
 	}
 
 	.tangent-btn {
 		font-family: var(--font-sans);
-		font-size: 0.7rem;
+		font-size: 0.72rem;
 		font-weight: 500;
-		padding: 0.25rem 0.55rem;
+		padding: 0.28rem 0.65rem;
 		border-radius: 999px;
-		border: 1px solid var(--color-border);
+		border: 1.5px solid var(--color-border);
 		background: white;
 		color: var(--color-ink-faint);
 		cursor: pointer;
 		transition: all 0.12s ease;
 		white-space: nowrap;
+	}
+
+	.tangent-btn:hover {
+		border-color: var(--color-d);
+		color: var(--color-d);
 	}
 
 	.tangent-btn.active {
@@ -367,10 +382,11 @@
 	.canvas-wrapper {
 		width: 100%;
 		aspect-ratio: 16 / 9;
-		border-radius: 0.5rem;
+		border-radius: 0.75rem;
 		overflow: hidden;
 		border: 1px solid var(--color-border-light);
 		position: relative;
+		margin: 0.3rem 0;
 	}
 
 	canvas {

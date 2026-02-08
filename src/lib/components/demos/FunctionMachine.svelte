@@ -126,7 +126,7 @@
 
 	let idx = $state(0);
 	let phase = $state<'appear' | 'swallow' | 'digest' | 'spit' | 'linger' | 'fadeout' | 'reset'>('reset');
-	let timer: ReturnType<typeof setInterval> | undefined;
+	let timer: ReturnType<typeof setTimeout> | undefined;
 	let inSpread = $state(0);
 	let outSpread = $state(0);
 	let gradPos = $state(0);
@@ -201,22 +201,65 @@
 	let dispAxisXn = $derived(lerpN(fromAxisX, sc.axisX, morphT));
 	let dispAxisYn = $derived(lerpN(fromAxisY, sc.axisY, morphT));
 
+	// Total cycle: 5200ms
+	// 0      – appear (input + label fade in)
+	// 900    – swallow (input slides into machine)
+	// 1150   – gradient sweep starts
+	// 1400   – input fully eaten
+	// 1900   – output emerges
+	// 2300   – linger (output stays)
+	// 3800   – fadeout (output + label fade out simultaneously)
+	// 4300   – morph curve to next function (while everything is faded)
+	// 4800   – next cycle starts (new input + label appear)
+
 	function cycle() {
 		phase = 'appear';
-		setTimeout(() => { phase = 'swallow'; inSpread = 4; setTimeout(() => { inSpread = 0; }, 300); }, 900);
-		setTimeout(() => { gradActive = true; gradPos = 0; const s = performance.now(); const dur = 700; function tick(n: number) { const p = Math.min((n-s)/dur,1); gradPos = p; if (p<1) requestAnimationFrame(tick); } requestAnimationFrame(tick); }, 1150);
-		setTimeout(() => { phase = 'digest'; }, 1400);
-		setTimeout(() => { gradActive = false; phase = 'spit'; outSpread = -2; setTimeout(() => { outSpread = 3; }, 100); setTimeout(() => { outSpread = 0; }, 280); }, 1900);
-		setTimeout(() => { phase = 'linger'; }, 2300);
-		setTimeout(() => { phase = 'fadeout'; }, 4000);
+
 		setTimeout(() => {
-			phase = 'reset';
-			// Start morphing the curve to next scenario
+			phase = 'swallow';
+			inSpread = 4;
+			setTimeout(() => { inSpread = 0; }, 300);
+		}, 900);
+
+		setTimeout(() => {
+			gradActive = true;
+			gradPos = 0;
+			const s = performance.now();
+			const dur = 700;
+			function tick(n: number) {
+				const p = Math.min((n - s) / dur, 1);
+				gradPos = p;
+				if (p < 1) requestAnimationFrame(tick);
+			}
+			requestAnimationFrame(tick);
+		}, 1150);
+
+		setTimeout(() => { phase = 'digest'; }, 1400);
+
+		setTimeout(() => {
+			gradActive = false;
+			phase = 'spit';
+			outSpread = -2;
+			setTimeout(() => { outSpread = 3; }, 100);
+			setTimeout(() => { outSpread = 0; }, 280);
+		}, 1900);
+
+		setTimeout(() => { phase = 'linger'; }, 2300);
+
+		// Fade out output + label AND morph curve simultaneously
+		setTimeout(() => {
+			phase = 'fadeout';
 			startMorph((idx + 1) % scenarios.length);
-		}, 4600);
+		}, 3800);
+
+		// Schedule next cycle after fade + morph complete
+		timer = setTimeout(cycle, 4400);
 	}
 
-	onMount(() => { setTimeout(cycle, 400); timer = setInterval(cycle, 5000); return () => { if (timer) clearInterval(timer); }; });
+	onMount(() => {
+		timer = setTimeout(cycle, 400);
+		return () => { if (timer) clearTimeout(timer); };
+	});
 
 	function tex(s: string): string { return katex.renderToString(s, { throwOnError: false, trust: true }); }
 
