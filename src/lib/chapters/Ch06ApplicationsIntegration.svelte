@@ -412,8 +412,8 @@
 		</ChapterSummary>
 
 		<!-- ═══ EXERCISES ═══ -->
-		<div class="exercises-group" use:reveal>
-			<div class="exercises-group-title">Exercises</div>
+		<details class="exercises-group" use:reveal>
+			<summary class="exercises-group-title">Exercises</summary>
 
 			<!-- Disk Method -->
 			<Exercise number={1}>
@@ -583,7 +583,7 @@
 					<p>When we compute the shell volume as <Katex math={r`\pi(x+d)^2 f(x) - \pi x^2 f(x)`} />, we get <Katex math={r`\pi f(x)(2xd + d^2)`} />. The term <Katex math={r`2xd`} /> is the volume of the "unrolled rectangle" (width <Katex math={r`2\pi x`} />, height <Katex math={r`f(x)`} />, thickness <Katex math="d" />). The term <Katex math="d^2" /> represents the <strong>curvature correction</strong> — the extra volume in the outer part of the shell due to the fact that the outer circumference is larger than the inner. Setting <Katex math="d^2 = 0" /> says this curvature is exactly zero: an infinitesimally thin shell has no discernible difference between its inner and outer edges.</p>
 				{/snippet}
 			</Exercise>
-		</div>
+		</details>
 
 		<!-- ═══ LOOKING AHEAD ═══ -->
 		<LookingAhead>

@@ -297,8 +297,8 @@
 		</ChapterSummary>
 
 		<!-- ═══ EXERCISES ═══ -->
-		<div class="exercises-group" use:reveal>
-			<div class="exercises-group-title">Exercises</div>
+		<details class="exercises-group" use:reveal>
+			<summary class="exercises-group-title">Exercises</summary>
 
 			<Exercise number={1}>
 				<p><strong>Warm-up.</strong> Simplify <Katex math="(3 + d)^2" /> using <Katex math="d^2 = 0" />.</p>
@@ -379,7 +379,7 @@
 					<p><Katex math="3d^2 = 0" /> — any multiple of <Katex math="d^2" /> is zero. <Katex math={r`\sqrt{d^2} = \sqrt{0} = 0`} />. As for <Katex math={r`\sqrt{d}`} />: this is not defined in standard SDG, because <Katex math="d" /> is not provably non-negative.</p>
 				{/snippet}
 			</Exercise>
-		</div>
+		</details>
 
 		<!-- ═══ LOOKING AHEAD ═══ -->
 		<LookingAhead>

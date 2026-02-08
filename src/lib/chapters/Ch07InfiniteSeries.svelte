@@ -555,8 +555,8 @@
 		</HistoryBox>
 
 		<!-- ═══ EXERCISES ═══ -->
-		<div class="exercises-group" use:reveal>
-			<div class="exercises-group-title">Exercises</div>
+		<details class="exercises-group" use:reveal>
+			<summary class="exercises-group-title">Exercises</summary>
 
 			<Exercise number={1}>
 				<p><strong>Warm-up.</strong> On <Katex math={r`D_2`} /> (where <Katex math={r`d^3 = 0`} />), expand <Katex math={r`\sin(d)`} /> and <Katex math={r`\cos(d)`} />.</p>
@@ -637,7 +637,7 @@
 				<p><strong>Exploration.</strong> The Taylor series for <Katex math={r`e^x`} /> converges for all <Katex math={r`x`} />, while the geometric series <Katex math={r`1/(1-x)`} /> converges only for <Katex math={r`|x| < 1`} />. Both are exact on <Katex math={r`D_n`} />. What property of the function determines whether its Taylor series converges everywhere? (Think about what happens to the function for large <Katex math={r`|x|`} /> and where the function has singularities.)</p>
 				{#snippet solution()}<p>The radius of convergence equals the distance to the nearest singularity (in the complex plane). The function <Katex math={r`e^x`} /> is entire — it has no singularities anywhere, not even in the complex plane — so its radius of convergence is <Katex math={r`\infty`} />. The function <Katex math={r`1/(1-x)`} /> has a pole at <Katex math={r`x = 1`} />, at distance 1 from the center of expansion, so <Katex math={r`R = 1`} />. On <Katex math={r`D_n`} />, singularities don't matter because the nilpotent structure forces termination, but in the real/complex world, singularities determine the reach of the series.</p>{/snippet}
 			</Exercise>
-		</div>
+		</details>
 
 		<!-- ═══ CHAPTER SUMMARY ═══ -->
 		<ChapterSummary>

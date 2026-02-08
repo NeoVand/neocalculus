@@ -437,8 +437,8 @@
 		</ChapterSummary>
 
 		<!-- ═══ EXERCISES ═══ -->
-		<div class="exercises-group" use:reveal>
-			<div class="exercises-group-title">Exercises</div>
+		<details class="exercises-group" use:reveal>
+			<summary class="exercises-group-title">Exercises</summary>
 
 			<Exercise number={1}>
 				<p><strong>Warm-up.</strong> Compute <Katex math={r`df`} /> for the 0-form <Katex math={r`f(x,y) = x^3 + y^2`} />.</p>
@@ -504,7 +504,7 @@
 				<p><strong>Exploration.</strong> The 1-form <Katex math={r`\omega = \frac{-y\,dx + x\,dy}{x^2 + y^2}`} /> on <Katex math={r`\mathbb{R}^2 \setminus \{0\}`} /> is closed but not exact. Verify that <Katex math={r`d\omega = 0`} /> by direct computation. Then explain intuitively why it cannot be exact.</p>
 				{#snippet solution()}<p>With <Katex math={r`P = \frac{-y}{x^2+y^2}`} /> and <Katex math={r`Q = \frac{x}{x^2+y^2}`} />:</p><Katex math={r`\frac{\partial Q}{\partial x} = \frac{(x^2+y^2) - x \cdot 2x}{(x^2+y^2)^2} = \frac{y^2 - x^2}{(x^2+y^2)^2}`} display /><Katex math={r`\frac{\partial P}{\partial y} = \frac{-(x^2+y^2) + y \cdot 2y}{(x^2+y^2)^2} = \frac{y^2 - x^2}{(x^2+y^2)^2}`} display /><p>So <Katex math={r`Q_x - P_y = 0`} />, confirming <Katex math={r`d\omega = 0`} />.</p><p>If <Katex math={r`\omega`} /> were exact, say <Katex math={r`\omega = d\theta`} />, then by Stokes' theorem <Katex math={r`\oint_C \omega = \theta(\text{end}) - \theta(\text{start}) = 0`} /> for any closed curve <Katex math="C" />. But <Katex math={r`\oint_C \omega = 2\pi`} /> for a circle around the origin. Contradiction. The "hole" at the origin prevents <Katex math={r`\omega`} /> from being exact.</p>{/snippet}
 			</Exercise>
-		</div>
+		</details>
 
 		<!-- ═══ CLOSING REFLECTION ═══ -->
 		<div class="neo-prose" use:reveal>

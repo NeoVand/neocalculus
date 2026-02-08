@@ -515,8 +515,8 @@
 		</HistoryBox>
 
 		<!-- ═══ EXERCISES ═══ -->
-		<div class="exercises-group" use:reveal>
-			<div class="exercises-group-title">Exercises</div>
+		<details class="exercises-group" use:reveal>
+			<summary class="exercises-group-title">Exercises</summary>
 
 			<Exercise number={1}>
 				<p><strong>Warm-up.</strong> Find the partial derivatives of <Katex math={r`f(x,y) = \sin(x)\,e^y`} /> using infinitesimal nudging.</p>
@@ -588,7 +588,7 @@
 				<p><strong>Exploration.</strong> Consider the transformation <Katex math={r`u = x + y`} />, <Katex math={r`v = x - y`} />. Compute its Jacobian, then use it to evaluate <Katex math={r`\iint_R e^{x+y}\,dA`} /> over the square with vertices <Katex math={r`(0,0), (1,0), (0,1), (1,1)`} /> by changing to <Katex math={r`(u,v)`} /> coordinates.</p>
 				{#snippet solution()}<p>We have <Katex math={r`x = \frac{u+v}{2}`} />, <Katex math={r`y = \frac{u-v}{2}`} />. The Jacobian: <Katex math={r`J = \begin{pmatrix} 1/2 & 1/2 \\ 1/2 & -1/2 \end{pmatrix}`} />, <Katex math={r`|\det J| = \frac{1}{2}`} />. The square in <Katex math={r`(x,y)`} /> maps to a rotated square in <Katex math={r`(u,v)`} /> with vertices <Katex math={r`(0,0), (1,1), (1,-1), (2,0)`} />. The integral becomes <Katex math={r`\frac{1}{2}\iint e^u\,du\,dv`} /> over this region. Since <Katex math={r`e^{x+y} = e^u`} />, the <Katex math="v" />-integral just measures width: <Katex math={r`\frac{1}{2}\int_0^2 e^u \cdot w(u)\,du`} /> where <Katex math={r`w(u) = \min(2u, 2(2-u))`} /> (the diamond width). This simplifies to <Katex math={r`\int_0^1 u\,e^u\,du + \int_1^2 (2-u)\,e^u\,du = e - 1`} /> (via integration by parts).</p>{/snippet}
 			</Exercise>
-		</div>
+		</details>
 
 		<!-- ═══ CHAPTER SUMMARY ═══ -->
 		<ChapterSummary>

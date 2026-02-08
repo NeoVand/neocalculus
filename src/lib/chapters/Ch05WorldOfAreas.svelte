@@ -607,8 +607,8 @@
 		</ChapterSummary>
 
 		<!-- ═══ EXERCISES ═══ -->
-		<div class="exercises-group" use:reveal>
-			<div class="exercises-group-title">Exercises</div>
+		<details class="exercises-group" use:reveal>
+			<summary class="exercises-group-title">Exercises</summary>
 
 			<!-- Basic antiderivatives -->
 			<Exercise number={1}>
@@ -723,7 +723,7 @@
 				<p><strong>Exploration.</strong> Explain in your own words why the equation <Katex math={r`du = g'(x)\,dx`} /> in substitution is "literally true" in SDG, whereas in standard calculus it is treated as a convenient shorthand. What changes about its meaning?</p>
 				{#snippet solution()}<p>In SDG, <Katex math={r`dx`} /> is a genuine infinitesimal quantity — a number <Katex math={r`d`} /> in the number line with <Katex math={r`d^2 = 0`} />. When we write <Katex math={r`du = g'(x)\,dx`} />, this is a real equation: nudging <Katex math={r`x`} /> by the infinitesimal <Katex math={r`dx`} /> changes <Katex math={r`u = g(x)`} /> by exactly <Katex math={r`g'(x)\,dx`} /> (with no error, since <Katex math={r`d^2 = 0`} /> kills all higher-order terms). In standard calculus, <Katex math={r`dx`} /> and <Katex math={r`du`} /> are not numbers — they're part of a limiting notation. The equation works as a rule for manipulating symbols, but the symbols don't refer to actual quantities.</p>{/snippet}
 			</Exercise>
-		</div>
+		</details>
 
 		<!-- ═══ LOOKING AHEAD ═══ -->
 		<LookingAhead>

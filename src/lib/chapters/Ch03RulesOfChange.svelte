@@ -505,8 +505,8 @@
 		<!-- ═══════════════════════════════════════════════ -->
 		<!-- EXERCISES                                      -->
 		<!-- ═══════════════════════════════════════════════ -->
-		<div class="exercises-group" use:reveal>
-			<div class="exercises-group-title">Exercises</div>
+		<details class="exercises-group" use:reveal>
+			<summary class="exercises-group-title">Exercises</summary>
 
 			<!-- WARM-UP -->
 			<Exercise number={1}>
@@ -625,7 +625,7 @@
 				<p><strong>Exploration.</strong> The Constancy Principle says: if <Katex math={r`f'(x) = 0`} /> for all <Katex math="x" />, then <Katex math="f" /> is constant. Use this to prove: if <Katex math={r`f'(x) = g'(x)`} /> for all <Katex math="x" />, then <Katex math={r`f(x) = g(x) + C`} /> for some constant <Katex math="C" />.</p>
 				{#snippet solution()}<p>Let <Katex math={r`h(x) = f(x) - g(x)`} />. Then <Katex math={r`h'(x) = f'(x) - g'(x) = 0`} />. By the Constancy Principle, <Katex math="h" /> is constant: <Katex math={r`h(x) = C`} />. So <Katex math={r`f(x) = g(x) + C`} />. ✓</p>{/snippet}
 			</Exercise>
-		</div>
+		</details>
 
 		<!-- ═══ LOOKING AHEAD ═══ -->
 		<LookingAhead>

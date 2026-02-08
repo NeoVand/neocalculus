@@ -485,8 +485,8 @@
 		</ChapterSummary>
 
 		<!-- ═══ EXERCISES ═══ -->
-		<div class="exercises-group" use:reveal>
-			<div class="exercises-group-title">Exercises</div>
+		<details class="exercises-group" use:reveal>
+			<summary class="exercises-group-title">Exercises</summary>
 
 			<Exercise number={1}>
 				<p><strong>Warm-up.</strong> A ball is dropped from rest. Using <Katex math={r`a = g = 9.8`} /> m/s², find its velocity and position after <Katex math="t" /> seconds.</p>
@@ -562,7 +562,7 @@
 				<p><strong>Exploration.</strong> We proved <Katex math={r`d(\text{KE} + \text{PE}) = 0`} /> for a particle in one dimension. What assumption about the force did we use? Give an example of a force for which energy is <em>not</em> conserved, and explain which step in the proof breaks down.</p>
 				{#snippet solution()}<p>We assumed <Katex math={r`F = -V'(x)`} /> — that the force is the (negative) derivative of a potential function. This is true for gravity, springs, and electrostatics, but <em>not</em> for friction. Friction <Katex math={r`F = -\mu mg \operatorname{sgn}(v)`} /> always opposes motion; there is no function <Katex math={r`V(x)`} /> whose derivative gives this force (it depends on <Katex math="v" />, not just <Katex math="x" />). The step <Katex math={r`d(V) = V'(x)\,dx = -F\,v\,dt`} /> fails because no such <Katex math="V" /> exists.</p>{/snippet}
 			</Exercise>
-		</div>
+		</details>
 
 		<!-- ═══ LOOKING AHEAD ═══ -->
 		<LookingAhead>

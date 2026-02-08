@@ -687,8 +687,8 @@
 		<!-- ═══════════════════════════════════════════════════════ -->
 		<!-- EXERCISES                                               -->
 		<!-- ═══════════════════════════════════════════════════════ -->
-		<div class="exercises-group" use:reveal>
-			<div class="exercises-group-title">Exercises</div>
+		<details class="exercises-group" use:reveal>
+			<summary class="exercises-group-title">Exercises</summary>
 
 			<!-- Warm-up -->
 			<Exercise number={1}>
@@ -871,7 +871,7 @@
 					<p>Geometrically, the tangent line at this point is horizontal — it never crosses the x-axis. The K-L axiom replaces the curve with a microstraight segment, but this segment is flat, so it has no root. Newton's method assumes the tangent is not horizontal. In the infinitesimal neighborhood at a critical point, the function looks like a constant, not a line with a root to find.</p>
 				{/snippet}
 			</Exercise>
-		</div>
+		</details>
 
 		<!-- ═══════════════════════════════════════════════════════ -->
 		<!-- CHAPTER SUMMARY                                        -->

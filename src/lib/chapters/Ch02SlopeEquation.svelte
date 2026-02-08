@@ -385,8 +385,8 @@
 		</ChapterSummary>
 
 		<!-- ═══ EXERCISES ═══ -->
-		<div class="exercises-group" use:reveal>
-			<div class="exercises-group-title">Exercises</div>
+		<details class="exercises-group" use:reveal>
+			<summary class="exercises-group-title">Exercises</summary>
 
 			<Exercise number={1}>
 				<p><strong>Warm-up.</strong> Use <Katex math="d^2 = 0" /> to find the derivative of <Katex math={r`f(x) = x^4`} />.</p>
@@ -459,7 +459,7 @@
 				<p><strong>Exploration.</strong> The tangent line to <Katex math="f(x)" /> at <Katex math="x = a" /> gives a "linear approximation": <Katex math={r`f(a + \Delta x) \approx f(a) + f'(a) \cdot \Delta x`} /> for small <Katex math={r`\Delta x`} />. Use this to estimate <Katex math={r`\sqrt{4.01}`} /> without a calculator. (Hint: <Katex math={r`f(x) = \sqrt{x}`} />, <Katex math="a = 4" />, <Katex math={r`\Delta x = 0.01`} />.)</p>
 				{#snippet solution()}<p><Katex math={r`\sqrt{4.01} \approx \sqrt{4} + \frac{1}{2\sqrt{4}} \cdot 0.01 = 2 + \frac{0.01}{4} = 2.0025`} />. (Exact value: 2.002498...) The approximation is excellent!</p>{/snippet}
 			</Exercise>
-		</div>
+		</details>
 
 		<!-- ═══ LOOKING AHEAD ═══ -->
 		<LookingAhead>

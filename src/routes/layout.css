@@ -443,16 +443,54 @@ h1, h2, h3, h4 {
 
 .exercises-group {
 	margin: var(--space-lg) 0;
+	border: 1px solid var(--color-border-light);
+	border-radius: 0.75rem;
+	overflow: hidden;
 }
 
 .exercises-group-title {
 	font-family: var(--font-sans);
-	font-size: 0.85rem;
+	font-size: 0.78rem;
 	font-weight: 700;
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
 	color: var(--color-ink-light);
-	margin-bottom: var(--space-sm);
+	padding: 0.9rem var(--space-md);
+	cursor: pointer;
+	user-select: none;
+	list-style: none;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	background: linear-gradient(135deg, #fafaf9, #f5f5f4);
+}
+
+.exercises-group-title::-webkit-details-marker { display: none; }
+
+.exercises-group-title::before {
+	content: '▸';
+	font-size: 0.7rem;
+	transition: transform 0.2s ease;
+	color: var(--color-ink-faint);
+}
+
+.exercises-group[open] .exercises-group-title::before {
+	transform: rotate(90deg);
+}
+
+.exercises-group[open] .exercises-group-title {
+	border-bottom: 1px solid var(--color-border-light);
+}
+
+.exercises-group .exercise {
+	border: none;
+	border-radius: 0;
+	border-bottom: 1px solid var(--color-border-light);
+	margin: 0;
+}
+
+.exercises-group .exercise:last-child {
+	border-bottom: none;
 }
 
 /* ═══════════════════════════════════════════
