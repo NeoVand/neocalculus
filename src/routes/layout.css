@@ -381,8 +381,8 @@ h1, h2, h3, h4 {
 
 .inline-plot svg {
 	border: 1px solid var(--color-border-light);
-	border-radius: 0.5rem;
-	background: white;
+	border-radius: 0.75rem;
+	background: #fdfbf7;
 }
 
 .inline-plot figcaption {

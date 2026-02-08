@@ -22,8 +22,8 @@
 		areaTo,
 		secondFn,
 		caption,
-		width = 380,
-		height = 220,
+		width = 400,
+		height = 180,
 		class: className = ''
 	}: Props = $props();
 
@@ -139,42 +139,41 @@
 
 <figure class="neo-figure inline-plot {className}">
 	<svg viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg">
-		<!-- grid -->
+		<!-- grid — subtle, matching PerfectZoom style -->
 		{#each xTicks as xt}
-			<line x1={tx(xt)} y1={PT} x2={tx(xt)} y2={height - PB} stroke="#eee9e0" stroke-width="0.7" />
-			<text x={tx(xt)} y={height - PB + 14} text-anchor="middle" font-size="9" font-family="var(--font-sans)" fill="#aaa">{xt}</text>
+			<line x1={tx(xt)} y1={PT} x2={tx(xt)} y2={height - PB} stroke="#f0ece4" stroke-width="0.5" />
+			<text x={tx(xt)} y={height - PB + 13} text-anchor="middle" font-size="8.5" font-family="var(--font-sans)" fill="#bbb">{xt}</text>
 		{/each}
 		{#each yTicks as yt}
-			<line x1={PL} y1={ty(yt)} x2={width - PR} y2={ty(yt)} stroke="#eee9e0" stroke-width="0.7" />
-			<text x={PL - 5} y={ty(yt) + 3} text-anchor="end" font-size="9" font-family="var(--font-sans)" fill="#aaa">{yt}</text>
+			<line x1={PL} y1={ty(yt)} x2={width - PR} y2={ty(yt)} stroke="#f0ece4" stroke-width="0.5" />
+			<text x={PL - 5} y={ty(yt) + 3} text-anchor="end" font-size="8.5" font-family="var(--font-sans)" fill="#bbb">{yt}</text>
 		{/each}
 
-		<!-- axes -->
+		<!-- axes — matching PerfectZoom -->
 		{#if domain[0] <= 0 && domain[1] >= 0}
-			<line x1={tx(0)} y1={PT} x2={tx(0)} y2={height - PB} stroke="#ccc8bf" stroke-width="1" />
+			<line x1={tx(0)} y1={PT} x2={tx(0)} y2={height - PB} stroke="#d4d0c8" stroke-width="1" />
 		{/if}
 		{#if computedRange[0] <= 0 && computedRange[1] >= 0}
-			<line x1={PL} y1={ty(0)} x2={width - PR} y2={ty(0)} stroke="#ccc8bf" stroke-width="1" />
+			<line x1={PL} y1={ty(0)} x2={width - PR} y2={ty(0)} stroke="#d4d0c8" stroke-width="1" />
 		{/if}
 
 		<!-- area -->
 		{#if areaD}
-			<path d={areaD} fill="rgba(168,85,247,0.12)" stroke="none" />
+			<path d={areaD} fill="rgba(168,85,247,0.10)" stroke="none" />
 		{/if}
 
 		<!-- second function -->
 		{#if secondPath}
-			<path d={secondPath} fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="5,4" />
+			<path d={secondPath} fill="none" stroke="rgba(168,85,247,0.5)" stroke-width="1.8" stroke-dasharray="5,4" />
 		{/if}
 
-		<!-- curve -->
-		<path d={curvePath} fill="none" stroke="var(--color-ink)" stroke-width="2" />
+		<!-- curve — thick, matching PerfectZoom -->
+		<path d={curvePath} fill="none" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
 
-		<!-- tangent -->
+		<!-- tangent — purple, dashed, matching PerfectZoom -->
 		{#if tangent}
-			<line x1={tangent.x1} y1={tangent.y1} x2={tangent.x2} y2={tangent.y2} stroke="var(--color-d)" stroke-width="1.8" stroke-dasharray="6,4" />
-			<circle cx={tangent.px} cy={tangent.py} r="4" fill="var(--color-d)" />
-			<circle cx={tangent.px} cy={tangent.py} r="2" fill="white" />
+			<line x1={tangent.x1} y1={tangent.y1} x2={tangent.x2} y2={tangent.y2} stroke="rgba(168,85,247,0.5)" stroke-width="2" stroke-dasharray="8,5" stroke-linecap="round" />
+			<circle cx={tangent.px} cy={tangent.py} r="4.5" fill="#a855f7" />
 		{/if}
 	</svg>
 	{#if caption}<figcaption>{caption}</figcaption>{/if}
