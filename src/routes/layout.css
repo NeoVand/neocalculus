@@ -286,21 +286,33 @@ h1, h2, h3, h4 {
 }
 
 /* ═══════════════════════════════════════════
-   CALLOUTS
+   CALLOUTS — unified purple for all math types
    ═══════════════════════════════════════════ */
 .callout {
 	border-radius: 0.75rem;
 	padding: 1.25rem var(--space-md);
 	margin: var(--space-md) 0;
+	background: linear-gradient(135deg, #faf5ff, #f5f3ff);
+	border: 1px solid #c4b5fd;
 }
 
 .callout-title {
 	font-family: var(--font-sans);
-	font-size: 0.8rem;
+	font-size: 0.78rem;
 	font-weight: 700;
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
 	margin-bottom: 0.6rem;
+	color: #a855f7;
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.callout-title svg {
+	flex-shrink: 0;
+	color: #a855f7;
+	opacity: 0.8;
 }
 
 .callout-content {
@@ -311,29 +323,21 @@ h1, h2, h3, h4 {
 .callout-content p { margin-bottom: 0.6rem; }
 .callout-content p:last-child { margin-bottom: 0; }
 
-.callout-definition {
-	background: linear-gradient(135deg, #eff6ff, #f0f7ff);
-	border-left: 3px solid #3b82f6;
-}
-.callout-definition .callout-title { color: #2563eb; }
-
-.callout-theorem {
-	background: linear-gradient(135deg, var(--color-d-glow), var(--color-d-soft));
-	border-left: 3px solid var(--color-d);
-}
-.callout-theorem .callout-title { color: var(--color-d); }
-
-.callout-key-idea {
-	background: linear-gradient(135deg, #ecfdf5, #f0fdf5);
-	border-left: 3px solid #059669;
-}
-.callout-key-idea .callout-title { color: #059669; }
-
+/* All math callout types share the same purple palette */
+.callout-definition,
+.callout-theorem,
+.callout-key-idea,
 .callout-warning {
-	background: linear-gradient(135deg, #fef3c7, #fefce8);
-	border-left: 3px solid #d97706;
+	background: linear-gradient(135deg, #faf5ff, #f5f3ff);
+	border: 1px solid #c4b5fd;
 }
-.callout-warning .callout-title { color: #b45309; }
+
+.callout-definition .callout-title,
+.callout-theorem .callout-title,
+.callout-key-idea .callout-title,
+.callout-warning .callout-title {
+	color: #a855f7;
+}
 
 /* ═══════════════════════════════════════════
    FIGURES
@@ -455,18 +459,21 @@ h1, h2, h3, h4 {
    DIG DEEPER (expandable)
    ═══════════════════════════════════════════ */
 .dig-deeper {
-	border: 1px dashed var(--color-border);
+	border: 1px solid var(--color-border-light);
 	border-radius: 0.75rem;
 	margin: var(--space-md) 0;
 	overflow: hidden;
+	background: linear-gradient(135deg, #fafaf9, #f5f5f4);
 }
 
 .dig-deeper summary {
 	font-family: var(--font-sans);
-	font-size: 0.82rem;
-	font-weight: 500;
-	color: var(--color-ink-light);
-	padding: 0.85rem 1.25rem;
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--color-ink-faint);
+	padding: 1rem 1.25rem;
 	cursor: pointer;
 	user-select: none;
 	list-style: none;

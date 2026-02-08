@@ -6,15 +6,12 @@
 		title?: string;
 	}
 
-	let { children, title = 'In Standard Calculus…' }: Props = $props();
+	let { children, title = 'In Standard Calculus...' }: Props = $props();
 </script>
 
 <aside class="standard-calc-box">
 	<div class="standard-calc-header">
-		<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-			<circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/>
-			<path d="M5.5 8h5M8 5.5v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-		</svg>
+		<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 3-5 5-5-5"/><path d="m17 21-5-5-5 5"/><path d="M4 12h16"/></svg>
 		{title}
 	</div>
 	<div class="standard-calc-content">
@@ -24,9 +21,9 @@
 
 <style>
 	.standard-calc-box {
-		border: 1px dashed var(--color-border);
+		border: 1px solid var(--color-border-light);
 		border-radius: 0.75rem;
-		padding: 1.1rem 1.25rem;
+		padding: 1.25rem var(--space-md);
 		margin: var(--space-md) 0;
 		background: linear-gradient(135deg, #fafaf9, #f5f5f4);
 	}
@@ -34,10 +31,11 @@
 	.standard-calc-header {
 		font-family: var(--font-sans);
 		font-size: 0.78rem;
-		font-weight: 600;
+		font-weight: 700;
 		color: var(--color-ink-faint);
-		letter-spacing: 0.02em;
-		margin-bottom: 0.5rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		margin-bottom: 0.6rem;
 		display: flex;
 		align-items: center;
 		gap: 0.4rem;
@@ -46,10 +44,11 @@
 	.standard-calc-header svg {
 		flex-shrink: 0;
 		color: var(--color-ink-faint);
+		opacity: 0.7;
 	}
 
 	.standard-calc-content {
-		font-size: 0.95rem;
+		font-size: 0.98rem;
 		line-height: 1.65;
 		color: var(--color-ink-light);
 	}
