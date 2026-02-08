@@ -4,14 +4,31 @@
 	const chapters = [
 		{ id: 'ch1', num: '1', title: 'The Smooth World' },
 		{ id: 'ch2', num: '2', title: 'The Slope Equation' },
-		{ id: 'ch3', num: '3', title: 'Rules of Change' },
-		{ id: 'ch4', num: '4', title: 'Optimization' },
-		{ id: 'ch5', num: '5', title: 'The World of Areas' },
-		{ id: 'ch6', num: '6', title: 'Applications' },
-		{ id: 'ch7', num: '7', title: 'Infinite Series' },
-		{ id: 'ch8', num: '8', title: 'Physics' },
-		{ id: 'ch9', num: '9', title: 'Many Dimensions' },
-		{ id: 'ch10', num: '10', title: 'Language of Forms' }
+		{ id: 'ch3', num: '3', title: 'Rules and Local Models' },
+		{ id: 'ch5', num: '4', title: 'Accumulation and FTC' },
+		{ id: 'ch6', num: '5', title: 'Integration Geometry' },
+		{ id: 'ch8', num: '6', title: 'Physics Modeling' },
+		{ id: 'ch7', num: '7', title: 'Series and Approximation' },
+		{ id: 'ch9', num: '8', title: 'Multivariable and Vector' },
+		{ id: 'ch10', num: '9', title: 'Forms and Unification' }
+	];
+
+	// Optimization currently lives in an extension module between ch3 and ch5.
+	const sectionToCanonicalChapter: Record<string, string> = {
+		ch4: 'ch3'
+	};
+
+	const observableSections = [
+		'ch1',
+		'ch2',
+		'ch3',
+		'ch4',
+		'ch5',
+		'ch6',
+		'ch8',
+		'ch7',
+		'ch9',
+		'ch10'
 	];
 
 	let activeChapter = $state('');
@@ -23,7 +40,8 @@
 			(entries) => {
 				for (const entry of entries) {
 					if (entry.isIntersecting) {
-						activeChapter = entry.target.id;
+						const id = entry.target.id;
+						activeChapter = sectionToCanonicalChapter[id] ?? id;
 					}
 				}
 			},
@@ -41,8 +59,8 @@
 		const heroEl = document.querySelector('.hero');
 		if (heroEl) heroObserver.observe(heroEl);
 
-		for (const ch of chapters) {
-			const el = document.getElementById(ch.id);
+		for (const id of observableSections) {
+			const el = document.getElementById(id);
 			if (el) observer.observe(el);
 		}
 
@@ -83,14 +101,22 @@
 		aria-label="Toggle chapter navigation"
 		aria-expanded={isOpen}
 	>
-		<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+		<svg
+			width="20"
+			height="20"
+			viewBox="0 0 20 20"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1.5"
+		>
 			{#if isOpen}
 				<path d="M5 5l10 10M15 5L5 15" stroke-linecap="round" />
 			{:else}
 				<path d="M3 6h14M3 10h14M3 14h14" stroke-linecap="round" />
 			{/if}
 		</svg>
-		<span class="mobile-ch-label">Ch {chapters.find((c) => c.id === activeChapter)?.num ?? ''}</span>
+		<span class="mobile-ch-label">Ch {chapters.find((c) => c.id === activeChapter)?.num ?? ''}</span
+		>
 	</button>
 {/if}
 

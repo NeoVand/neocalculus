@@ -9,10 +9,16 @@
 
 	let { children, solution, number }: Props = $props();
 	let showSolution = $state(false);
+	let isExtension = $derived(number !== undefined && number > 10);
 </script>
 
-<div class="exercise">
-	{#if number}<div class="exercise-header">Exercise {number}</div>{/if}
+<div class="exercise" class:exercise-extension={isExtension}>
+	{#if number}
+		<div class="exercise-header">
+			Exercise {number}{#if isExtension}
+				(Extension){/if}
+		</div>
+	{/if}
 	<div class="exercise-prompt">
 		{@render children()}
 	</div>

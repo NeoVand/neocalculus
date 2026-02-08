@@ -1,5 +1,7 @@
 # Neocalculus: The Definitive Plan
 
+> Note: Active execution has moved to `/Users/neo/repos/neocalculus/MASTER_PLAN.md`, `/Users/neo/repos/neocalculus/CHAPTER_SPECS.md`, and `/Users/neo/repos/neocalculus/MIGRATION_MATRIX.md`. This document is retained for historical context.
+
 ## Vision
 
 A single-page, scroll-driven web experience that teaches calculus from scratch using
@@ -8,7 +10,7 @@ or the historical baggage of 19th-century analysis. We call it **Neocalculus**.
 
 The target audience is a gifted teenager (or curious adult) who wants to understand
 calculus and use it for physics, engineering, and computation. The app treats SDG
-axioms as *the natural truth about how smooth reality works*, not as advanced
+axioms as _the natural truth about how smooth reality works_, not as advanced
 mathematics.
 
 **Tech stack:** SvelteKit 2 + Svelte 5 + Tailwind 4 + KaTeX + Canvas/SVG
@@ -19,6 +21,7 @@ interactive demos + mdsvex for content sections.
 ## Part I: Narrative Architecture (The Story)
 
 The page scrolls through **7 chapters**, each with:
+
 - A conceptual introduction (narrative text + animated illustrations)
 - Interactive demos the student can play with
 - Worked examples with step-by-step animated algebra
@@ -26,16 +29,19 @@ The page scrolls through **7 chapters**, each with:
 - A "Dig Deeper" expandable section for the mathematically curious
 
 ### Chapter 1: The Smooth World
+
 **Core idea:** Reality is smooth. If you zoom into any curve far enough, it becomes
 a perfectly straight line. There is a "bottom" to the zoom — the infinitesimal scale.
 
 **Key concepts:**
-- The number line R contains special numbers called *infinitesimals* (d) where d² = 0
+
+- The number line R contains special numbers called _infinitesimals_ (d) where d² = 0
 - These are not zero — they're too small to measure, but they have direction and slope
 - At the infinitesimal scale, every curve is a straight line segment (Microstraightness)
 - This is not an approximation — it's exact
 
 **Interactive Demo 1: "The Perfect Zoom"**
+
 - A canvas showing a curve (parabola, sine wave, circle — user picks)
 - A draggable magnifying lens that zooms into any point
 - As zoom level increases, the curve flattens
@@ -46,6 +52,7 @@ a perfectly straight line. There is a "bottom" to the zoom — the infinitesimal
 - Labels appear: "This straight segment IS part of the curve at infinitesimal scale"
 
 **Interactive Demo 2: "Meet d"**
+
 - A number line visualization
 - Drag a slider to make a quantity smaller and smaller
 - As it approaches "infinitesimal", its square visually collapses to exactly 0
@@ -56,6 +63,7 @@ a perfectly straight line. There is a "bottom" to the zoom — the infinitesimal
 ---
 
 ### Chapter 2: The Slope Equation (Derivatives Without Limits)
+
 **Core idea:** For any function f, when you nudge x by an infinitesimal d:
 
     f(x + d) = f(x) + f'(x) · d
@@ -64,6 +72,7 @@ The derivative f'(x) is simply the coefficient of d. No limits. No approaching.
 Just algebra.
 
 **Key concepts:**
+
 - The Fundamental Equation: f(x + d) = f(x) + f'(x)·d
 - The derivative is the unique number that makes this equation true
 - The "Cancel but don't divide" rule (Microcancellation): if a·d = b·d for all
@@ -71,6 +80,7 @@ Just algebra.
 - d² = 0 is the only computational tool you need
 
 **Interactive Demo 3: "The Algebra Machine"**
+
 - User picks a function from a menu OR types one in:
   x², x³, x⁴, 1/x, √x, sin(x), eˣ, x·sin(x), etc.
 - The app performs the expansion f(x + d) step by step, animated:
@@ -86,6 +96,7 @@ Just algebra.
 **Worked Examples (all shown step-by-step with animation):**
 
 **Example 2.1: f(x) = x²**
+
 ```
 f(x + d) = (x + d)²
          = x² + 2xd + d²
@@ -95,6 +106,7 @@ f(x + d) = (x + d)²
 ```
 
 **Example 2.2: f(x) = x³**
+
 ```
 f(x + d) = (x + d)³
          = x³ + 3x²d + 3xd² + d³
@@ -104,6 +116,7 @@ f(x + d) = (x + d)³
 ```
 
 **Example 2.3: f(x) = 1/x (quotient by algebra)**
+
 ```
 f(x + d) = 1/(x + d)
 
@@ -118,6 +131,7 @@ Multiply numerator and denominator by (x - d):
 ```
 
 **Example 2.4: f(x) = √x**
+
 ```
 f(x + d) = √(x + d)
 
@@ -132,6 +146,7 @@ Matching the d terms: 1 = 2k√x
 ```
 
 **Example 2.5: f(x) = sin(x) — The Infinitesimal Triangle**
+
 ```
 Key insight: For infinitesimal d, draw a right triangle with angle d
 and hypotenuse 1.
@@ -147,6 +162,7 @@ sin(x + d) = sin(x)·cos(d) + cos(x)·sin(d)
 ```
 
 **Example 2.6: f(x) = cos(x)**
+
 ```
 cos(x + d) = cos(x)·cos(d) - sin(x)·sin(d)
            = cos(x)·1 - sin(x)·d
@@ -156,6 +172,7 @@ cos(x + d) = cos(x)·cos(d) - sin(x)·sin(d)
 ```
 
 **Example 2.7: f(x) = eˣ**
+
 ```
 We define eˣ as the unique function where f'(x) = f(x) and f(0) = 1.
 "The function whose rate of change equals itself."
@@ -170,6 +187,7 @@ infinitesimal power is 1 + d.
 ```
 
 **Example 2.8: f(x) = ln(x)**
+
 ```
 Since ln is the inverse of exp, and exp'(x) = exp(x):
 
@@ -184,9 +202,11 @@ Matching d terms: 1 = x·y'
 ---
 
 ### Chapter 3: The Rules of Change
+
 **Core idea:** All the standard differentiation rules fall out of pure algebra with d² = 0.
 
 **Key concepts:**
+
 - The Product Rule
 - The Chain Rule
 - The Quotient Rule
@@ -194,6 +214,7 @@ Matching d terms: 1 = x·y'
 - Higher-order derivatives via higher nilpotents (d₁ + d₂ cubes to zero → second derivative)
 
 **Interactive Demo 4: "Rule Prover"**
+
 - Pick a rule (Product, Chain, Quotient)
 - The app shows the algebraic proof step by step with color-coded terms:
   - f terms in BLUE
@@ -205,6 +226,7 @@ Matching d terms: 1 = x·y'
 **Worked Proofs:**
 
 **Product Rule: (f·g)' = f'·g + f·g'**
+
 ```
 (fg)(x + d) = f(x + d) · g(x + d)
             = [f(x) + f'(x)·d] · [g(x) + g'(x)·d]
@@ -212,10 +234,12 @@ Matching d terms: 1 = x·y'
             = f(x)g(x) + [f'(x)g(x) + f(x)g'(x)]·d     ← d² = 0
 ∴ (fg)'(x) = f'(x)g(x) + f(x)g'(x)  ✓
 ```
+
 (Accompanied by the visual rectangle diagram from Bell's paper — a rectangle
 with sides f and g, showing the infinitesimal strips.)
 
 **Chain Rule: (f∘g)' = f'(g(x)) · g'(x)**
+
 ```
 f(g(x + d)) = f(g(x) + g'(x)·d)
 
@@ -228,6 +252,7 @@ So we can apply the Fundamental Equation again:
 ```
 
 **Quotient Rule: (f/g)' = (f'g - fg') / g²**
+
 ```
 (f/g)(x + d) = f(x + d) / g(x + d)
              = [f + f'd] / [g + g'd]
@@ -242,6 +267,7 @@ Multiply top and bottom by (g - g'd):
 ```
 
 **Higher Derivatives: The Taylor Telescope**
+
 ```
 Use two different nilsquares d₁ and d₂:
 f(x + d₁ + d₂) = f(x) + f'(x)(d₁ + d₂) + ½f''(x)(d₁ + d₂)²
@@ -257,6 +283,7 @@ Extending: D_n = {d : d^(n+1) = 0} gives exact polynomial expansion to degree n.
 ```
 
 **Interactive Demo 5: "The Taylor Telescope"**
+
 - Pick a function. Pick the order (1st, 2nd, 3rd).
 - The app shows the exact infinitesimal Taylor polynomial.
 - Compare with classical Taylor: "Ours is exact on D_n, theirs is approximate everywhere."
@@ -266,16 +293,19 @@ Extending: D_n = {d : d^(n+1) = 0} gives exact polynomial expansion to degree n.
 ---
 
 ### Chapter 4: The World of Areas (Integration)
+
 **Core idea:** Integration is the reverse of differentiation. The area under a curve
-accumulates via infinitesimal rectangles that are *exactly right* — not approximately.
+accumulates via infinitesimal rectangles that are _exactly right_ — not approximately.
 
 **Key concepts:**
+
 - The Fundamental Theorem of Calculus (as a geometric derivation, not a theorem to prove)
 - Area under a curve via microstraightness
 - The Constancy Principle: if f'(x) = 0 everywhere, then f is constant
 - Antiderivatives determine global behavior from infinitesimal behavior
 
 **The Geometric Proof (Bell's Derivation):**
+
 ```
 Let A(x) = area under curve y = f(x) from 0 to x.
 
@@ -293,6 +323,7 @@ This IS the Fundamental Theorem of Calculus.
 ```
 
 **Interactive Demo 6: "The Infinitesimal Strip"**
+
 - A curve displayed on a graph
 - User drags a point along the x-axis
 - At each point, an infinitesimal strip appears:
@@ -305,6 +336,7 @@ This IS the Fundamental Theorem of Calculus.
 **Worked Examples:**
 
 **Example 4.1: Area under f(x) = x²**
+
 ```
 We need A(x) such that A'(x) = x² and A(0) = 0.
 Test: A(x) = x³/3.
@@ -315,6 +347,7 @@ Check: A(0) = 0. ✓
 ```
 
 **Example 4.2: Area under sin(x)**
+
 ```
 We need A(x) such that A'(x) = sin(x) and A(0) = 0.
 Since cos'(x) = -sin(x), we have (-cos)'(x) = sin(x).
@@ -326,16 +359,19 @@ So A(x) = -cos(x) + C. Since A(0) = 0: 0 = -cos(0) + C = -1 + C, so C = 1.
 ---
 
 ### Chapter 5: Geometry From Infinitesimals
+
 **Core idea:** Microstraightness + the Pythagorean theorem = all of geometric calculus.
-Arc length, surface area, and volume formulas *derive themselves*.
+Arc length, surface area, and volume formulas _derive themselves_.
 
 **Key concepts:**
+
 - Arc length via microstraight segments + Pythagorean theorem
 - Surface area of revolution via infinitesimal frustums (that are actually cylinders,
   because the curvature vanishes at infinitesimal scale)
 - Volume of revolution via infinitesimal disks
 
 **The Arc Length Derivation (from O'Connor):**
+
 ```
 At any point on the curve y = f(x), the infinitesimal piece from x to x+d
 is STRAIGHT (microstraightness). It's a line segment from (x, f(x)) to
@@ -354,6 +390,7 @@ So: s'(x) = √(1 + f'(x)²)    (by microcancellation)
 ```
 
 **Interactive Demo 7: "The Unrolling Curve"**
+
 - A curve on a graph (user picks: parabola, sine, circle, etc.)
 - Click "Unroll" and the curve literally unrolls into a straight line below,
   with each infinitesimal straight segment laid end-to-end
@@ -362,6 +399,7 @@ So: s'(x) = √(1 + f'(x)²)    (by microcancellation)
   legs = d and f'(x)·d)
 
 **Interactive Demo 8: "The Revolution"**
+
 - A curve rotated around the x-axis, rendered in 3D (Three.js or CSS 3D)
 - Each infinitesimal strip is shown as a disk/cylinder
 - Toggle: "Classical frustums" (truncated cones) vs "Neocalculus disks" (flat,
@@ -371,10 +409,12 @@ So: s'(x) = √(1 + f'(x)²)    (by microcancellation)
 ---
 
 ### Chapter 6: Modeling the Physical World
+
 **Core idea:** Physics is where Neocalculus truly shines. Velocity, acceleration,
 force, motion — all become algebraic operations on infinitesimals.
 
 **Key concepts:**
+
 - Velocity = derivative of position (the infinitesimal displacement per infinitesimal time)
 - Acceleration = derivative of velocity = second derivative of position
 - Newton's F = ma in infinitesimal form
@@ -382,6 +422,7 @@ force, motion — all become algebraic operations on infinitesimals.
 - Kepler's areal law
 
 **Interactive Demo 9: "The Physics Sandbox"**
+
 - A projectile simulator:
   - Set initial velocity, angle, gravity
   - Toggle between "Euler steps" (discrete, approximate) and "Synthetic trajectory"
@@ -391,12 +432,14 @@ force, motion — all become algebraic operations on infinitesimals.
     x(t+d) = x(t) + v(t)·d, v(t+d) = v(t) + a·d
 
 **Interactive Demo 10: "The Hanging Chain"**
+
 - A draggable chain that naturally forms a catenary shape
 - The infinitesimal force balance is shown at each point
 - The differential equation falls out from SDG reasoning:
   balance forces on the infinitesimal straight segment from P to Q
 
 **Worked Example: Kepler's Areal Law (from Bell)**
+
 ```
 A particle moves under central force toward point O.
 In infinitesimal time d, the radius vector sweeps an area:
@@ -412,10 +455,12 @@ The force is radial, so there's no torque:
 ---
 
 ### Chapter 7: The Bigger Picture
+
 **Core idea:** What we've built is just the beginning. The same principles extend to
 multivariable calculus, differential forms, and the deepest structures of mathematics.
 
 **Key concepts (lighter treatment, showing the horizon):**
+
 - Partial derivatives: f(x + d₁, y + d₂) = f(x,y) + f_x·d₁ + f_y·d₂
 - D(2) = {(d₁,d₂): d₁² = d₂² = d₁d₂ = 0} for gradients without mixed partials
 - Tangent vectors as maps D → M (a microsegment placed on a surface)
@@ -426,12 +471,14 @@ multivariable calculus, differential forms, and the deepest structures of mathem
   (unifying the FTC, Green's, Stokes', and Divergence theorems)
 
 **Interactive Demo 11: "The Gradient Explorer"**
+
 - A 3D surface plot
 - User places an infinitesimal cross D(2) on the surface at any point
 - The partial derivatives are shown as slopes of the two arms
 - The gradient vector is displayed as an arrow
 
 **Interactive Demo 12: "Stokes' Theorem Visualizer"**
+
 - An animated demonstration showing how the exterior derivative of a 1-form
   on infinitesimal squares adds up, with interior contributions canceling,
   leaving only the boundary integral
@@ -442,78 +489,71 @@ multivariable calculus, differential forms, and the deepest structures of mathem
 ## Part II: Interactive Demo Specifications
 
 ### Core Engine: The DualNumber Arithmetic Library
+
 A JavaScript/TypeScript library that implements dual number arithmetic where d² = 0
 is enforced exactly. This powers all interactive computations.
 
 ```typescript
 class Dual {
-  real: number;    // the "real part"
-  inf: number;     // the "infinitesimal part" (coefficient of d)
+	real: number; // the "real part"
+	inf: number; // the "infinitesimal part" (coefficient of d)
 
-  constructor(real: number, inf: number = 0) {
-    this.real = real;
-    this.inf = inf;
-  }
+	constructor(real: number, inf: number = 0) {
+		this.real = real;
+		this.inf = inf;
+	}
 
-  add(other: Dual): Dual {
-    return new Dual(this.real + other.real, this.inf + other.inf);
-  }
+	add(other: Dual): Dual {
+		return new Dual(this.real + other.real, this.inf + other.inf);
+	}
 
-  mul(other: Dual): Dual {
-    // (a + bd)(c + ed) = ac + (ae + bc)d + bed² = ac + (ae + bc)d
-    return new Dual(
-      this.real * other.real,
-      this.real * other.inf + this.inf * other.real
-    );
-  }
+	mul(other: Dual): Dual {
+		// (a + bd)(c + ed) = ac + (ae + bc)d + bed² = ac + (ae + bc)d
+		return new Dual(this.real * other.real, this.real * other.inf + this.inf * other.real);
+	}
 
-  div(other: Dual): Dual {
-    // (a + bd)/(c + ed) = a/c + (bc - ae)/(c²) · d
-    const c = other.real;
-    return new Dual(
-      this.real / c,
-      (this.inf * c - this.real * other.inf) / (c * c)
-    );
-  }
+	div(other: Dual): Dual {
+		// (a + bd)/(c + ed) = a/c + (bc - ae)/(c²) · d
+		const c = other.real;
+		return new Dual(this.real / c, (this.inf * c - this.real * other.inf) / (c * c));
+	}
 
-  pow(n: number): Dual {
-    return new Dual(
-      Math.pow(this.real, n),
-      n * Math.pow(this.real, n - 1) * this.inf
-    );
-  }
+	pow(n: number): Dual {
+		return new Dual(Math.pow(this.real, n), n * Math.pow(this.real, n - 1) * this.inf);
+	}
 
-  sin(): Dual {
-    return new Dual(Math.sin(this.real), Math.cos(this.real) * this.inf);
-  }
+	sin(): Dual {
+		return new Dual(Math.sin(this.real), Math.cos(this.real) * this.inf);
+	}
 
-  cos(): Dual {
-    return new Dual(Math.cos(this.real), -Math.sin(this.real) * this.inf);
-  }
+	cos(): Dual {
+		return new Dual(Math.cos(this.real), -Math.sin(this.real) * this.inf);
+	}
 
-  exp(): Dual {
-    const e = Math.exp(this.real);
-    return new Dual(e, e * this.inf);
-  }
+	exp(): Dual {
+		const e = Math.exp(this.real);
+		return new Dual(e, e * this.inf);
+	}
 
-  log(): Dual {
-    return new Dual(Math.log(this.real), this.inf / this.real);
-  }
+	log(): Dual {
+		return new Dual(Math.log(this.real), this.inf / this.real);
+	}
 
-  sqrt(): Dual {
-    const s = Math.sqrt(this.real);
-    return new Dual(s, this.inf / (2 * s));
-  }
+	sqrt(): Dual {
+		const s = Math.sqrt(this.real);
+		return new Dual(s, this.inf / (2 * s));
+	}
 }
 
 // Usage: derivative of f(x) = x³ at x = 2
-const x = new Dual(2, 1);  // x = 2 + 1·d (the "1" means "nudge by d")
-const result = x.pow(3);    // result = 8 + 12d
+const x = new Dual(2, 1); // x = 2 + 1·d (the "1" means "nudge by d")
+const result = x.pow(3); // result = 8 + 12d
 // result.real = 8 = f(2)
 // result.inf = 12 = f'(2) = 3·(2²)
 ```
 
 ### Demo Component Architecture (Svelte 5)
+
 Each interactive demo is a self-contained Svelte component:
 
 ```
@@ -557,6 +597,7 @@ src/
 ## Part III: Visual Design Principles
 
 ### Typography & Color
+
 - **Body font:** A warm serif (Crimson Pro or Lora) for the narrative text
 - **Math font:** KaTeX default (Computer Modern)
 - **Code/computation font:** JetBrains Mono
@@ -570,6 +611,7 @@ src/
   - Interactive elements: subtle gradients, glassmorphism on demo panels
 
 ### Animation Philosophy
+
 - **Scroll-triggered reveals:** Content enters as you scroll, not all at once
 - **Step-by-step equations:** Mathematical derivations appear one line at a time,
   with d² terms appearing then fading out with a particle effect
@@ -578,6 +620,7 @@ src/
 - **Performance:** Use CSS transforms and Canvas for 60fps, avoid DOM thrashing
 
 ### Layout
+
 - **Max content width:** 720px for text (optimal reading width)
 - **Full-bleed demos:** Interactive demos span the full viewport width
 - **Floating math:** Key equations "float" in styled callout boxes
@@ -590,60 +633,61 @@ src/
 
 ### Derivatives We Prove (all via d² = 0 algebra)
 
-| Function | Method | Proof Complexity |
-|----------|--------|-----------------|
-| xⁿ (integer n) | Binomial expansion, d² = 0 kills all but linear term | ★ Easy |
-| 1/x | Multiply by conjugate (x-d)/(x-d), d² = 0 | ★★ Medium |
-| √x | Square both sides, match d coefficients | ★★ Medium |
-| sin(x) | Infinitesimal triangle: sin(d)=d, cos(d)=1, then angle addition | ★★ Medium |
-| cos(x) | Same method as sin | ★★ Medium |
-| tan(x) | Quotient rule on sin/cos | ★★ Medium |
-| eˣ | Defined by f'=f, f(0)=1. eᵈ = 1+d follows. | ★ Easy (axiomatic) |
-| ln(x) | Inverse function: if y=ln(x), then x=eʸ, nudge both sides | ★★ Medium |
-| xᵃ (real a) | Write as e^(a·ln(x)), apply chain rule | ★★★ Harder |
-| arcsin(x) | Inverse function method on sin | ★★★ Harder |
-| arctan(x) | Inverse function method on tan | ★★★ Harder |
-| sinh(x), cosh(x) | From eˣ definition, direct computation | ★★ Medium |
+| Function         | Method                                                          | Proof Complexity   |
+| ---------------- | --------------------------------------------------------------- | ------------------ |
+| xⁿ (integer n)   | Binomial expansion, d² = 0 kills all but linear term            | ★ Easy             |
+| 1/x              | Multiply by conjugate (x-d)/(x-d), d² = 0                       | ★★ Medium          |
+| √x               | Square both sides, match d coefficients                         | ★★ Medium          |
+| sin(x)           | Infinitesimal triangle: sin(d)=d, cos(d)=1, then angle addition | ★★ Medium          |
+| cos(x)           | Same method as sin                                              | ★★ Medium          |
+| tan(x)           | Quotient rule on sin/cos                                        | ★★ Medium          |
+| eˣ               | Defined by f'=f, f(0)=1. eᵈ = 1+d follows.                      | ★ Easy (axiomatic) |
+| ln(x)            | Inverse function: if y=ln(x), then x=eʸ, nudge both sides       | ★★ Medium          |
+| xᵃ (real a)      | Write as e^(a·ln(x)), apply chain rule                          | ★★★ Harder         |
+| arcsin(x)        | Inverse function method on sin                                  | ★★★ Harder         |
+| arctan(x)        | Inverse function method on tan                                  | ★★★ Harder         |
+| sinh(x), cosh(x) | From eˣ definition, direct computation                          | ★★ Medium          |
 
 ### Differentiation Rules We Prove
 
-| Rule | Method |
-|------|--------|
-| Sum rule | Direct: (f+g)(x+d) = f(x+d) + g(x+d) |
-| Constant multiple | Direct: (cf)(x+d) = c·f(x+d) |
-| Product rule | Expand product, d² vanishes |
-| Quotient rule | Multiply by conjugate of denominator |
-| Chain rule | Nested application of Fundamental Equation |
-| Inverse function | Nudge both sides of y = f⁻¹(x), i.e. f(y) = x |
+| Rule              | Method                                        |
+| ----------------- | --------------------------------------------- |
+| Sum rule          | Direct: (f+g)(x+d) = f(x+d) + g(x+d)          |
+| Constant multiple | Direct: (cf)(x+d) = c·f(x+d)                  |
+| Product rule      | Expand product, d² vanishes                   |
+| Quotient rule     | Multiply by conjugate of denominator          |
+| Chain rule        | Nested application of Fundamental Equation    |
+| Inverse function  | Nudge both sides of y = f⁻¹(x), i.e. f(y) = x |
 
 ### Integration Topics
 
-| Topic | Method |
-|-------|--------|
+| Topic                           | Method                                               |
+| ------------------------------- | ---------------------------------------------------- |
 | Fundamental Theorem (geometric) | Infinitesimal strip = rectangle + vanishing triangle |
-| Basic antiderivatives | Reverse the derivative table above |
-| Area under curves | Direct from FTC |
-| Arc length | Pythagorean theorem on microstraight segments |
-| Surface area of revolution | Infinitesimal cylinder (frustum with d²=0) |
-| Volume of revolution (disks) | Infinitesimal disk: V' = π·f(x)²·d |
-| Volume of revolution (shells) | Infinitesimal cylindrical shell |
+| Basic antiderivatives           | Reverse the derivative table above                   |
+| Area under curves               | Direct from FTC                                      |
+| Arc length                      | Pythagorean theorem on microstraight segments        |
+| Surface area of revolution      | Infinitesimal cylinder (frustum with d²=0)           |
+| Volume of revolution (disks)    | Infinitesimal disk: V' = π·f(x)²·d                   |
+| Volume of revolution (shells)   | Infinitesimal cylindrical shell                      |
 
 ### Physics Applications
 
-| Application | SDG Content |
-|-------------|------------|
-| Velocity & acceleration | v = dx/dt as literal infinitesimal ratio |
-| Projectile motion | x(t+d) = x(t) + v·d, v(t+d) = v(t) + g·d |
-| Simple harmonic motion | Spring: F = -kx → x'' = -ω²x |
-| The catenary | Infinitesimal force balance → differential equation |
-| Kepler's areal law | Infinitesimal sector = triangle (microstraightness) |
-| Work and energy | W = F·dx as literal infinitesimal work |
+| Application             | SDG Content                                         |
+| ----------------------- | --------------------------------------------------- |
+| Velocity & acceleration | v = dx/dt as literal infinitesimal ratio            |
+| Projectile motion       | x(t+d) = x(t) + v·d, v(t+d) = v(t) + g·d            |
+| Simple harmonic motion  | Spring: F = -kx → x'' = -ω²x                        |
+| The catenary            | Infinitesimal force balance → differential equation |
+| Kepler's areal law      | Infinitesimal sector = triangle (microstraightness) |
+| Work and energy         | W = F·dx as literal infinitesimal work              |
 
 ---
 
 ## Part V: Implementation Phases
 
 ### Phase 1: Foundation (Week 1-2)
+
 - [ ] Set up SvelteKit project with Tailwind, KaTeX, custom fonts
 - [ ] Build the DualNumber engine (dual.ts)
 - [ ] Build core math rendering components (Equation, StepByStep, DToggle)
@@ -651,23 +695,27 @@ src/
 - [ ] Build the scrolling infrastructure (intersection observers, progress bar)
 
 ### Phase 2: Chapters 1-2 (Week 3-4)
+
 - [ ] Chapter 1: Narrative + "Perfect Zoom" demo + "Meet d" demo
 - [ ] Chapter 2: All 8 worked derivative examples with animated step-by-step
 - [ ] The Algebra Machine interactive demo
 - [ ] Challenge problems for Chapters 1-2
 
 ### Phase 3: Chapters 3-4 (Week 5-6)
+
 - [ ] Chapter 3: Rule proofs (product, chain, quotient) + Taylor Telescope
 - [ ] Chapter 4: FTC geometric proof + Infinitesimal Strip demo
 - [ ] Integration examples
 - [ ] Challenge problems for Chapters 3-4
 
 ### Phase 4: Chapters 5-6 (Week 7-8)
+
 - [ ] Chapter 5: Arc length + Unrolling Curve + Revolution demos
 - [ ] Chapter 6: Physics Sandbox + Hanging Chain + Kepler
 - [ ] Challenge problems
 
 ### Phase 5: Chapter 7 + Polish (Week 9-10)
+
 - [ ] Chapter 7: Multivariable preview (Gradient Explorer, Stokes)
 - [ ] Mobile responsiveness
 - [ ] Performance optimization

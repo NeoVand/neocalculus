@@ -22,29 +22,38 @@
 			Where every curve becomes a straight line,<br />and calculus becomes algebra.
 		</p>
 		<p class="hero-motivation">
-			For over two centuries, calculus has been taught through limits — an unintuitive machinery
-			of epsilons and deltas that obscures the geometric simplicity underneath. But there is another way.
-			Modern mathematics has shown that calculus can be rebuilt from a single, elegant axiom: that
-			infinitesimal quantities exist, and their squares vanish. No limits. No hand-waving. Just algebra.
-			This is that calculus.
+			For over two centuries, calculus has been taught through limits — an unintuitive machinery of
+			epsilons and deltas that obscures the geometric simplicity underneath. But there is another
+			way. Modern mathematics has shown that calculus can be rebuilt from a single, elegant axiom:
+			that infinitesimal quantities exist, and their squares vanish. No limits. No hand-waving. Just
+			algebra. This is that calculus.
 		</p>
 	</div>
 	<nav class="toc" aria-label="Table of contents">
 		<ol>
 			<li><a href="#ch1">The Smooth World</a></li>
 			<li><a href="#ch2">The Slope Equation</a></li>
-			<li><a href="#ch3">The Rules of Change</a></li>
-			<li><a href="#ch4">Applications of Derivatives</a></li>
-			<li><a href="#ch5">The World of Areas</a></li>
-			<li><a href="#ch6">Applications of Integration</a></li>
-			<li><a href="#ch7">Infinite Series</a></li>
-			<li><a href="#ch8">The Physical World</a></li>
-			<li><a href="#ch9">Many Dimensions</a></li>
-			<li><a href="#ch10">The Language of Forms</a></li>
+			<li><a href="#ch3">Rules of Change and Local Models</a></li>
+			<li><a href="#ch5">Accumulation and the Fundamental Theorem</a></li>
+			<li><a href="#ch6">Integration Geometry and Techniques</a></li>
+			<li><a href="#ch8">Differential Equations and Physics Modeling</a></li>
+			<li><a href="#ch7">Series and Approximation</a></li>
+			<li><a href="#ch9">Multivariable and Vector Calculus</a></li>
+			<li><a href="#ch10">Differential Forms and Unification</a></li>
 		</ol>
 	</nav>
+	<p class="toc-note">
+		Optimization and Newton's method are integrated as a Chapter 3 extension module.
+	</p>
 	<div class="scroll-hint" aria-hidden="true">
-		<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7" /></svg>
+		<svg
+			width="20"
+			height="20"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7" /></svg
+		>
 	</div>
 </section>
 
@@ -59,8 +68,8 @@
 	<Ch04 />
 	<Ch05 />
 	<Ch06 />
-	<Ch07 />
 	<Ch08 />
+	<Ch07 />
 	<Ch09 />
 	<Ch10 />
 </div>
@@ -74,10 +83,14 @@
 				One axiom. <Katex math="d^2 = 0" />.
 			</p>
 			<p style="color: var(--color-ink-light);">
-				From this single rule, we derived every derivative in the standard table. We proved the product, chain, and quotient rules. We established the Fundamental Theorem of Calculus, integration techniques, volumes of revolution, Taylor series, the equations of motion, and the generalized Stokes' theorem.
+				From this single rule, we derived every derivative in the standard table. We proved the
+				product, chain, and quotient rules. We established the Fundamental Theorem of Calculus,
+				integration techniques, volumes of revolution, Taylor series, the equations of motion, and
+				the generalized Stokes' theorem.
 			</p>
 			<p style="color: var(--color-ink-light);">
-				All without limits. All without epsilon-delta. All from algebra and the geometry of microstraightness.
+				All without limits. All without epsilon-delta. All from algebra and the geometry of
+				microstraightness.
 			</p>
 			<p style="font-style: italic; color: var(--color-d); margin-top: var(--space-lg);">
 				Neocalculus — calculus, reimagined from first principles.
@@ -162,6 +175,15 @@
 
 	.toc a:hover {
 		color: var(--color-d);
+	}
+
+	.toc-note {
+		margin-top: 0.8rem;
+		font-family: var(--font-sans);
+		font-size: 0.72rem;
+		color: var(--color-ink-faint);
+		max-width: 42rem;
+		text-align: center;
 	}
 
 	/* ── Scroll Hint ── */
