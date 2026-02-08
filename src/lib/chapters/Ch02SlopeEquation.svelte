@@ -22,7 +22,10 @@
 		<div use:reveal>
 			<span class="chapter-number">Chapter 2</span>
 			<h2 class="chapter-title">The Slope Equation</h2>
-			<p class="chapter-tagline">Derivatives without limits. Just algebra.</p>
+			<div class="chapter-epigraph">
+				<blockquote>"It is useful to solve differential equations by means of infinite series, but I am surprised that no one likes the method of infinitely small quantities, which is shorter and more direct."</blockquote>
+				<p class="epigraph-attr">— Gottfried Wilhelm Leibniz, letter to Johann Bernoulli, 1695</p>
+			</div>
 			<hr class="chapter-divider" />
 		</div>
 

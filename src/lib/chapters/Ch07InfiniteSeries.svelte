@@ -19,7 +19,10 @@
 		<div use:reveal>
 			<span class="chapter-number">Chapter 7</span>
 			<h2 class="chapter-title">Infinite Series</h2>
-			<p class="chapter-tagline">From exact nilpotent polynomials to the infinite series of classical mathematics.</p>
+			<div class="chapter-epigraph">
+				<blockquote>"The infinite series is the most noble of all the instruments which the human mind has constructed."</blockquote>
+				<p class="epigraph-attr">— Leonhard Euler</p>
+			</div>
 			<hr class="chapter-divider" />
 		</div>
 

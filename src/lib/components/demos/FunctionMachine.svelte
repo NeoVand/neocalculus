@@ -6,8 +6,6 @@
 		inputMath: string;
 		fnMath: string;
 		outputMath: string;
-		inputColor: string;
-		outputColor: string;
 		plot: [number, number][];
 		plotDot: [number, number];
 		axisX: number | null;
@@ -48,14 +46,18 @@
 		return data.pts[best];
 	}
 
-	const sqD   = makePlotData(x => x*x, -3, 3);
-	const sinD  = makePlotData(Math.sin, -Math.PI, Math.PI);
-	const absD  = makePlotData(Math.abs, -3, 3);
-	const sqrtD = makePlotData(x => Math.sqrt(Math.max(x,0)), 0, 6);
-	const expD  = makePlotData(Math.exp, -2, 2.5);
-	const cosD  = makePlotData(Math.cos, -Math.PI, Math.PI);
-	const cubeD = makePlotData(x => x*x*x, -2, 2);
-	const recipD = makePlotData(x => 1/x, 0.3, 5);
+	const sqD    = makePlotData(x => x*x, -3, 3);
+	const sinD   = makePlotData(Math.sin, -2*Math.PI, 2*Math.PI);
+	const absD   = makePlotData(Math.abs, -3, 3);
+	const sqrtD  = makePlotData(x => Math.sqrt(Math.max(x,0)), 0, 6);
+	const expD   = makePlotData(Math.exp, -2, 2.5);
+	const cosD   = makePlotData(Math.cos, -2*Math.PI, 2*Math.PI);
+	const cubeD  = makePlotData(x => x*x*x, -2, 2);
+	const recipD = makePlotData(x => 1/x, 0.3, 3);
+	const lnD    = makePlotData(Math.log, 0.15, 6);
+	const idD    = makePlotData(x => x, -3, 3);
+	const circD  = makePlotData(x => Math.sqrt(Math.max(0, 1 - x*x)), -1, 1);
+	const sincD  = makePlotData(x => Math.abs(x) < 0.001 ? 1 : Math.sin(x)/x, -4*Math.PI, 4*Math.PI);
 
 	// Floor function — staircase. Resampled to N_PTS+1 points for morph,
 	// but with extra points clustered at integer boundaries so vertical
@@ -103,17 +105,23 @@
 	}
 
 	const floorD = makeFloorPlot(-1.5, 3.5);
+	const constD = makePlotData(() => 0, -4, 4);
 
 	const scenarios: Scenario[] = [
-		{ inputMath: '-1', fnMath: 'f(x) = x^2', outputMath: '1', inputColor: '#3b82f6', outputColor: '#059669', plot: sqD.pts, plotDot: findDot(x=>x*x, -1, -3, 3, sqD), axisX: sqD.axisX, axisY: sqD.axisY },
-		{ inputMath: '\\pi/6', fnMath: '\\sin(x)', outputMath: '1/2', inputColor: '#f59e0b', outputColor: '#059669', plot: sinD.pts, plotDot: findDot(Math.sin, Math.PI/6, -Math.PI, Math.PI, sinD), axisX: sinD.axisX, axisY: sinD.axisY },
-		{ inputMath: '-2', fnMath: '|x|', outputMath: '2', inputColor: '#8b5cf6', outputColor: '#059669', plot: absD.pts, plotDot: findDot(Math.abs, -2, -3, 3, absD), axisX: absD.axisX, axisY: absD.axisY },
-		{ inputMath: '4', fnMath: '\\sqrt{x}', outputMath: '2', inputColor: '#3b82f6', outputColor: '#059669', plot: sqrtD.pts, plotDot: findDot(x=>Math.sqrt(x), 4, 0, 6, sqrtD), axisX: sqrtD.axisX, axisY: sqrtD.axisY },
-		{ inputMath: '1', fnMath: 'e^x', outputMath: 'e', inputColor: '#06b6d4', outputColor: '#059669', plot: expD.pts, plotDot: findDot(Math.exp, 1, -2, 2.5, expD), axisX: expD.axisX, axisY: expD.axisY },
-		{ inputMath: '\\pi/3', fnMath: '\\cos(x)', outputMath: '1/2', inputColor: '#f59e0b', outputColor: '#059669', plot: cosD.pts, plotDot: findDot(Math.cos, Math.PI/3, -Math.PI, Math.PI, cosD), axisX: cosD.axisX, axisY: cosD.axisY },
-		{ inputMath: '-1', fnMath: 'x^3', outputMath: '-1', inputColor: '#3b82f6', outputColor: '#ef4444', plot: cubeD.pts, plotDot: findDot(x=>x*x*x, -1, -2, 2, cubeD), axisX: cubeD.axisX, axisY: cubeD.axisY },
-		{ inputMath: '2.7', fnMath: '\\lfloor x \\rfloor', outputMath: '2', inputColor: '#ec4899', outputColor: '#059669', plot: floorD.pts, plotDot: findDot(Math.floor, 2.7, -1.5, 3.5, floorD), axisX: floorD.axisX, axisY: floorD.axisY },
-		{ inputMath: '2', fnMath: '1/x', outputMath: '1/2', inputColor: '#8b5cf6', outputColor: '#059669', plot: recipD.pts, plotDot: findDot(x=>1/x, 2, 0.3, 5, recipD), axisX: recipD.axisX, axisY: recipD.axisY },
+		{ inputMath: '-1', fnMath: 'f(x) = x^2', outputMath: '1', plot: sqD.pts, plotDot: findDot(x=>x*x, -1, -3, 3, sqD), axisX: sqD.axisX, axisY: sqD.axisY },
+		{ inputMath: '\\pi/6', fnMath: 'f(x) = \\sin(x)', outputMath: '1/2', plot: sinD.pts, plotDot: findDot(Math.sin, Math.PI/6, -2*Math.PI, 2*Math.PI, sinD), axisX: sinD.axisX, axisY: sinD.axisY },
+		{ inputMath: '-2', fnMath: 'f(x) = |x|', outputMath: '2', plot: absD.pts, plotDot: findDot(Math.abs, -2, -3, 3, absD), axisX: absD.axisX, axisY: absD.axisY },
+		{ inputMath: '4', fnMath: 'f(x) = \\sqrt{x}', outputMath: '2', plot: sqrtD.pts, plotDot: findDot(x=>Math.sqrt(x), 4, 0, 6, sqrtD), axisX: sqrtD.axisX, axisY: sqrtD.axisY },
+		{ inputMath: '1', fnMath: 'f(x) = e^x', outputMath: 'e', plot: expD.pts, plotDot: findDot(Math.exp, 1, -2, 2.5, expD), axisX: expD.axisX, axisY: expD.axisY },
+		{ inputMath: '\\pi/3', fnMath: 'f(x) = \\cos(x)', outputMath: '1/2', plot: cosD.pts, plotDot: findDot(Math.cos, Math.PI/3, -2*Math.PI, 2*Math.PI, cosD), axisX: cosD.axisX, axisY: cosD.axisY },
+		{ inputMath: '-1', fnMath: 'f(x) = x^3', outputMath: '-1', plot: cubeD.pts, plotDot: findDot(x=>x*x*x, -1, -2, 2, cubeD), axisX: cubeD.axisX, axisY: cubeD.axisY },
+		{ inputMath: '2.7', fnMath: 'f(x) = \\lfloor x \\rfloor', outputMath: '2', plot: floorD.pts, plotDot: findDot(Math.floor, 2.7, -1.5, 3.5, floorD), axisX: floorD.axisX, axisY: floorD.axisY },
+		{ inputMath: '2', fnMath: 'f(x) = 1/x', outputMath: '1/2', plot: recipD.pts, plotDot: findDot(x=>1/x, 2, 0.3, 3, recipD), axisX: recipD.axisX, axisY: recipD.axisY },
+		{ inputMath: 'e', fnMath: 'f(x) = \\log(x)', outputMath: '1', plot: lnD.pts, plotDot: findDot(Math.log, Math.E, 0.15, 6, lnD), axisX: lnD.axisX, axisY: lnD.axisY },
+		{ inputMath: '-2', fnMath: 'f(x) = x', outputMath: '-2', plot: idD.pts, plotDot: findDot(x=>x, -2, -3, 3, idD), axisX: idD.axisX, axisY: idD.axisY },
+		{ inputMath: '0', fnMath: 'f(x) = \\sqrt{1-x^2}', outputMath: '1', plot: circD.pts, plotDot: findDot(x => Math.sqrt(1-x*x), 0, -1, 1, circD), axisX: circD.axisX, axisY: circD.axisY },
+		{ inputMath: '\\pi', fnMath: 'f(x) = \\sin(x)/x', outputMath: '0', plot: sincD.pts, plotDot: findDot(x => Math.sin(x)/x, Math.PI, -4*Math.PI, 4*Math.PI, sincD), axisX: sincD.axisX, axisY: sincD.axisY },
+		{ inputMath: '42', fnMath: 'f(x) = 0', outputMath: '0', plot: constD.pts, plotDot: findDot(() => 0, 42, -4, 4, constD), axisX: constD.axisX, axisY: constD.axisY },
 	];
 
 	let idx = $state(0);
@@ -230,7 +238,7 @@
 	let machinePath = $derived.by(() => {
 		const fLx = bL - fLen - inSpread, fRx = bR + fLen + outSpread;
 		const mIn = mouthH + inSpread * 3, mOut = mouthH + Math.max(outSpread, 0) * 3;
-		const r = 7;
+		const r = 14;
 		return [
 			`M ${bL+r},${bT}`, `L ${bR-r},${bT}`, `Q ${bR},${bT} ${bR},${bT+r}`,
 			`L ${bR},${bMid-slotH/2}`,
@@ -247,7 +255,10 @@
 	let gradX = $derived(funnelLeftX + gradPos * (funnelRightX - funnelLeftX));
 
 	// Plot area
-	const pL = bL + 14, pR = bR - 14, pT_ = 108, pB_ = 178;
+	// Plot area — 24px margin on left/right, symmetric top/bottom within the lower half
+	const plotMargin = 24;
+	const pL = bL + plotMargin, pR = bR - plotMargin;
+	const pT_ = 110, pB_ = bB - plotMargin; // 170, giving 24px bottom margin
 	const pW = pR - pL, pH = pB_ - pT_;
 
 	// Rendered from interpolated display values
@@ -262,7 +273,7 @@
 
 <div class="fm-wrap">
 	<div class="fm-stage" style="--rest-l: {restLeft}%; --rest-r: {restRight}%; --swallow: {swallowPct}%; --hidden-r: {hiddenRight}%;">
-		<div class="fm-val fm-val-in" class:appear={phase === 'appear'} class:swallow={phase === 'swallow'} class:gone={phase === 'digest' || phase === 'spit' || phase === 'linger'} class:fading={phase === 'fadeout' || phase === 'reset'} style="--vc: {sc.inputColor}">
+		<div class="fm-val fm-val-in" class:appear={phase === 'appear'} class:swallow={phase === 'swallow'} class:gone={phase === 'digest' || phase === 'spit' || phase === 'linger'} class:fading={phase === 'fadeout' || phase === 'reset'}>
 			{@html tex(sc.inputMath)}
 		</div>
 
@@ -293,12 +304,17 @@
 			{/if}
 
 			<foreignObject x={bL} y={bT} width={bR-bL} height="95">
-				<div class="fm-label" xmlns="http://www.w3.org/1999/xhtml">
+				<div
+					class="fm-label"
+					class:visible={phase === 'appear' || phase === 'swallow' || phase === 'digest' || phase === 'spit' || phase === 'linger'}
+					class:fading={phase === 'fadeout' || phase === 'reset'}
+					xmlns="http://www.w3.org/1999/xhtml"
+				>
 					{@html tex(sc.fnMath)}
 				</div>
 			</foreignObject>
 
-			<rect x={pL-8} y={pT_-8} width={pW+16} height={pH+16} rx="8" ry="8" fill="white" fill-opacity="0.5" stroke="none" opacity="0.7"/>
+			<rect x={pL-8} y={pT_-8} width={pW+16} height={pH+16} rx="12" ry="12" fill="white" fill-opacity="0.5" stroke="none" opacity="0.7"/>
 
 			{#if axisXpx !== null}
 				<line x1={axisXpx} y1={pT_} x2={axisXpx} y2={pB_} stroke="#c4b5fd" stroke-width="0.7" opacity="0.45"/>
@@ -307,15 +323,15 @@
 				<line x1={pL} y1={axisYpx} x2={pR} y2={axisYpx} stroke="#c4b5fd" stroke-width="0.7" opacity="0.45"/>
 			{/if}
 
-			<g clip-path="url(#plotClip)" opacity="0.6">
-				<polyline points={plotPolyline} fill="none" stroke="#a855f7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+			<g clip-path="url(#plotClip)" opacity="0.85">
+				<polyline points={plotPolyline} fill="none" stroke="#a855f7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
 				<line x1={dotPx.cx} y1={dotPx.cy} x2={axisXpx ?? pL} y2={dotPx.cy} stroke="#a855f7" stroke-width="0.7" stroke-dasharray="3,2" opacity="0.5"/>
 				<line x1={dotPx.cx} y1={dotPx.cy} x2={dotPx.cx} y2={axisYpx ?? pB_} stroke="#a855f7" stroke-width="0.7" stroke-dasharray="3,2" opacity="0.5"/>
-				<circle cx={dotPx.cx} cy={dotPx.cy} r="3.5" fill="#a855f7" opacity="0.9"/>
+				<circle cx={dotPx.cx} cy={dotPx.cy} r="4.5" fill="#a855f7" opacity="0.9"/>
 			</g>
 		</svg>
 
-		<div class="fm-val fm-val-out" class:emerge={phase === 'spit' || phase === 'linger'} class:fading={phase === 'fadeout' || phase === 'reset'} style="--vc: {sc.outputColor}">
+		<div class="fm-val fm-val-out" class:emerge={phase === 'spit' || phase === 'linger'} class:fading={phase === 'fadeout' || phase === 'reset'}>
 			{@html tex(sc.outputMath)}
 		</div>
 	</div>
@@ -332,14 +348,14 @@
 
 	.fm-x-label, .fm-fx-label {
 		position: absolute;
-		top: 2%;
+		top: 18%;
 		z-index: 3;
 		color: var(--color-ink-faint);
 	}
 
 	.fm-x-label { left: var(--rest-l); transform: translateX(-50%); }
 	.fm-fx-label { right: var(--rest-r); transform: translateX(50%); }
-	.fm-x-label :global(.katex), .fm-fx-label :global(.katex) { font-size: 0.92em; color: var(--color-ink-faint); }
+	.fm-x-label :global(.katex), .fm-fx-label :global(.katex) { font-size: 1.05em; color: var(--color-ink-faint); }
 
 	.fm-stage {
 		position: relative;
@@ -359,20 +375,28 @@
 		width: 100%; height: 100%;
 		display: flex; align-items: center; justify-content: center;
 		color: var(--color-d); pointer-events: none;
+		opacity: 0;
+		transition: opacity 0.45s ease;
 	}
+
+	.fm-label.visible { opacity: 1; }
+	.fm-label.fading { opacity: 0; transition: opacity 0.5s ease; }
 
 	.fm-label :global(.katex) { font-size: 1.35em; }
 
 	.fm-val {
 		position: absolute; top: 50%;
 		transform: translateY(-50%) translateX(-50%);
-		padding: 0.18rem 0.55rem; border-radius: 999px;
-		background: white; border: 1.5px solid var(--vc);
-		box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+		padding: 0.3rem 0.7rem; border-radius: 999px;
+		background: radial-gradient(circle at 40% 40%, #f5f3ff, #ede9fe);
+		border: 1.8px solid #a855f7;
+		box-shadow: none;
 		white-space: nowrap; z-index: 1; opacity: 0;
+		min-width: 2.1em; min-height: 2.1em;
+		display: flex; align-items: center; justify-content: center;
 	}
 
-	.fm-val :global(.katex) { font-size: 0.92em; color: var(--vc); }
+	.fm-val :global(.katex) { font-size: 1.1em; color: #7c3aed; }
 
 	.fm-val-in { left: var(--rest-l); transition: left 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease; }
 	.fm-val-in.appear { left: var(--rest-l); opacity: 1; transition: opacity 0.45s ease; }

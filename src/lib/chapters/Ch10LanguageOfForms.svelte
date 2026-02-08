@@ -16,7 +16,10 @@
 		<div use:reveal>
 			<span class="chapter-number">Chapter 10</span>
 			<h2 class="chapter-title">The Language of Forms</h2>
-			<p class="chapter-tagline">Differential forms, Stokes' theorem, and the grand unification.</p>
+			<div class="chapter-epigraph">
+				<blockquote>"Mathematics is the art of giving the same name to different things."</blockquote>
+				<p class="epigraph-attr">— Henri Poincaré, <em>Science and Method</em>, 1908</p>
+			</div>
 			<hr class="chapter-divider" />
 		</div>
 

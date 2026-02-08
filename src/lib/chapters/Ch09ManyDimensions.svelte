@@ -70,7 +70,10 @@
 		<div use:reveal>
 			<span class="chapter-number">Chapter 9</span>
 			<h2 class="chapter-title">Many Dimensions</h2>
-			<p class="chapter-tagline">Partial derivatives, gradients, and the geometry of surfaces — where infinitesimals fan out in every direction.</p>
+			<div class="chapter-epigraph">
+				<blockquote>"I turn away with fright and horror from the lamentable evil of functions which have no derivatives."</blockquote>
+				<p class="epigraph-attr">— Charles Hermite, letter to Thomas Stieltjes, 1893</p>
+			</div>
 			<hr class="chapter-divider" />
 		</div>
 

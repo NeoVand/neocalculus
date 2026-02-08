@@ -19,7 +19,10 @@
 		<div use:reveal>
 			<span class="chapter-number">Chapter 3</span>
 			<h2 class="chapter-title">The Rules of Change</h2>
-			<p class="chapter-tagline">Product, chain, quotient rules, implicit differentiation, and higher derivatives — all from pure algebra.</p>
+			<div class="chapter-epigraph">
+				<blockquote>"The rules of differential calculus are the grammar of the language in which nature speaks to us."</blockquote>
+				<p class="epigraph-attr">— Adapted from Galileo Galilei</p>
+			</div>
 			<hr class="chapter-divider" />
 		</div>
 

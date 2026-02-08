@@ -86,7 +86,10 @@
 		<div use:reveal>
 			<span class="chapter-number">Chapter 8</span>
 			<h2 class="chapter-title">Modeling the Physical World</h2>
-			<p class="chapter-tagline">Velocity, acceleration, force, and motion — where infinitesimal reasoning was born.</p>
+			<div class="chapter-epigraph">
+				<blockquote>"The book of nature is written in the language of mathematics."</blockquote>
+				<p class="epigraph-attr">— Galileo Galilei, <em>The Assayer</em>, 1623</p>
+			</div>
 			<hr class="chapter-divider" />
 		</div>
 

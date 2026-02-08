@@ -73,7 +73,10 @@
 		<div use:reveal>
 			<span class="chapter-number">Chapter 6</span>
 			<h2 class="chapter-title">Applications of Integration</h2>
-			<p class="chapter-tagline">Volumes, surface areas, work, and more — all from infinitesimal slices.</p>
+			<div class="chapter-epigraph">
+				<blockquote>"Give me a place to stand and I will move the Earth."</blockquote>
+				<p class="epigraph-attr">— Archimedes of Syracuse, c. 250 BC</p>
+			</div>
 			<hr class="chapter-divider" />
 		</div>
 

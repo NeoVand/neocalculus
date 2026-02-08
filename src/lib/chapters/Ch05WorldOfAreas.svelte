@@ -135,7 +135,10 @@
 		<div use:reveal>
 			<span class="chapter-number">Chapter 5</span>
 			<h2 class="chapter-title">The World of Areas</h2>
-			<p class="chapter-tagline">Integration, the Fundamental Theorem, and techniques for finding antiderivatives.</p>
+			<div class="chapter-epigraph">
+				<blockquote>"To see a World in a Grain of Sand / And a Heaven in a Wild Flower, / Hold Infinity in the palm of your hand / And Eternity in an hour."</blockquote>
+				<p class="epigraph-attr">— William Blake, <em>Auguries of Innocence</em>, c. 1803</p>
+			</div>
 			<hr class="chapter-divider" />
 		</div>
 

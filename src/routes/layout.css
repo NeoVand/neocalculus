@@ -130,6 +130,29 @@ h1, h2, h3, h4 {
 	line-height: 1.6;
 }
 
+.chapter-epigraph {
+	margin: 0.4rem 0 0;
+	max-width: 32rem;
+}
+
+.chapter-epigraph blockquote {
+	font-size: 0.95rem;
+	font-style: italic;
+	color: var(--color-ink-light);
+	line-height: 1.65;
+	margin: 0 0 0.3rem;
+	padding: 0;
+	border: none;
+}
+
+.chapter-epigraph .epigraph-attr {
+	font-family: var(--font-sans);
+	font-size: 0.72rem;
+	font-style: normal;
+	color: var(--color-ink-faint);
+	letter-spacing: 0.02em;
+}
+
 .chapter-divider {
 	width: 3rem;
 	height: 2px;

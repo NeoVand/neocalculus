@@ -21,7 +21,10 @@
 		<div use:reveal>
 			<span class="chapter-number">Chapter 1</span>
 			<h2 class="chapter-title">The Smooth World</h2>
-			<p class="chapter-tagline">Functions, smoothness, and the single idea that rebuilds all of calculus.</p>
+			<div class="chapter-epigraph">
+				<blockquote>"Nature never makes jumps."</blockquote>
+				<p class="epigraph-attr">— Gottfried Wilhelm Leibniz, <em>New Essays</em>, 1704</p>
+			</div>
 			<hr class="chapter-divider" />
 		</div>
 
@@ -59,64 +62,56 @@
 		<Figure number="1.1" caption="Three kinds of functions. Left: x² is smooth — at every point, zooming in reveals a straight tangent line. Center: |x| has a corner at x = 0 that persists at every zoom level. Right: a step function has a jump discontinuity — the output teleports.">
 			<svg viewBox="0 0 690 210" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:690px">
 				<!-- ──── Panel 1: SMOOTH (x²) ──── -->
-				<rect x="6" y="6" width="210" height="198" rx="8" fill="white" stroke="#e5e1d8" stroke-width="1"/>
-				<text x="111" y="25" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#059669" font-weight="700" letter-spacing="0.04em">SMOOTH</text>
-				<!-- axes crossing at origin (111, 150) -->
-				<line x1="22" y1="150" x2="200" y2="150" stroke="#d4d0c8" stroke-width="0.7"/>
-				<line x1="111" y1="32" x2="111" y2="195" stroke="#d4d0c8" stroke-width="0.7"/>
-				<!-- x² parabola: vertex at origin (111, 150), scaled so f(±2)≈ top -->
-				<!-- Points: x=-2→y=4 at (31,38), x=-1→y=1 at (71,122), x=0→y=0 at (111,150), x=1→y=1 at (151,122), x=2→y=4 at (191,38) -->
-				<path d="M 31 38 C 51 100, 91 150, 111 150 C 131 150, 171 100, 191 38" stroke="#1a1a2e" stroke-width="2" fill="none"/>
-				<!-- tangent line at x=1 → slope=2, touching at (151, 122) -->
-				<line x1="121" y1="156" x2="181" y2="88" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="5,3"/>
-				<circle cx="151" cy="122" r="3" fill="#a855f7"/>
-				<!-- label -->
+				<rect x="6" y="6" width="210" height="198" rx="10" fill="white" stroke="#e5e1d8" stroke-width="1"/>
+				<text x="111" y="25" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#a855f7" font-weight="700" letter-spacing="0.04em">SMOOTH</text>
+				<!-- axes at origin (111, 152) -->
+				<line x1="22" y1="152" x2="200" y2="152" stroke="#d4d0c8" stroke-width="0.6"/>
+				<line x1="111" y1="32" x2="111" y2="192" stroke="#d4d0c8" stroke-width="0.6"/>
+				<!-- x² parabola: origin=(111,152), scaleX=40px/unit, scaleY=25px/unit -->
+				<!-- 25 computed points from x=-2.2 to x=2.2 -->
+				<polyline points="23,31 30,50 38,68 45,84 52,98 60,111 67,122 74,131 82,139 89,144 96,149 104,151 111,152 118,151 126,149 133,144 140,139 148,131 155,122 162,111 170,98 177,84 184,68 192,50 199,31"
+					stroke="#1a1a2e" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+				<!-- tangent at x=1: point=(151,127), slope=2 -->
+				<line x1="123" y1="162" x2="179" y2="92" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="5,3"/>
+				<circle cx="151" cy="127" r="3" fill="#a855f7"/>
+				<text x="180" y="86" font-size="8.5" font-family="Inter,sans-serif" fill="#a855f7" font-weight="600">tangent</text>
 				<text x="111" y="190" text-anchor="middle" font-size="10" font-family="var(--font-mono)" fill="#1a1a2e">f(x) = x²</text>
-				<!-- "straight" annotation pointing to tangent -->
-				<text x="182" y="82" font-size="8.5" font-family="Inter,sans-serif" fill="#a855f7" font-weight="600">tangent</text>
 
 				<!-- ──── Panel 2: CORNER (|x|) ──── -->
-				<rect x="240" y="6" width="210" height="198" rx="8" fill="white" stroke="#e5e1d8" stroke-width="1"/>
-				<text x="345" y="25" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#f59e0b" font-weight="700" letter-spacing="0.04em">CORNER</text>
-				<!-- axes crossing at origin (345, 150) -->
-				<line x1="256" y1="150" x2="434" y2="150" stroke="#d4d0c8" stroke-width="0.7"/>
-				<line x1="345" y1="32" x2="345" y2="195" stroke="#d4d0c8" stroke-width="0.7"/>
-				<!-- |x|: vertex at origin (345, 150) going up both sides -->
-				<!-- f(±2.5)=2.5 → at top. scale: 40px per unit → f(2)→(425,70), f(-2)→(265,70) -->
-				<line x1="265" y1="70" x2="345" y2="150" stroke="#1a1a2e" stroke-width="2"/>
-				<line x1="345" y1="150" x2="425" y2="70" stroke="#1a1a2e" stroke-width="2"/>
-				<!-- corner dot -->
-				<circle cx="345" cy="150" r="3.5" fill="#f59e0b"/>
-				<!-- two conflicting tangent directions at the corner -->
-				<line x1="310" y1="178" x2="345" y2="150" stroke="#f59e0b" stroke-width="1.3" stroke-dasharray="4,3"/>
-				<line x1="345" y1="150" x2="380" y2="178" stroke="#f59e0b" stroke-width="1.3" stroke-dasharray="4,3"/>
-				<text x="286" y="176" font-size="7.5" font-family="Inter,sans-serif" fill="#f59e0b" font-weight="500">slope −1</text>
-				<text x="382" y="176" font-size="7.5" font-family="Inter,sans-serif" fill="#f59e0b" font-weight="500">slope +1</text>
-				<!-- label -->
-				<text x="345" y="193" text-anchor="middle" font-size="10" font-family="var(--font-mono)" fill="#1a1a2e">f(x) = |x|</text>
+				<rect x="240" y="6" width="210" height="198" rx="10" fill="white" stroke="#e5e1d8" stroke-width="1"/>
+				<text x="345" y="25" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#a855f7" font-weight="700" letter-spacing="0.04em">CORNER</text>
+				<!-- axes at origin (345, 152) -->
+				<line x1="256" y1="152" x2="434" y2="152" stroke="#d4d0c8" stroke-width="0.6"/>
+				<line x1="345" y1="32" x2="345" y2="192" stroke="#d4d0c8" stroke-width="0.6"/>
+				<!-- |x|: V at origin. scale ~40px/unit both directions -->
+				<line x1="265" y1="72" x2="345" y2="152" stroke="#1a1a2e" stroke-width="2"/>
+				<line x1="345" y1="152" x2="425" y2="72" stroke="#1a1a2e" stroke-width="2"/>
+				<circle cx="345" cy="152" r="3.5" fill="#a855f7"/>
+				<!-- conflicting slopes shown as dashed extensions -->
+				<line x1="308" y1="180" x2="345" y2="152" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.7"/>
+				<line x1="345" y1="152" x2="382" y2="180" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.7"/>
+				<text x="282" y="182" font-size="7.5" font-family="Inter,sans-serif" fill="#a855f7" font-weight="500" opacity="0.8">−1</text>
+				<text x="384" y="182" font-size="7.5" font-family="Inter,sans-serif" fill="#a855f7" font-weight="500" opacity="0.8">+1</text>
+				<text x="345" y="190" text-anchor="middle" font-size="10" font-family="var(--font-mono)" fill="#1a1a2e">f(x) = |x|</text>
 
 				<!-- ──── Panel 3: JUMP (step function) ──── -->
-				<rect x="474" y="6" width="210" height="198" rx="8" fill="white" stroke="#e5e1d8" stroke-width="1"/>
-				<text x="579" y="25" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#ef4444" font-weight="700" letter-spacing="0.04em">JUMP</text>
-				<!-- axes crossing at origin (579, 130) -->
-				<line x1="490" y1="130" x2="668" y2="130" stroke="#d4d0c8" stroke-width="0.7"/>
-				<line x1="579" y1="32" x2="579" y2="195" stroke="#d4d0c8" stroke-width="0.7"/>
-				<!-- Step function: 0 for x<0, 1 for x≥0 -->
-				<!-- y=0 line from left to origin -->
-				<line x1="496" y1="130" x2="579" y2="130" stroke="#1a1a2e" stroke-width="2"/>
-				<!-- y=1 line from origin to right, at y=70 (60px above axis) -->
-				<line x1="579" y1="70" x2="662" y2="70" stroke="#1a1a2e" stroke-width="2"/>
-				<!-- vertical gap — dashed to show the jump -->
-				<line x1="579" y1="130" x2="579" y2="70" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3"/>
-				<!-- open circle at bottom, filled at top -->
-				<circle cx="579" cy="130" r="3.5" fill="white" stroke="#1a1a2e" stroke-width="1.5"/>
-				<circle cx="579" cy="70" r="3.5" fill="#1a1a2e"/>
-				<!-- jump annotation -->
-				<text x="595" y="104" font-size="8" font-family="Inter,sans-serif" fill="#ef4444" font-weight="600">teleports!</text>
-				<!-- y-axis labels -->
-				<text x="572" y="134" text-anchor="end" font-size="8" font-family="Inter,sans-serif" fill="#94919b">0</text>
-				<text x="572" y="74" text-anchor="end" font-size="8" font-family="Inter,sans-serif" fill="#94919b">1</text>
-				<!-- label -->
+				<rect x="474" y="6" width="210" height="198" rx="10" fill="white" stroke="#e5e1d8" stroke-width="1"/>
+				<text x="579" y="25" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="#a855f7" font-weight="700" letter-spacing="0.04em">JUMP</text>
+				<!-- axes at origin (579, 132) -->
+				<line x1="490" y1="132" x2="668" y2="132" stroke="#d4d0c8" stroke-width="0.6"/>
+				<line x1="579" y1="32" x2="579" y2="192" stroke="#d4d0c8" stroke-width="0.6"/>
+				<!-- Step: y=0 for x<0, y=1 for x≥0 -->
+				<line x1="496" y1="132" x2="579" y2="132" stroke="#1a1a2e" stroke-width="2"/>
+				<line x1="579" y1="72" x2="662" y2="72" stroke="#1a1a2e" stroke-width="2"/>
+				<!-- dashed gap -->
+				<line x1="579" y1="132" x2="579" y2="72" stroke="#a855f7" stroke-width="1.3" stroke-dasharray="3,3" opacity="0.6"/>
+				<!-- open/filled circles -->
+				<circle cx="579" cy="132" r="3.5" fill="white" stroke="#1a1a2e" stroke-width="1.5"/>
+				<circle cx="579" cy="72" r="3.5" fill="#1a1a2e"/>
+				<!-- annotation -->
+				<text x="596" y="106" font-size="8" font-family="Inter,sans-serif" fill="#a855f7" font-weight="600" opacity="0.8">jump!</text>
+				<text x="572" y="136" text-anchor="end" font-size="8" font-family="Inter,sans-serif" fill="#94919b">0</text>
+				<text x="572" y="76" text-anchor="end" font-size="8" font-family="Inter,sans-serif" fill="#94919b">1</text>
 				<text x="579" y="190" text-anchor="middle" font-size="10" font-family="var(--font-mono)" fill="#1a1a2e">step function</text>
 			</svg>
 		</Figure>

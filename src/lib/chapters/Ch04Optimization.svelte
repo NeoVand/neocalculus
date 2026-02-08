@@ -204,7 +204,10 @@
 		<div use:reveal>
 			<span class="chapter-number">Chapter 4</span>
 			<h2 class="chapter-title">Applications of Derivatives</h2>
-			<p class="chapter-tagline">Optimization, curve sketching, and the power of linear approximation.</p>
+			<div class="chapter-epigraph">
+				<blockquote>"Nothing takes place in the world whose meaning is not that of some maximum or minimum."</blockquote>
+				<p class="epigraph-attr">— Leonhard Euler, <em>Methodus Inveniendi</em>, 1744</p>
+			</div>
 			<hr class="chapter-divider" />
 		</div>
 
