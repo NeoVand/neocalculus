@@ -12,6 +12,7 @@
 	import NextChapter from '$lib/components/NextChapter.svelte';
 	import PerfectZoom from '$lib/components/demos/PerfectZoom.svelte';
 	import FunctionMachine from '$lib/components/demos/FunctionMachine.svelte';
+	import MicrostraightnessBridge from '$lib/components/figures/MicrostraightnessBridge.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
 </script>
@@ -374,97 +375,19 @@
 			</p>
 		</div>
 
-		<!-- Number line figure — placed here, near "Meet d" where it belongs -->
+	</div>
+
+	<div class="wide-width" use:reveal>
 		<Figure
 			number="1.2"
-			caption="The Neocalculus number line. Around every point sits an infinitesimal neighborhood D — a 'cloud' of quantities d where d² = 0."
+			class="figure-1-2"
+			caption="Microstraightness bridge. From a to a+d, the curve and tangent differ by a second-order residual r(d) ~ d². On D where d² = 0, only the first-order term remains."
 		>
-			<svg
-				viewBox="0 0 460 90"
-				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-				style="max-width:460px"
-			>
-				<line x1="30" y1="50" x2="430" y2="50" stroke="#1a1a2e" stroke-width="1.5" />
-				<polygon points="430,50 424,46 424,54" fill="#1a1a2e" />
-				<line x1="80" y1="45" x2="80" y2="55" stroke="#1a1a2e" stroke-width="1.2" />
-				<text
-					x="80"
-					y="70"
-					text-anchor="middle"
-					font-size="12"
-					font-family="Crimson Pro,serif"
-					fill="#1a1a2e">-1</text
-				>
-				<line x1="175" y1="45" x2="175" y2="55" stroke="#1a1a2e" stroke-width="1.2" />
-				<text
-					x="175"
-					y="70"
-					text-anchor="middle"
-					font-size="12"
-					font-family="Crimson Pro,serif"
-					fill="#1a1a2e">0</text
-				>
-				<line x1="270" y1="45" x2="270" y2="55" stroke="#1a1a2e" stroke-width="1.2" />
-				<text
-					x="270"
-					y="70"
-					text-anchor="middle"
-					font-size="12"
-					font-family="Crimson Pro,serif"
-					fill="#1a1a2e">1</text
-				>
-				<line x1="365" y1="45" x2="365" y2="55" stroke="#1a1a2e" stroke-width="1.2" />
-				<text
-					x="365"
-					y="70"
-					text-anchor="middle"
-					font-size="12"
-					font-family="Crimson Pro,serif"
-					fill="#1a1a2e">2</text
-				>
-				<ellipse
-					cx="175"
-					cy="50"
-					rx="22"
-					ry="16"
-					fill="rgba(168,85,247,0.12)"
-					stroke="#a855f7"
-					stroke-width="1"
-					stroke-dasharray="3,2"
-				/>
-				<text
-					x="175"
-					y="26"
-					text-anchor="middle"
-					font-size="10"
-					font-family="Inter,sans-serif"
-					fill="#a855f7"
-					font-weight="500">d² = 0</text
-				>
-				<ellipse
-					cx="270"
-					cy="50"
-					rx="22"
-					ry="16"
-					fill="rgba(168,85,247,0.08)"
-					stroke="#a855f7"
-					stroke-width="0.8"
-					stroke-dasharray="3,2"
-				/>
-				<ellipse
-					cx="365"
-					cy="50"
-					rx="22"
-					ry="16"
-					fill="rgba(168,85,247,0.08)"
-					stroke="#a855f7"
-					stroke-width="0.8"
-					stroke-dasharray="3,2"
-				/>
-			</svg>
+			<MicrostraightnessBridge />
 		</Figure>
+	</div>
 
+	<div class="content-width">
 		<div class="neo-prose" use:reveal>
 			<p>
 				We write <Katex math={r`D = \{d \in \mathcal{R} : d^2 = 0\}`} /> for the set of all infinitesimals
@@ -853,3 +776,10 @@
 		<NextChapter href="ch2" title="The Slope Equation" number="2" />
 	</div>
 </section>
+
+<style>
+	:global(.figure-1-2 figcaption) {
+		max-width: var(--w-content);
+		margin-inline: auto;
+	}
+</style>
