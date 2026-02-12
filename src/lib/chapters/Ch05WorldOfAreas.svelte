@@ -11,10 +11,57 @@
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import StandardCalcBox from '$lib/components/StandardCalcBox.svelte';
 	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
+	import DependencyMap from '$lib/components/DependencyMap.svelte';
+	import RevealBox from '$lib/components/RevealBox.svelte';
 	import NextChapter from '$lib/components/NextChapter.svelte';
 	import InfinitesimalStrip from '$lib/components/demos/InfinitesimalStrip.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
+
+	const chapterDependencyNodes = [
+		{
+			id: 'ch2-slope',
+			label: 'Slope equation base (Ch2)',
+			to: '#ch2',
+			lane: 'core',
+			note: 'Antiderivative logic still rests on derivative meaning.'
+		},
+		{
+			id: 'ch3-rules',
+			label: 'Rule grammar (Ch3)',
+			to: '#ch3-product-rule',
+			lane: 'core',
+			note: 'Substitution and parts use chain/product structures.'
+		},
+		{
+			id: 'ch5-ftc',
+			label: 'Fundamental Theorem core (this chapter)',
+			to: '#ch5-ftc-core',
+			lane: 'core',
+			note: 'Boundary terms survive; interior cancellations vanish.'
+		},
+		{
+			id: 'ch6-techniques',
+			label: 'Geometry + techniques (Ch6)',
+			to: '#ch6',
+			lane: 'bridge',
+			note: 'Arc length, volume, and method selection extend this core.'
+		},
+		{
+			id: 'ch10-forms',
+			label: 'Generalized Stokes (Ch10)',
+			to: '#ch10-generalized-stokes',
+			lane: 'bridge',
+			note: 'FTC is the 1D member of a higher-dimensional family.'
+		}
+	] as const;
+
+	const chapterDependencyEdges = [
+		{ from: 'ch2-slope', to: 'ch3-rules' },
+		{ from: 'ch3-rules', to: 'ch5-ftc' },
+		{ from: 'ch5-ftc', to: 'ch6-techniques' },
+		{ from: 'ch5-ftc', to: 'ch10-forms' }
+	] as const;
 
 	function setupFTCStrip(JXG: any, board: any) {
 		const f = (x: number) => 0.15 * x * x + 0.8; // simple positive curve
@@ -259,6 +306,21 @@
 			<hr class="chapter-divider" />
 		</div>
 
+		<DependencyMap
+			title="Chapter 4 Dependency Network"
+			intro="Open for the prerequisite chain behind FTC and where it propagates next."
+			returnLabel="Chapter 4 dependency map"
+			nodes={chapterDependencyNodes}
+			edges={chapterDependencyEdges}
+		/>
+
+		<Callout type="key-idea" title="Core Path (First Pass)">
+			<p>
+				For a first pass, focus on FTC, antiderivatives, substitution, and improper integrals. The
+				extension studio contains additional integration techniques and geometric applications.
+			</p>
+		</Callout>
+
 		<!-- ═══ SECTION: Motivation ═══ -->
 		<div class="neo-prose" use:reveal>
 			<h3>From rates to totals</h3>
@@ -298,7 +360,7 @@
 
 		<!-- ═══ SECTION: The Fundamental Theorem ═══ -->
 		<div class="neo-prose" use:reveal>
-			<h3>The Fundamental Theorem of Calculus</h3>
+			<h3 id="ch5-ftc-core">The Fundamental Theorem of Calculus</h3>
 			<p>
 				Let <Katex math={r`f`} /> be a smooth function, and let <Katex math={r`A(x)`} /> be the area under
 				the curve from some fixed starting point <Katex math={r`a`} /> to the variable endpoint <Katex
@@ -767,6 +829,11 @@
 			</div>
 		</div>
 
+		<RevealBox
+			title="Extension Studio: Integration Techniques and Geometry"
+			subtitle="Optional first-pass branch"
+			tone="math"
+		>
 		<!-- ═══ SECTION: Integration by Parts ═══ -->
 		<div class="neo-prose" use:reveal>
 			<h4>Integration by parts</h4>
@@ -1213,6 +1280,7 @@
 				<span class="step-note">✓</span>
 			</div>
 		</div>
+		</RevealBox>
 
 		<!-- ═══ SECTION: Improper Integrals ═══ -->
 		<div class="neo-prose" use:reveal>
@@ -1436,6 +1504,11 @@
 					</p>{/snippet}
 			</Exercise>
 
+			<RevealBox
+				title="Extension Exercises (11-21)"
+				subtitle="Open for advanced practice and exploration"
+				tone="math"
+			>
 			<!-- IBP -->
 			<Exercise number={11}>
 				<p>
@@ -1598,6 +1671,7 @@
 						to actual quantities.
 					</p>{/snippet}
 			</Exercise>
+			</RevealBox>
 		</details>
 
 		<!-- ═══ LOOKING AHEAD ═══ -->

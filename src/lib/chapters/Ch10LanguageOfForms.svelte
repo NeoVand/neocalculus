@@ -7,9 +7,57 @@
 	import DigDeeper from '$lib/components/DigDeeper.svelte';
 	import ChapterSummary from '$lib/components/ChapterSummary.svelte';
 	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
+	import DependencyMap from '$lib/components/DependencyMap.svelte';
+	import RevealBox from '$lib/components/RevealBox.svelte';
+	import FailureModeBox from '$lib/components/FailureModeBox.svelte';
 	import StokesVisualizer from '$lib/components/demos/StokesVisualizer.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
+
+	const chapterDependencyNodes = [
+		{
+			id: 'ch5-ftc',
+			label: 'Boundary cancellation intuition (Ch5 FTC)',
+			to: '#ch5-ftc-core',
+			lane: 'core',
+			note: 'Endpoint-only survival in 1D is the first Stokes pattern.'
+		},
+		{
+			id: 'ch9-vector',
+			label: 'Vector-calculus setup (Ch9)',
+			to: '#ch9',
+			lane: 'core',
+			note: 'Gradient, curl, divergence provide coordinate intuition.'
+		},
+		{
+			id: 'ch10-exterior',
+			label: 'Exterior derivative core (this chapter)',
+			to: '#ch10-exterior-derivative',
+			lane: 'core',
+			note: 'd raises form degree and controls boundary flow.'
+		},
+		{
+			id: 'ch10-stokes',
+			label: 'Generalized Stokes theorem (this chapter)',
+			to: '#ch10-generalized-stokes',
+			lane: 'bridge',
+			note: 'One equation unifies FTC, Green, Stokes, Divergence.'
+		},
+		{
+			id: 'ch10-topology',
+			label: 'Closed vs exact forms (this chapter)',
+			to: '#ch10-closed-exact',
+			lane: 'deep',
+			note: 'Global topology limits what local antiderivatives can do.'
+		}
+	] as const;
+
+	const chapterDependencyEdges = [
+		{ from: 'ch5-ftc', to: 'ch10-exterior' },
+		{ from: 'ch9-vector', to: 'ch10-exterior' },
+		{ from: 'ch10-exterior', to: 'ch10-stokes' },
+		{ from: 'ch10-stokes', to: 'ch10-topology' }
+	] as const;
 </script>
 
 <section class="chapter" id="ch10">
@@ -48,13 +96,28 @@
 			<p>
 				The answer is yes — and the language that makes it possible is the language of <strong
 					>differential forms</strong
-				>. In this chapter, we'll discover that every integration theorem you've ever encountered —
-				the Fundamental Theorem of Calculus, Green's theorem, the classical Stokes' theorem, the
-				Divergence theorem — is the <em>same theorem</em>, written in different notation. And the
-				proof, in SDG, is essentially the same one-line cancellation argument we've been using all
-				along.
+				>. In this chapter, we'll show that the standard integration theorems from this course — the
+				Fundamental Theorem of Calculus, Green's theorem, the classical Stokes' theorem, and the
+				Divergence theorem — can be written as special cases of one boundary/interior principle. In
+				the SDG presentation, they share the same interior-cancellation mechanism.
 			</p>
 		</div>
+
+		<DependencyMap
+			title="Chapter 9 Dependency Network"
+			intro="Open for the prerequisite spine from FTC and vector calculus into generalized Stokes."
+			returnLabel="Chapter 9 dependency map"
+			nodes={chapterDependencyNodes}
+			edges={chapterDependencyEdges}
+		/>
+
+		<Callout type="key-idea" title="Core Path (First Pass)">
+			<p>
+				For a first pass, focus on forms, exterior derivative, generalized Stokes, and
+				closed-versus-exact logic. Open extension studios for detailed classical specializations and
+				variational mechanics.
+			</p>
+		</Callout>
 
 		<!-- ═══ SECTION: What Is a Differential Form? ═══ -->
 		<div class="neo-prose" use:reveal>
@@ -229,7 +292,7 @@
 
 		<!-- ═══ SECTION: The Exterior Derivative ═══ -->
 		<div class="neo-prose" use:reveal>
-			<h3>The exterior derivative</h3>
+			<h3 id="ch10-exterior-derivative">The exterior derivative</h3>
 			<p>
 				Given a k-form <Katex math={r`\omega`} />, its <strong>exterior derivative</strong>
 				<Katex math={r`d\omega`} /> is a (k+1)-form. It measures how <Katex math={r`\omega`} /> varies
@@ -349,7 +412,7 @@
 			<p style="margin-top: 0.5rem;">
 				The form <Katex math={r`\omega = x\,dy - y\,dx`} /> has a constant "curl" of 2. Integrating <Katex
 					math={r`d\omega`}
-				/> over any region gives twice the area of that region.
+				/> over an oriented planar region gives twice the signed area of that region.
 			</p>
 		</div>
 
@@ -366,9 +429,9 @@
 		</div>
 
 		<Callout type="theorem" title="d² = 0 for the Exterior Derivative">
-			<p>For any differential form <Katex math={r`\omega`} />:</p>
+			<p>For smooth differential forms <Katex math={r`\omega`} /> on the domains we consider:</p>
 			<Katex math={r`d(d\omega) = 0`} display />
-			<p>The exterior derivative applied twice is always zero.</p>
+			<p>The exterior derivative applied twice is zero.</p>
 		</Callout>
 
 		<div class="neo-prose" use:reveal>
@@ -439,7 +502,7 @@
 
 		<!-- ═══ SECTION: Generalized Stokes' Theorem ═══ -->
 		<div class="neo-prose" use:reveal>
-			<h3>The Generalized Stokes' Theorem</h3>
+			<h3 id="ch10-generalized-stokes">The Generalized Stokes' Theorem</h3>
 			<p>
 				We defined the exterior derivative by what it does on infinitesimal cells: <Katex
 					math={r`\int_C d\omega = \int_{\partial C} \omega`}
@@ -447,15 +510,15 @@
 				<em>finite</em> region?
 			</p>
 			<p>
-				The miracle: interior boundaries cancel. When two infinitesimal cells share a face, they
-				traverse that face in opposite orientations. The alternation property means these
+				The key mechanism: interior boundaries cancel. When two infinitesimal cells share a face,
+				they traverse that face in opposite orientations. The alternation property means these
 				contributions cancel exactly. Only the outer boundary survives.
 			</p>
 		</div>
 
 		<Callout type="theorem" title="The Generalized Stokes' Theorem">
 			<p>
-				For any differential form <Katex math={r`\omega`} /> and any oriented region <Katex
+				For suitable smooth differential forms <Katex math={r`\omega`} /> and oriented regions <Katex
 					math="M"
 				/>:
 			</p>
@@ -905,17 +968,23 @@
 				orientation theory, and careful analytic estimates. In SDG, the proof is <em>algebraic</em>:
 				sum the defining identity <Katex math={r`\int_C d\omega = \int_{\partial C} \omega`} /> over all
 				infinitesimal cells. Interior faces cancel by alternation. The outer boundary is all that remains.
-				That's the entire proof.
+				This is the core mechanism; a full formal treatment still tracks regularity and orientation hypotheses.
 			</p>
 		</SDGAdvantage>
 
+		<RevealBox
+			title="Extension Studio: Four Classical Theorems as Stokes Specializations"
+			subtitle="Optional first-pass branch"
+			tone="math"
+		>
 		<!-- ═══ SECTION: Deriving the Classical Theorems ═══ -->
 		<div class="neo-prose" use:reveal>
 			<h3>The four classical theorems</h3>
 			<p>
-				Now we derive every classical integration theorem as a one-line specialization of Stokes'.
-				This is one of the most satisfying moments in all of mathematics: four theorems that seemed
-				unrelated turn out to be a single theorem in disguise.
+				Now we derive the four classical integration theorems in this course as short
+				specializations of Stokes'. This is one of the most satisfying moments in all of
+				mathematics: four theorems that seemed unrelated turn out to be a single theorem in
+				disguise.
 			</p>
 		</div>
 
@@ -1059,15 +1128,16 @@
 		<SDGAdvantage title="Four Theorems, Four Specializations">
 			<p>
 				Each classical theorem is obtained by choosing a specific degree of form and a specific
-				dimension of region. There is nothing more to prove — once you have the generalized Stokes'
-				theorem, every classical integral theorem is a <em>one-line corollary</em>. The language of
-				forms reveals that these "four separate theorems" were always the same theorem.
+				dimension of region. Once generalized Stokes is in place, the standard quartet (FTC, Green,
+				classical Stokes, Divergence) appears as direct corollaries. The language of forms makes the
+				common structure explicit.
 			</p>
 		</SDGAdvantage>
+		</RevealBox>
 
 		<!-- ═══ SECTION: de Rham Cohomology ═══ -->
 		<div class="neo-prose" use:reveal>
-			<h4>Closed and exact forms: detecting holes</h4>
+			<h4 id="ch10-closed-exact">Closed and exact forms: detecting holes</h4>
 			<p>
 				The equation <Katex math={r`d^2 = 0`} /> has a profound consequence. If <Katex
 					math={r`\omega = d\eta`}
@@ -1145,13 +1215,28 @@
 			</p>
 		</DigDeeper>
 
+		<FailureModeBox
+			title="Failure Mode: Local Primitive Assumed Global"
+			trigger="Treating a locally exact form as globally exact on a domain with holes"
+			symptom="Predicted loop integral is zero, but computation gives a nonzero winding contribution"
+			recovery="Check topology first; use chart-wise primitives and track global obstructions via closed-vs-exact analysis"
+		/>
+
+		<RevealBox
+			title="Extension Studio: Variational Mechanics Bridge"
+			subtitle="Optional first-pass branch"
+			tone="math"
+		>
 		<!-- ═══ SECTION: Euler-Lagrange / Principle of Least Action ═══ -->
 		<div class="neo-prose" use:reveal>
 			<h4>The principle of least action</h4>
 			<p>
 				The language of forms doesn't just unify the theorems of calculus — it connects to the
-				deepest principle in physics. The <strong>principle of least action</strong> says that
-				nature always chooses the path that makes a quantity called the <em>action</em> stationary.
+				variational framework used across physics. The <strong
+					>principle of stationary action</strong
+				>
+				says that, in many classical models, physical trajectories make a quantity called the
+				<em>action</em> stationary.
 			</p>
 			<p>
 				The action is an integral of a function called the <strong>Lagrangian</strong>
@@ -1217,25 +1302,27 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				This single equation generates all of classical mechanics. With <Katex
+				This equation generates a large class of classical mechanics models. With <Katex
 					math={r`L = \tfrac{1}{2}m\dot{x}^2 - V(x)`}
-				/>, it gives Newton's <Katex math={r`F = ma`} />. With different Lagrangians, it gives the
-				equations for electromagnetism, general relativity, and quantum field theory. The principle
-				of least action is the language physics is written in — and SDG makes it algebraically
-				transparent.
+				/>, it gives Newton's <Katex math={r`F = ma`} />. With richer Lagrangians and additional
+				structure, the same variational method underlies formulations used in electromagnetism,
+				relativity, and field theory. SDG makes the first-order variational algebra transparent.
 			</p>
 		</div>
+		</RevealBox>
 
 		<!-- ═══ SECTION: The Grand Unification ═══ -->
 		<Callout type="key-idea" title="The Grand Unification">
 			<p>
-				All of calculus — from the derivative of <Katex math="x^2" /> to the Divergence Theorem in three
-				dimensions — rests on a single principle:
-				<strong>the infinitesimal determines the global</strong>. The derivative captures
-				infinitesimal change; integration accumulates it. Stokes' theorem says these are the same
-				operation, viewed from different angles.
+				Much of first-course calculus can be read through one theme: <strong
+					>local differential data and global integral data are linked by boundary operators</strong
+				>. Derivatives capture local change; integration accumulates it. Stokes' theorem makes that
+				link explicit in a uniform language.
 			</p>
-			<p>And all of it flows from one axiom: <Katex math="d^2 = 0" />.</p>
+			<p>
+				In this text, the mainline development centers on <Katex math="d^2 = 0" />, together with
+				smoothness and orientation assumptions when needed.
+			</p>
 		</Callout>
 
 		<!-- ═══ HISTORY ═══ -->
@@ -1290,8 +1377,8 @@
 					/>. Proved by the cancellation of interior boundaries.
 				</li>
 				<li>
-					Every classical integral theorem — <strong>FTC, Green's, Stokes', Divergence</strong> — is one
-					specialization of this.
+					The standard quartet — <strong>FTC, Green's, Stokes', Divergence</strong> — appears as specializations
+					of this framework.
 				</li>
 				<li>
 					<strong>Closed</strong> forms (<Katex math={r`d\omega = 0`} />) that are not
@@ -1300,7 +1387,7 @@
 				</li>
 				<li>
 					The <strong>Euler-Lagrange equation</strong> follows from infinitesimal variation of the action
-					— the deepest principle of physics, made algebraic by SDG.
+					— a major organizing principle in classical mechanics, presented in first-order algebraic form.
 				</li>
 			</ul>
 		</ChapterSummary>
@@ -1498,6 +1585,11 @@
 					</p>{/snippet}
 			</Exercise>
 
+			<RevealBox
+				title="Extension Exercises (11-13)"
+				subtitle="Open for variational and topology-focused problems"
+				tone="math"
+			>
 			<Exercise number={11}>
 				<p>
 					<strong>Challenge.</strong> For the projectile Lagrangian <Katex
@@ -1575,10 +1667,11 @@
 						/> for any closed curve <Katex math="C" />. But <Katex
 							math={r`\oint_C \omega = 2\pi`}
 						/> for a circle around the origin. Contradiction. The "hole" at the origin prevents <Katex
-							math={r`\omega`}
+						math={r`\omega`}
 						/> from being exact.
 					</p>{/snippet}
 			</Exercise>
+			</RevealBox>
 		</details>
 
 		<!-- ═══ CLOSING REFLECTION ═══ -->
@@ -1590,33 +1683,34 @@
 				small numbers.
 			</p>
 			<p>
-				From that one equation, we built the derivative — the slope of any smooth function, computed
-				by pure algebra. We built the integral — the accumulation of infinitesimal contributions. We
-				proved the Fundamental Theorem of Calculus — the link between the two — by watching
-				infinitesimal telescoping.
+				From that one equation, we built a derivative workflow for smooth functions in this text,
+				using algebraic coefficient extraction. We built integration as accumulation of
+				infinitesimal contributions, and we established the Fundamental Theorem of Calculus through
+				telescoping.
 			</p>
 			<p>
-				Then we went further. We derived the rules for every function: polynomials, exponentials,
-				trigonometric functions, logarithms. We found the chain rule, the product rule, the quotient
-				rule — all from <Katex math="d^2 = 0" />. We built Taylor series, solved differential
-				equations, computed areas and volumes and arc lengths.
+				Then we extended the same method to core function families: polynomials, exponentials,
+				trigonometric functions, and logarithms. We derived the chain, product, and quotient rules;
+				built Taylor expansions; and applied the framework to differential equations and geometric
+				quantities.
 			</p>
 			<p>
-				And now, in this final chapter, we've discovered that the same equation — <Katex
-					math="d^2 = 0"
-				/> — governs the exterior derivative. That it unifies the Fundamental Theorem of Calculus, Green's
-				theorem, the classical Stokes' theorem, and the Divergence theorem into a single equation: <Katex
-					math={r`\int_M d\omega = \int_{\partial M} \omega`}
-				/>. That it detects topological holes in spaces. That it connects to the principle of least
-				action — the deepest law of physics.
+				In this final chapter, we saw the same first-order discipline reappear in exterior calculus.
+				Within the assumptions made here, FTC, Green, classical Stokes, and Divergence fit into the
+				common template <Katex math={r`\int_M d\omega = \int_{\partial M} \omega`} />. We also saw
+				how closed-versus-exact forms detect topology, and how variational equations connect to
+				mechanics.
 			</p>
-			<p>One axiom. All of calculus. All of classical mechanics. The beginning of topology.</p>
+			<p>
+				One axiom, used carefully with explicit assumptions, can organize a remarkably large part of
+				calculus.
+			</p>
 		</div>
 
 		<Callout type="key-idea" title="The Final Word">
 			<p>
-				From <Katex math="d^2 = 0" /> to Stokes' theorem, from the slope of a parabola to the unification
-				of all integral theorems — <strong>one axiom</strong>.
+				From <Katex math="d^2 = 0" /> to Stokes' theorem, this text develops a coherent first-order mainline
+				with one guiding axiom and clearly stated scope conditions.
 			</p>
 		</Callout>
 	</div>

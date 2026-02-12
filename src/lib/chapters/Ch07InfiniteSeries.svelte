@@ -9,9 +9,57 @@
 	import ChapterSummary from '$lib/components/ChapterSummary.svelte';
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
+	import DependencyMap from '$lib/components/DependencyMap.svelte';
+	import RevealBox from '$lib/components/RevealBox.svelte';
+	import FailureModeBox from '$lib/components/FailureModeBox.svelte';
 	import NextChapter from '$lib/components/NextChapter.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
+
+	const chapterDependencyNodes = [
+		{
+			id: 'ch2-slope',
+			label: 'Slope equation base (Ch2)',
+			to: '#ch2',
+			lane: 'core',
+			note: 'Series coefficients begin with derivative extraction.'
+		},
+		{
+			id: 'ch3-rules',
+			label: 'Rule grammar (Ch3)',
+			to: '#ch3-product-rule',
+			lane: 'core',
+			note: 'Higher derivatives repeatedly reuse chain/product rules.'
+		},
+		{
+			id: 'ch7-taylor',
+			label: 'Taylor coefficients (this chapter)',
+			to: '#ch7-taylor-coefficients',
+			lane: 'core',
+			note: 'Exact on nilpotent neighborhoods, approximate on reals.'
+		},
+		{
+			id: 'ch8-modeling',
+			label: 'DE modeling and approximations (Ch8)',
+			to: '#ch8',
+			lane: 'bridge',
+			note: 'Series gives local models for differential systems.'
+		},
+		{
+			id: 'ch10-unification',
+			label: 'Forms and unification (Ch10)',
+			to: '#ch10',
+			lane: 'bridge',
+			note: 'Power-series tools reappear in advanced expansions.'
+		}
+	] as const;
+
+	const chapterDependencyEdges = [
+		{ from: 'ch2-slope', to: 'ch3-rules' },
+		{ from: 'ch3-rules', to: 'ch7-taylor' },
+		{ from: 'ch7-taylor', to: 'ch8-modeling' },
+		{ from: 'ch7-taylor', to: 'ch10-unification' }
+	] as const;
 </script>
 
 <section class="chapter" id="ch7">
@@ -42,8 +90,8 @@
 				The answer is one of the most powerful ideas in all of mathematics: <strong
 					>represent a function as a polynomial</strong
 				>. Polynomials are easy to evaluate — just addition and multiplication. And as we've already
-				seen, in the nilpotent world every function <em>is</em> a polynomial. The question is how to extend
-				this to the real numbers.
+				seen, on nilpotent neighborhoods every smooth map has a finite polynomial form. The question
+				is how to extend this to the real numbers.
 			</p>
 			<p>
 				This chapter tells the full story, starting from the exact nilpotent expansions we already
@@ -51,6 +99,22 @@
 				why — and when — those infinite series converge.
 			</p>
 		</div>
+
+		<DependencyMap
+			title="Chapter 7 Dependency Network"
+			intro="Open for prerequisite links and where series methods feed forward."
+			returnLabel="Chapter 7 dependency map"
+			nodes={chapterDependencyNodes}
+			edges={chapterDependencyEdges}
+		/>
+
+		<Callout type="key-idea" title="Core Path (First Pass)">
+			<p>
+				If this is your first pass, focus on coefficient extraction, the nilpotent-to-classical
+				bridge, convergence radius, and remainder bounds. The extension studios hold larger expansion
+				catalogs and advanced applications.
+			</p>
+		</Callout>
 
 		<!-- ═══ SECTION 2: Review of D_n ═══ -->
 		<div class="neo-prose" use:reveal>
@@ -67,7 +131,7 @@
 			<p>For each natural number <Katex math="n" />, define</p>
 			<Katex math={r`D_n = \bigl\{d \in \mathcal{R} : d^{n+1} = 0\bigr\}`} display />
 			<p>
-				On <Katex math={r`D_n`} />, every function is <strong>uniquely</strong> determined by a
+				On <Katex math={r`D_n`} />, every smooth map is <strong>uniquely</strong> determined by a
 				polynomial of degree <Katex math={r`\leq n`} />:
 			</p>
 			<Katex math={r`f(d) = a_0 + a_1 d + a_2 d^2 + \cdots + a_n d^n`} display />
@@ -168,7 +232,7 @@
 
 		<!-- ═══ SECTION 3: Deriving Taylor Coefficients ═══ -->
 		<div class="neo-prose" use:reveal>
-			<h3>Extracting Taylor coefficients</h3>
+			<h3 id="ch7-taylor-coefficients">Extracting Taylor coefficients</h3>
 			<p>
 				On <Katex math="D" />, we get the first derivative: <Katex
 					math={r`f(x + d) = f(x) + f'(x)\cdot d`}
@@ -244,6 +308,11 @@
 			</p>
 		</div>
 
+		<RevealBox
+			title="Extension Studio: Exact Expansion Catalog on D_n"
+			subtitle="Optional first-pass branch"
+			tone="math"
+		>
 		<!-- ═══ SECTION 4: Key Expansions on D_n ═══ -->
 		<div class="neo-prose" use:reveal>
 			<h3>Building up: key expansions</h3>
@@ -477,6 +546,7 @@
 				questions arise — the higher powers simply vanish.
 			</p>
 		</div>
+		</RevealBox>
 
 		<!-- ═══ SECTION 5: The Nilpotent-to-Classical Bridge (CLIMAX) ═══ -->
 		<div class="neo-prose" use:reveal>
@@ -665,11 +735,10 @@
 				In standard calculus, the Taylor series must be <em>proved</em> to converge, and the
 				remainder term must be <em>estimated</em>. In Neocalculus, the expansion on <Katex
 					math={r`D_n`}
-				/> is <strong>exact by axiom</strong> — convergence is guaranteed by the nilpotent
-				structure, and the remainder is literally zero. No convergence tests are needed in the
-				infinitesimal world. The question of convergence only arises when we leave <Katex
-					math={r`D_n`}
-				/> and evaluate at real numbers.
+				/> is <strong>exact by axiom</strong>: the remainder is literally zero because powers above <Katex
+					math="n"
+				/> vanish. No convergence tests are needed inside the infinitesimal world. The question of convergence
+				only arises when we leave <Katex math={r`D_n`} /> and evaluate at real numbers.
 			</p>
 		</SDGAdvantage>
 
@@ -838,6 +907,13 @@
 			</p>
 		</DigDeeper>
 
+		<FailureModeBox
+			title="Failure Mode: Radius-Of-Convergence Overreach"
+			trigger="Using a power series outside its convergence radius"
+			symptom="Partial sums drift or blow up even when the target function is finite at that point"
+			recovery="Check the radius first; use the series only for |x-a| < R, or switch center/method near the target point"
+		/>
+
 		<!-- ═══ SECTION 8: Error Estimation ═══ -->
 		<div class="neo-prose" use:reveal>
 			<h3>Error estimation: the Taylor remainder</h3>
@@ -883,6 +959,11 @@
 			</p>
 		</div>
 
+		<RevealBox
+			title="Extension Studio: Binomial and Non-Elementary Applications"
+			subtitle="Optional first-pass branch"
+			tone="math"
+		>
 		<!-- ═══ SECTION 9: Binomial Series ═══ -->
 		<div class="neo-prose" use:reveal>
 			<h4>The binomial series</h4>
@@ -1080,6 +1161,7 @@
 				>
 			</p>
 		</div>
+		</RevealBox>
 
 		<!-- ═══ HISTORY BOX ═══ -->
 		<HistoryBox name="Leonhard Euler" years="1707–1783">
@@ -1275,6 +1357,11 @@
 					</p>{/snippet}
 			</Exercise>
 
+			<RevealBox
+				title="Extension Exercises (11-14)"
+				subtitle="Open for advanced modeling and philosophy questions"
+				tone="math"
+			>
 			<Exercise number={11}>
 				<p>
 					<strong>Challenge.</strong> Compute <Katex math={r`\int_0^{0.5} \sin(x^2)\,dx`} /> to three
@@ -1367,6 +1454,7 @@
 						in the real/complex world, singularities determine the reach of the series.
 					</p>{/snippet}
 			</Exercise>
+			</RevealBox>
 		</details>
 
 		<!-- ═══ CHAPTER SUMMARY ═══ -->
@@ -1374,8 +1462,8 @@
 			<ul>
 				<li>
 					<strong><Katex math={r`D_n`} /> neighborhoods:</strong>
-					<Katex math={r`D_n = \{d : d^{n+1} = 0\}`} />. On <Katex math={r`D_n`} />, every function
-					equals its Taylor polynomial of degree <Katex math="n" /> exactly.
+					<Katex math={r`D_n = \{d : d^{n+1} = 0\}`} />. On <Katex math={r`D_n`} />, every smooth
+					map equals its Taylor polynomial of degree <Katex math="n" /> exactly.
 				</li>
 				<li>
 					<strong>Extracting derivatives:</strong> The <Katex math="k" />th derivative of <Katex

@@ -82,11 +82,7 @@
 
 		board.create(
 			'text',
-			[
-				0,
-				-3.26,
-				'Drag P: the purple gradient stays orthogonal to the blue tangent direction.'
-			],
+			[0, -3.26, 'Drag P: the purple gradient stays orthogonal to the blue tangent direction.'],
 			{
 				fontSize: 10,
 				color: '#94919b',
@@ -444,8 +440,8 @@
 			<p>
 				Since <Katex math={r`d\mathbf{r}`} /> is an infinitesimal tangent vector along the level curve,
 				and <Katex math={r`\nabla f \cdot d\mathbf{r} = 0`} />, the gradient is perpendicular to the
-				level curve. Look at Figure 9.1 — the purple gradient arrow always points straight outward
-				from the circular contours, at right angles.
+				level curve. In Figure 9.1 (for <Katex math={r`f(x,y)=x^2+y^2`} />), the purple gradient
+				arrow points outward from the circular contours at right angles.
 			</p>
 		</div>
 
@@ -895,9 +891,7 @@
 				/> — the infinitesimal tiles change shape. The Jacobian determinant tells us exactly how much
 				the area of each tile is stretched or compressed.
 			</p>
-			<p>
-				Here is the SDG derivation, and it is one of the most natural arguments in all of calculus.
-			</p>
+			<p>Here is the SDG derivation in first-order infinitesimal language.</p>
 		</div>
 
 		<div use:reveal>
@@ -964,9 +958,8 @@
 				In standard calculus, the change-of-variables formula <Katex
 					math={r`dA = |\det J|\,du\,dv`}
 				/> is motivated by a linearization argument: the Jacobian matrix "approximately" maps infinitesimal
-				rectangles to parallelograms. In SDG, there is no approximation. The infinitesimal rectangle
-				<em>exactly</em> maps to an infinitesimal parallelogram, because all functions are exactly linear
-				over infinitesimal distances. The Jacobian formula is not an approximation — it is an identity.
+				rectangles to parallelograms. In SDG, this is encoded as an exact first-order statement on infinitesimal
+				tiles. The Jacobian formula appears as an identity at that scale.
 			</p>
 		</SDGAdvantage>
 

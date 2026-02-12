@@ -1,42 +1,33 @@
-# sv
+# Neocalculus
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Neocalculus is a SvelteKit-based interactive calculus book built around an infinitesimal-first teaching approach.
 
-## Creating a project
+## Development
 
-If you're seeing this, you've probably already done this step. Congrats!
+1. Install dependencies:
+   - `npm install`
+2. Run dev server:
+   - `npm run dev`
+3. Build production output:
+   - `npm run build`
+4. Preview production output:
+   - `npm run preview`
+5. Sync JSXGraph static assets manually (optional; already called by `dev`/`build`):
+   - `npm run assets:jsxgraph`
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## Quality and Baseline Tooling
 
-To recreate this project with the same configuration:
+1. Type/lint checks:
+   - `npm run check`
+   - `npm run lint`
+2. Baseline metrics from existing build artifacts:
+   - `npm run metrics:baseline`
+3. Build and then collect baseline metrics:
+   - `npm run metrics:baseline:build`
 
-```sh
-# recreate this project
-npx sv create --template minimal --types ts --add prettier eslint tailwindcss="plugins:typography,forms" sveltekit-adapter="adapter:static" mdsvex mcp="ide:cursor+setup:remote" --install npm .
-```
+## Project Planning Docs
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+1. Master strategy: `/Users/neo/repos/neocalculus/MASTER_PLAN.md`
+2. Execution backlog: `/Users/neo/repos/neocalculus/IMPLEMENTATION_BACKLOG.md`
+3. Baseline snapshot: `/Users/neo/repos/neocalculus/BASELINE_REPORT.md`
+4. QA regression harness: `/Users/neo/repos/neocalculus/QA_REGRESSION_CHECKLIST.md`

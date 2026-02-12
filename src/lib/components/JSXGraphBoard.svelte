@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
+	import { ensureJSXGraph } from '$lib/utils/jsxgraph-loader';
 
 	interface Props {
 		/** Function that receives the JXG global and the board, and draws on it. */
@@ -27,72 +28,79 @@
 		class: className = ''
 	}: Props = $props();
 
-	let container: HTMLDivElement;
 	let board: any = null;
-	let jxgModule: any = null;
+	let jxg: any = null;
 	let boardId = `jsx-${Math.random().toString(36).slice(2, 9)}`;
+	let loadError = $state(false);
 
-	onMount(async () => {
-		// Dynamic import — JSXGraph is browser-only (needs DOM)
-		// Load JSXGraph CSS from static
-		if (!document.querySelector('link[data-jsxgraph-css]')) {
-			const link = document.createElement('link');
-			link.rel = 'stylesheet';
-			link.href = '/jsxgraph.css';
-			link.setAttribute('data-jsxgraph-css', '');
-			document.head.appendChild(link);
-		}
+	onMount(() => {
+		let disposed = false;
 
-		jxgModule = await import('jsxgraph');
+		const init = async () => {
+			try {
+				jxg = await ensureJSXGraph();
+				if (disposed) return;
 
-		board = jxgModule.JSXGraph.initBoard(boardId, {
-			boundingbox,
-			keepAspectRatio: true,
-			axis: axes,
-			showCopyright: false,
-			showNavigation: false,
-			pan: { enabled: false },
-			zoom: { enabled: false },
-			registerEvents: false,
-			renderer: 'svg',
-			grid: {
-				visible: false
-			},
-			defaultAxes: {
-				x: {
-					ticks: {
-						strokeColor: '#ccc8bf',
-						label: { fontSize: 11, cssClass: 'jsx-tick-label', anchorX: 'middle' }
+				board = jxg.JSXGraph.initBoard(boardId, {
+					boundingbox,
+					keepAspectRatio: true,
+					axis: axes,
+					showCopyright: false,
+					showNavigation: false,
+					pan: { enabled: false },
+					zoom: { enabled: false },
+					registerEvents: false,
+					renderer: 'svg',
+					grid: {
+						visible: false
 					},
-					strokeColor: '#ccc8bf'
-				},
-				y: {
-					ticks: {
-						strokeColor: '#ccc8bf',
-						label: { fontSize: 11, cssClass: 'jsx-tick-label', anchorX: 'right' }
-					},
-					strokeColor: '#ccc8bf'
+					defaultAxes: {
+						x: {
+							ticks: {
+								strokeColor: '#ccc8bf',
+								label: { fontSize: 11, cssClass: 'jsx-tick-label', anchorX: 'middle' }
+							},
+							strokeColor: '#ccc8bf'
+						},
+						y: {
+							ticks: {
+								strokeColor: '#ccc8bf',
+								label: { fontSize: 11, cssClass: 'jsx-tick-label', anchorX: 'right' }
+							},
+							strokeColor: '#ccc8bf'
+						}
+					}
+				});
+
+				setup(jxg, board);
+			} catch (error) {
+				loadError = true;
+				console.error('Failed to initialize JSXGraph board', error);
+			}
+		};
+
+		void init();
+
+		return () => {
+			disposed = true;
+			if (board && jxg) {
+				try {
+					jxg.JSXGraph.freeBoard(board);
+				} catch {
+					/* ignore cleanup errors */
 				}
 			}
-		});
-
-		setup(jxgModule, board);
-	});
-
-	onDestroy(() => {
-		if (board && jxgModule) {
-			try {
-				jxgModule.JSXGraph.freeBoard(board);
-			} catch {
-				/* ignore cleanup errors */
-			}
-		}
+		};
 	});
 </script>
 
 <figure class="neo-figure jsx-figure {className}">
 	<div class="jsx-board-wrapper" style="aspect-ratio: {aspectRatio};">
-		<div id={boardId} bind:this={container} class="jxgbox" style="width:100%; height:100%;"></div>
+		{#if loadError}
+			<div class="jsx-fallback">Interactive figure failed to load.</div>
+		{:else}
+			<div id={boardId} class="jxgbox" style="width:100%; height:100%;"></div>
+		{/if}
 	</div>
 	{#if caption}
 		<figcaption>
@@ -109,6 +117,15 @@
 		border-radius: 0.5rem;
 		overflow: hidden;
 		background: white;
+		display: grid;
+		place-items: center;
+	}
+
+	.jsx-fallback {
+		font-family: var(--font-sans);
+		font-size: 0.9rem;
+		color: var(--color-ink-faint);
+		padding: 0.75rem;
 	}
 
 	.jsx-board-wrapper :global(.jxgbox) {

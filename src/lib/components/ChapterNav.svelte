@@ -1,138 +1,213 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	const chapters = [
-		{ id: 'ch1', num: '1', title: 'The Smooth World' },
-		{ id: 'ch2', num: '2', title: 'The Slope Equation' },
-		{ id: 'ch3', num: '3', title: 'Rules and Local Models' },
-		{ id: 'ch5', num: '4', title: 'Accumulation and FTC' },
-		{ id: 'ch6', num: '5', title: 'Integration Geometry' },
-		{ id: 'ch8', num: '6', title: 'Physics Modeling' },
-		{ id: 'ch7', num: '7', title: 'Series and Approximation' },
-		{ id: 'ch9', num: '8', title: 'Multivariable and Vector' },
-		{ id: 'ch10', num: '9', title: 'Forms and Unification' }
-	];
-
-	// Optimization currently lives in an extension module between ch3 and ch5.
-	const sectionToCanonicalChapter: Record<string, string> = {
-		ch4: 'ch3'
+	export type TocChapter = {
+		id: string;
+		number: string;
+		title: string;
+		subtitle?: string;
+		kind?: 'core' | 'extension';
 	};
 
-	const observableSections = [
-		'ch1',
-		'ch2',
-		'ch3',
-		'ch4',
-		'ch5',
-		'ch6',
-		'ch8',
-		'ch7',
-		'ch9',
-		'ch10'
-	];
+	interface Props {
+		chapters: readonly TocChapter[];
+		mode?: 'full' | 'floating';
+		heroSelector?: string;
+	}
 
-	let activeChapter = $state('');
-	let isOpen = $state(false);
+	let { chapters, mode = 'floating', heroSelector = '.hero' }: Props = $props();
+
 	let isPastHero = $state(false);
+	let isOpen = $state(false);
+	let activeId = $state('');
 
-	onMount(() => {
-		const observer = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (entry.isIntersecting) {
-						const id = entry.target.id;
-						activeChapter = sectionToCanonicalChapter[id] ?? id;
-					}
-				}
-			},
-			{ rootMargin: '-20% 0px -70% 0px' }
-		);
-
-		// Observe hero to know when we're past it
-		const heroObserver = new IntersectionObserver(
-			(entries) => {
-				isPastHero = !entries[0].isIntersecting;
-			},
-			{ threshold: 0 }
-		);
-
-		const heroEl = document.querySelector('.hero');
-		if (heroEl) heroObserver.observe(heroEl);
-
-		for (const id of observableSections) {
-			const el = document.getElementById(id);
-			if (el) observer.observe(el);
-		}
-
-		return () => {
-			observer.disconnect();
-			heroObserver.disconnect();
-		};
+	let activeIndex = $derived.by(() => {
+		const currentId = activeId || chapters[0]?.id || '';
+		const index = chapters.findIndex((chapter) => chapter.id === currentId);
+		return index >= 0 ? index : 0;
 	});
 
-	function handleNavClick(id: string) {
-		isOpen = false;
-		const el = document.getElementById(id);
-		if (el) el.scrollIntoView({ behavior: 'smooth' });
+	let activeChapter = $derived(chapters[activeIndex] ?? chapters[0]);
+	let progressText = $derived(`${Math.min(activeIndex + 1, chapters.length)} / ${chapters.length}`);
+
+	function chapterIndex(id: string) {
+		return chapters.findIndex((chapter) => chapter.id === id);
 	}
+
+	function isVisited(id: string) {
+		const index = chapterIndex(id);
+		return index >= 0 && index < activeIndex;
+	}
+
+	function jumpTo(id: string) {
+		if (typeof window === 'undefined') return;
+
+		isOpen = false;
+		activeId = id;
+
+		const target = document.getElementById(id);
+		if (!target) return;
+
+		const hash = `#${encodeURIComponent(id)}`;
+		if (window.location.hash !== hash) {
+			history.pushState(null, '', hash);
+		}
+
+		target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	}
+
+	onMount(() => {
+		if (mode !== 'floating') return;
+
+		let rafPending = false;
+
+		const updateState = () => {
+			const hero = document.querySelector<HTMLElement>(heroSelector);
+			if (hero) {
+				isPastHero = hero.getBoundingClientRect().bottom <= 96;
+			} else {
+				isPastHero = true;
+			}
+
+			if (chapters.length === 0) return;
+
+			const anchorLine = Math.min(window.innerHeight * 0.35, 260);
+			let currentId = activeId || chapters[0].id;
+
+			for (const chapter of chapters) {
+				const element = document.getElementById(chapter.id);
+				if (!element) continue;
+				if (element.getBoundingClientRect().top <= anchorLine) {
+					currentId = chapter.id;
+				}
+			}
+
+			activeId = currentId;
+		};
+
+		const scheduleUpdate = () => {
+			if (rafPending) return;
+			rafPending = true;
+			requestAnimationFrame(() => {
+				rafPending = false;
+				updateState();
+			});
+		};
+
+		const handleHashChange = () => {
+			const hash = decodeURIComponent(window.location.hash.slice(1));
+			if (!hash) return;
+			if (chapters.some((chapter) => chapter.id === hash)) {
+				activeId = hash;
+			}
+			scheduleUpdate();
+		};
+
+		scheduleUpdate();
+		handleHashChange();
+
+		window.addEventListener('scroll', scheduleUpdate, { passive: true });
+		window.addEventListener('resize', scheduleUpdate);
+		window.addEventListener('hashchange', handleHashChange);
+
+		const mutationObserver = new MutationObserver(scheduleUpdate);
+		mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+		return () => {
+			window.removeEventListener('scroll', scheduleUpdate);
+			window.removeEventListener('resize', scheduleUpdate);
+			window.removeEventListener('hashchange', handleHashChange);
+			mutationObserver.disconnect();
+		};
+	});
 </script>
 
-<!-- Desktop sidebar -->
-{#if isPastHero}
-	<nav class="chapter-sidebar" aria-label="Chapter navigation">
+{#if mode === 'full'}
+	<nav class="toc-card" aria-label="Table of contents">
+		<div class="toc-card-head">
+			<p class="toc-card-eyebrow">Book Navigation</p>
+			<h3>Table of Contents</h3>
+			<p>
+				The list below is the source of truth for chapter order, including the optimization extension.
+				Use it to jump to any chapter.
+			</p>
+		</div>
+
 		<ol>
-			{#each chapters as ch}
-				<li class:active={activeChapter === ch.id}>
-					<button onclick={() => handleNavClick(ch.id)}>
-						<span class="ch-num">{ch.num}</span>
-						<span class="ch-title">{ch.title}</span>
+			{#each chapters as chapter (chapter.id)}
+				<li class:active={activeId === chapter.id}>
+					<button type="button" onclick={() => jumpTo(chapter.id)}>
+						<span class="toc-number">{chapter.number}</span>
+						<span class="toc-main">
+							<span class="toc-title">{chapter.title}</span>
+							{#if chapter.subtitle}
+								<span class="toc-subtitle">{chapter.subtitle}</span>
+							{/if}
+						</span>
+						{#if chapter.kind === 'extension'}
+							<span class="toc-kind">Extension</span>
+						{/if}
 					</button>
 				</li>
 			{/each}
 		</ol>
-	</nav>
-{/if}
 
-<!-- Mobile hamburger -->
-{#if isPastHero}
+		<p class="toc-card-note">
+			The floating TOC appears after the hero and tracks your live reading position.
+		</p>
+	</nav>
+{:else if isPastHero}
+	<aside class="toc-rail" aria-label="Chapter navigation">
+		<header>
+			<span class="toc-rail-label">Reading Position</span>
+			<strong>{progressText}</strong>
+		</header>
+		<ol>
+			{#each chapters as chapter (chapter.id)}
+				<li class:active={activeId === chapter.id} class:visited={isVisited(chapter.id)}>
+					<button type="button" onclick={() => jumpTo(chapter.id)}>
+						<span class="toc-rail-number">{chapter.number}</span>
+						<span class="toc-rail-title">{chapter.title}</span>
+					</button>
+				</li>
+			{/each}
+		</ol>
+		<button class="toc-top" type="button" onclick={() => jumpTo(chapters[0].id)}>Jump to Top</button>
+	</aside>
+
 	<button
-		class="chapter-mobile-toggle"
+		class="toc-mobile-toggle"
+		type="button"
 		onclick={() => (isOpen = !isOpen)}
-		aria-label="Toggle chapter navigation"
+		aria-label="Toggle table of contents"
 		aria-expanded={isOpen}
 	>
-		<svg
-			width="20"
-			height="20"
-			viewBox="0 0 20 20"
-			fill="none"
-			stroke="currentColor"
-			stroke-width="1.5"
-		>
-			{#if isOpen}
-				<path d="M5 5l10 10M15 5L5 15" stroke-linecap="round" />
-			{:else}
-				<path d="M3 6h14M3 10h14M3 14h14" stroke-linecap="round" />
-			{/if}
-		</svg>
-		<span class="mobile-ch-label">Ch {chapters.find((c) => c.id === activeChapter)?.num ?? ''}</span
-		>
+		<span class="toc-mobile-progress">{progressText}</span>
+		<span class="toc-mobile-title">{activeChapter?.number}. {activeChapter?.title}</span>
 	</button>
 {/if}
 
-<!-- Mobile drawer -->
-{#if isOpen}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="chapter-mobile-backdrop" onclick={() => (isOpen = false)}></div>
-	<nav class="chapter-mobile-drawer" aria-label="Chapter navigation">
-		<div class="drawer-header">Chapters</div>
+{#if mode === 'floating' && isOpen}
+	<button class="toc-mobile-backdrop" type="button" aria-label="Close table of contents" onclick={() => (isOpen = false)}></button>
+	<nav class="toc-mobile-drawer" aria-label="Table of contents drawer">
+		<header>
+			<p class="toc-card-eyebrow">Table of Contents</p>
+			<strong>Chapter {Math.min(activeIndex + 1, chapters.length)} of {chapters.length}</strong>
+		</header>
 		<ol>
-			{#each chapters as ch}
-				<li class:active={activeChapter === ch.id}>
-					<button onclick={() => handleNavClick(ch.id)}>
-						<span class="ch-num">{ch.num}.</span>
-						{ch.title}
+			{#each chapters as chapter (chapter.id)}
+				<li class:active={activeId === chapter.id} class:visited={isVisited(chapter.id)}>
+					<button type="button" onclick={() => jumpTo(chapter.id)}>
+						<span class="toc-number">{chapter.number}</span>
+						<span class="toc-main">
+							<span class="toc-title">{chapter.title}</span>
+							{#if chapter.subtitle}
+								<span class="toc-subtitle">{chapter.subtitle}</span>
+							{/if}
+						</span>
+						{#if chapter.kind === 'extension'}
+							<span class="toc-kind">Extension</span>
+						{/if}
 					</button>
 				</li>
 			{/each}
@@ -141,193 +216,321 @@
 {/if}
 
 <style>
-	/* ── Desktop Sidebar ── */
-	.chapter-sidebar {
+	.toc-card {
+		margin-top: var(--space-lg);
+		max-width: 48rem;
+		width: min(48rem, 100%);
+		padding: 1.1rem 1.1rem 1rem;
+		border: 1px solid color-mix(in srgb, var(--color-border) 82%, #9ec5fe 18%);
+		border-radius: 0.95rem;
+		background:
+			radial-gradient(circle at 85% 8%, rgba(30, 144, 255, 0.08), transparent 38%),
+			linear-gradient(165deg, #ffffff 0%, #f9fbff 55%, #f7f6ff 100%);
+		text-align: left;
+		animation: float-down 1.2s var(--ease-out-expo);
+	}
+
+	.toc-card-head h3 {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 1.25rem;
+		color: var(--color-ink);
+	}
+
+	.toc-card-head p {
+		margin: 0.45rem 0 0;
+		font-family: var(--font-serif);
+		font-size: 0.94rem;
+		line-height: 1.6;
+		color: var(--color-ink-light);
+	}
+
+	.toc-card-eyebrow {
+		margin: 0 0 0.25rem;
+		font-family: var(--font-sans);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-ink-faint);
+	}
+
+	.toc-card ol,
+	.toc-mobile-drawer ol,
+	.toc-rail ol {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.toc-card ol {
+		margin-top: 0.85rem;
+		display: grid;
+		gap: 0.35rem;
+	}
+
+	.toc-card li button,
+	.toc-mobile-drawer li button {
+		width: 100%;
+		border: none;
+		background: none;
+		display: flex;
+		align-items: center;
+		gap: 0.65rem;
+		padding: 0.55rem 0.6rem;
+		border-radius: 0.6rem;
+		cursor: pointer;
+		text-align: left;
+		transition:
+			background-color 0.16s ease,
+			border-color 0.16s ease;
+	}
+
+	.toc-card li button:hover,
+	.toc-mobile-drawer li button:hover {
+		background: color-mix(in srgb, var(--color-d-soft) 60%, white 40%);
+	}
+
+	.toc-number,
+	.toc-rail-number {
+		font-family: var(--font-sans);
+		font-size: 0.72rem;
+		font-weight: 700;
+		line-height: 1;
+		color: var(--color-ink-faint);
+		min-width: 2rem;
+	}
+
+	.toc-main {
+		display: flex;
+		flex-direction: column;
+		gap: 0.12rem;
+		min-width: 0;
+		flex: 1;
+	}
+
+	.toc-title,
+	.toc-rail-title {
+		font-family: var(--font-sans);
+		font-size: 0.84rem;
+		font-weight: 600;
+		line-height: 1.3;
+		color: var(--color-ink-light);
+	}
+
+	.toc-subtitle {
+		font-family: var(--font-sans);
+		font-size: 0.7rem;
+		color: var(--color-ink-faint);
+	}
+
+	.toc-kind {
+		font-family: var(--font-sans);
+		font-size: 0.63rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: #8a4f00;
+		background: #fff4d6;
+		border: 1px solid #f4d9a0;
+		border-radius: 999px;
+		padding: 0.18rem 0.45rem;
+	}
+
+	.toc-card li.active button,
+	.toc-mobile-drawer li.active button {
+		background: var(--color-d-glow);
+	}
+
+	.toc-card li.active .toc-title,
+	.toc-mobile-drawer li.active .toc-title,
+	.toc-rail li.active .toc-rail-title {
+		color: var(--color-d);
+	}
+
+	.toc-card-note {
+		margin: 0.6rem 0 0;
+		font-family: var(--font-sans);
+		font-size: 0.72rem;
+		color: var(--color-ink-faint);
+	}
+
+	.toc-rail {
 		position: fixed;
-		left: 1rem;
+		right: 1rem;
 		top: 50%;
 		transform: translateY(-50%);
-		z-index: 50;
+		z-index: 52;
+		width: 16rem;
 		display: none;
+		padding: 0.7rem;
+		border: 1px solid var(--color-border-light);
+		border-radius: 0.9rem;
+		background: color-mix(in srgb, white 92%, #edf4ff 8%);
+		box-shadow: 0 14px 36px rgba(18, 24, 33, 0.08);
 	}
 
 	@media (min-width: 1280px) {
-		.chapter-sidebar {
+		.toc-rail {
 			display: block;
 		}
 	}
 
-	.chapter-sidebar ol {
-		list-style: none;
-		padding: 0;
-		margin: 0;
+	.toc-rail header {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		margin-bottom: 0.55rem;
+	}
+
+	.toc-rail-label {
+		font-family: var(--font-sans);
+		font-size: 0.66rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-ink-faint);
+	}
+
+	.toc-rail header strong {
+		font-family: var(--font-sans);
+		font-size: 0.74rem;
+		color: var(--color-d);
+	}
+
+	.toc-rail ol {
 		display: flex;
 		flex-direction: column;
-		gap: 0.15rem;
+		gap: 0.2rem;
 	}
 
-	.chapter-sidebar li button {
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-		background: none;
-		border: none;
-		cursor: pointer;
-		padding: 0.3rem 0.5rem;
-		border-radius: 0.4rem;
-		transition: all 0.15s;
+	.toc-rail li button {
 		width: 100%;
+		border: none;
+		background: none;
+		display: flex;
+		gap: 0.45rem;
+		align-items: center;
+		padding: 0.35rem 0.42rem;
+		border-radius: 0.45rem;
 		text-align: left;
+		cursor: pointer;
 	}
 
-	.chapter-sidebar li button:hover {
+	.toc-rail li button:hover {
 		background: var(--color-d-soft);
 	}
 
-	.chapter-sidebar li.active button {
+	.toc-rail li.visited .toc-rail-title {
+		color: var(--color-ink-faint);
+	}
+
+	.toc-rail li.active button {
 		background: var(--color-d-glow);
 	}
 
-	.chapter-sidebar .ch-num {
-		font-family: var(--font-sans);
-		font-size: 0.65rem;
-		font-weight: 700;
-		color: var(--color-ink-faint);
-		min-width: 1rem;
-		text-align: right;
-	}
-
-	.chapter-sidebar li.active .ch-num {
-		color: var(--color-d);
-	}
-
-	.chapter-sidebar .ch-title {
-		font-family: var(--font-sans);
-		font-size: 0.68rem;
-		color: var(--color-ink-faint);
-		white-space: nowrap;
-	}
-
-	.chapter-sidebar li.active .ch-title {
-		color: var(--color-d);
-		font-weight: 600;
-	}
-
-	/* ── Mobile Toggle ── */
-	.chapter-mobile-toggle {
-		position: fixed;
-		bottom: 1.25rem;
-		right: 1.25rem;
-		z-index: 60;
-		background: white;
+	.toc-top {
+		margin-top: 0.55rem;
+		width: 100%;
 		border: 1px solid var(--color-border);
-		border-radius: 2rem;
-		padding: 0.55rem 0.9rem;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-		transition: all 0.15s;
-	}
-
-	.chapter-mobile-toggle:hover {
-		border-color: var(--color-d);
-	}
-
-	.mobile-ch-label {
-		font-family: var(--font-sans);
-		font-size: 0.72rem;
-		font-weight: 600;
-		color: var(--color-d);
-	}
-
-	@media (min-width: 1280px) {
-		.chapter-mobile-toggle {
-			display: none;
-		}
-	}
-
-	/* ── Mobile Backdrop ── */
-	.chapter-mobile-backdrop {
-		position: fixed;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.3);
-		z-index: 70;
-	}
-
-	/* ── Mobile Drawer ── */
-	.chapter-mobile-drawer {
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		z-index: 80;
 		background: white;
-		border-radius: 1rem 1rem 0 0;
-		padding: 1rem 1.25rem 2rem;
-		box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-		max-height: 70vh;
-		overflow-y: auto;
+		color: var(--color-d);
+		border-radius: 999px;
+		font-family: var(--font-sans);
+		font-size: 0.7rem;
+		font-weight: 600;
+		padding: 0.35rem 0.55rem;
+		cursor: pointer;
 	}
 
-	.drawer-header {
+	.toc-top:hover {
+		border-color: var(--color-d);
+		background: var(--color-d-soft);
+	}
+
+	.toc-mobile-toggle {
+		position: fixed;
+		bottom: 1.15rem;
+		right: 1rem;
+		z-index: 58;
+		display: flex;
+		flex-direction: column;
+		gap: 0.12rem;
+		min-width: 12rem;
+		max-width: min(18rem, calc(100vw - 2rem));
+		border: 1px solid var(--color-border);
+		background: white;
+		border-radius: 0.85rem;
+		padding: 0.48rem 0.62rem;
+		text-align: left;
+		cursor: pointer;
+		box-shadow: 0 10px 24px rgba(18, 24, 33, 0.16);
+	}
+
+	.toc-mobile-progress {
 		font-family: var(--font-sans);
-		font-size: 0.8rem;
+		font-size: 0.63rem;
 		font-weight: 700;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
-		color: var(--color-ink-faint);
-		margin-bottom: 0.75rem;
-		padding-bottom: 0.5rem;
-		border-bottom: 1px solid var(--color-border-light);
+		color: var(--color-d);
 	}
 
-	.chapter-mobile-drawer ol {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-
-	.chapter-mobile-drawer li button {
-		display: block;
-		width: 100%;
-		text-align: left;
-		background: none;
-		border: none;
-		padding: 0.6rem 0.5rem;
-		cursor: pointer;
+	.toc-mobile-title {
 		font-family: var(--font-sans);
-		font-size: 0.88rem;
-		color: var(--color-ink-light);
-		border-radius: 0.4rem;
-		transition: all 0.1s;
-	}
-
-	.chapter-mobile-drawer li button:hover {
-		background: var(--color-d-soft);
-	}
-
-	.chapter-mobile-drawer li.active button {
-		color: var(--color-d);
-		font-weight: 600;
-		background: var(--color-d-glow);
-	}
-
-	.chapter-mobile-drawer .ch-num {
-		color: var(--color-ink-faint);
-		font-weight: 700;
 		font-size: 0.78rem;
-	}
-
-	.chapter-mobile-drawer li.active .ch-num {
-		color: var(--color-d);
+		font-weight: 600;
+		color: var(--color-ink-light);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	@media (min-width: 1280px) {
-		.chapter-mobile-backdrop,
-		.chapter-mobile-drawer {
+		.toc-mobile-toggle {
 			display: none;
 		}
+	}
+
+	.toc-mobile-backdrop {
+		position: fixed;
+		inset: 0;
+		border: none;
+		background: rgba(0, 0, 0, 0.34);
+		z-index: 70;
+	}
+
+	.toc-mobile-drawer {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 71;
+		max-height: 76vh;
+		overflow-y: auto;
+		padding: 1rem 1rem 1.35rem;
+		background: white;
+		border-radius: 1rem 1rem 0 0;
+		box-shadow: 0 -12px 36px rgba(18, 24, 33, 0.18);
+	}
+
+	.toc-mobile-drawer header {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		padding-bottom: 0.55rem;
+		border-bottom: 1px solid var(--color-border-light);
+		margin-bottom: 0.5rem;
+	}
+
+	.toc-mobile-drawer header strong {
+		font-family: var(--font-sans);
+		font-size: 0.76rem;
+		font-weight: 600;
+		color: var(--color-d);
+	}
+
+	.toc-mobile-drawer li.visited .toc-title {
+		color: var(--color-ink-faint);
 	}
 </style>

@@ -1,17 +1,83 @@
 <script lang="ts">
 	import Ch01 from '$lib/chapters/Ch01SmoothWorld.svelte';
-	import Ch02 from '$lib/chapters/Ch02SlopeEquation.svelte';
-	import Ch03 from '$lib/chapters/Ch03RulesOfChange.svelte';
-	import Ch04 from '$lib/chapters/Ch04Optimization.svelte';
-	import Ch05 from '$lib/chapters/Ch05WorldOfAreas.svelte';
-	import Ch06 from '$lib/chapters/Ch06ApplicationsIntegration.svelte';
-	import Ch07 from '$lib/chapters/Ch07InfiniteSeries.svelte';
-	import Ch08 from '$lib/chapters/Ch08Physics.svelte';
-	import Ch09 from '$lib/chapters/Ch09ManyDimensions.svelte';
-	import Ch10 from '$lib/chapters/Ch10LanguageOfForms.svelte';
 	import ChapterNav from '$lib/components/ChapterNav.svelte';
+	import LazyChapter from '$lib/components/LazyChapter.svelte';
 	import Katex from '$lib/components/Katex.svelte';
+	import WormholeReturn from '$lib/components/WormholeReturn.svelte';
 	import { reveal } from '$lib/utils/scroll';
+
+	const chapters = [
+		{
+			id: 'ch1',
+			number: '1',
+			title: 'The Smooth World',
+			subtitle: 'Infinitesimal model and microstraightness',
+			kind: 'core'
+		},
+		{
+			id: 'ch2',
+			number: '2',
+			title: 'The Slope Equation',
+			subtitle: 'Derivatives as coefficient extraction',
+			kind: 'core'
+		},
+		{
+			id: 'ch3',
+			number: '3',
+			title: 'Rules of Change and Local Models',
+			subtitle: 'Product, chain, quotient, and linearization',
+			kind: 'core'
+		},
+		{
+			id: 'ch4',
+			number: '3E',
+			title: 'Optimization Extension',
+			subtitle: 'Critical points and Newton updates',
+			kind: 'extension'
+		},
+		{
+			id: 'ch5',
+			number: '4',
+			title: 'Accumulation and the Fundamental Theorem',
+			subtitle: 'Area accumulation and antiderivatives',
+			kind: 'core'
+		},
+		{
+			id: 'ch6',
+			number: '5',
+			title: 'Integration Geometry and Techniques',
+			subtitle: 'Methods and geometric applications',
+			kind: 'core'
+		},
+		{
+			id: 'ch8',
+			number: '6',
+			title: 'Differential Equations and Physics Modeling',
+			subtitle: 'Dynamics from local laws',
+			kind: 'core'
+		},
+		{
+			id: 'ch7',
+			number: '7',
+			title: 'Series and Approximation',
+			subtitle: 'Taylor bridges and convergence',
+			kind: 'core'
+		},
+		{
+			id: 'ch9',
+			number: '8',
+			title: 'Multivariable and Vector Calculus',
+			subtitle: 'Partials, gradients, Jacobians, and fields',
+			kind: 'core'
+		},
+		{
+			id: 'ch10',
+			number: '9',
+			title: 'Differential Forms and Unification',
+			subtitle: 'Exterior derivative and Stokes unification',
+			kind: 'core'
+		}
+	] as const;
 </script>
 
 <!-- ═══ HERO ═══ -->
@@ -19,32 +85,18 @@
 	<div class="hero-inner">
 		<h1 class="hero-title">Neocalculus</h1>
 		<p class="hero-subtitle">
-			Where every curve becomes a straight line,<br />and calculus becomes algebra.
+			Where smooth curves become infinitesimally linear,<br />and calculus becomes first-order
+			algebra.
 		</p>
 		<p class="hero-motivation">
-			For over two centuries, calculus has been taught through limits — an unintuitive machinery of
-			epsilons and deltas that obscures the geometric simplicity underneath. But there is another
-			way. Modern mathematics has shown that calculus can be rebuilt from a single, elegant axiom:
-			that infinitesimal quantities exist, and their squares vanish. No limits. No hand-waving. Just
-			algebra. This is that calculus.
+			Calculus is often introduced through limits. This book starts from a different,
+			infinitesimal-first model of smooth change. In that model we adopt the axiom that
+			infinitesimal quantities satisfy <Katex math="d^2=0" />, and we build core first-course
+			calculus results through algebraic coefficient extraction. Where extra assumptions matter, we
+			call them out explicitly.
 		</p>
 	</div>
-	<nav class="toc" aria-label="Table of contents">
-		<ol>
-			<li><a href="#ch1">The Smooth World</a></li>
-			<li><a href="#ch2">The Slope Equation</a></li>
-			<li><a href="#ch3">Rules of Change and Local Models</a></li>
-			<li><a href="#ch5">Accumulation and the Fundamental Theorem</a></li>
-			<li><a href="#ch6">Integration Geometry and Techniques</a></li>
-			<li><a href="#ch8">Differential Equations and Physics Modeling</a></li>
-			<li><a href="#ch7">Series and Approximation</a></li>
-			<li><a href="#ch9">Multivariable and Vector Calculus</a></li>
-			<li><a href="#ch10">Differential Forms and Unification</a></li>
-		</ol>
-	</nav>
-	<p class="toc-note">
-		Optimization and Newton's method are integrated as a Chapter 3 extension module.
-	</p>
+	<ChapterNav mode="full" {chapters} />
 	<div class="scroll-hint" aria-hidden="true">
 		<svg
 			width="20"
@@ -58,20 +110,75 @@
 </section>
 
 <!-- ═══ CHAPTER NAVIGATION ═══ -->
-<ChapterNav />
+<ChapterNav mode="floating" {chapters} />
+<WormholeReturn />
 
 <!-- ═══ CHAPTERS ═══ -->
 <div class="page-wrapper">
 	<Ch01 />
-	<Ch02 />
-	<Ch03 />
-	<Ch04 />
-	<Ch05 />
-	<Ch06 />
-	<Ch08 />
-	<Ch07 />
-	<Ch09 />
-	<Ch10 />
+	<LazyChapter
+		id="ch2"
+		chapterNumber="2"
+		title="The Slope Equation"
+		preview="Derivatives as first-order coefficients, including trig, exponential, and logarithmic families."
+		load={() => import('$lib/chapters/Ch02SlopeEquation.svelte')}
+	/>
+	<LazyChapter
+		id="ch3"
+		chapterNumber="3"
+		title="Rules of Change and Local Models"
+		preview="Product, chain, quotient, implicit differentiation, and local linear models from one algebraic workflow."
+		load={() => import('$lib/chapters/Ch03RulesOfChange.svelte')}
+	/>
+	<LazyChapter
+		id="ch4"
+		chapterNumber="3 Extension"
+		title="Optimization Extension"
+		preview="Critical points, extrema, and Newton's method as a compact extension module."
+		load={() => import('$lib/chapters/Ch04Optimization.svelte')}
+	/>
+	<LazyChapter
+		id="ch5"
+		chapterNumber="4"
+		title="Accumulation and the Fundamental Theorem"
+		preview="Accumulation, antiderivatives, and the FTC through infinitesimal strips and cancellation."
+		load={() => import('$lib/chapters/Ch05WorldOfAreas.svelte')}
+	/>
+	<LazyChapter
+		id="ch6"
+		chapterNumber="5"
+		title="Integration Geometry and Techniques"
+		preview="Arc length, area and volume methods, and integration techniques in geometric form."
+		load={() => import('$lib/chapters/Ch06ApplicationsIntegration.svelte')}
+	/>
+	<LazyChapter
+		id="ch8"
+		chapterNumber="6"
+		title="Differential Equations and Physics Modeling"
+		preview="Local laws, separable equations, and physical modeling through differential equations."
+		load={() => import('$lib/chapters/Ch08Physics.svelte')}
+	/>
+	<LazyChapter
+		id="ch7"
+		chapterNumber="7"
+		title="Series and Approximation"
+		preview="Taylor expansions, convergence, and bridge points between nilpotent and classical series."
+		load={() => import('$lib/chapters/Ch07InfiniteSeries.svelte')}
+	/>
+	<LazyChapter
+		id="ch9"
+		chapterNumber="8"
+		title="Multivariable and Vector Calculus"
+		preview="Partials, gradient, Jacobian, and vector-field integrals in multiple dimensions."
+		load={() => import('$lib/chapters/Ch09ManyDimensions.svelte')}
+	/>
+	<LazyChapter
+		id="ch10"
+		chapterNumber="9"
+		title="Differential Forms and Unification"
+		preview="Exterior derivative, Stokes-style unification, and topological scope notes."
+		load={() => import('$lib/chapters/Ch10LanguageOfForms.svelte')}
+	/>
 </div>
 
 <!-- ═══ CLOSING ═══ -->
@@ -80,17 +187,17 @@
 		<hr class="chapter-divider" style="margin: 0 auto var(--space-lg)" />
 		<div class="neo-prose" style="text-align: center;">
 			<p style="font-size: 1.3rem; font-weight: 500;">
-				One axiom. <Katex math="d^2 = 0" />.
+				One central axiom: <Katex math="d^2 = 0" />.
 			</p>
 			<p style="color: var(--color-ink-light);">
-				From this single rule, we derived every derivative in the standard table. We proved the
-				product, chain, and quotient rules. We established the Fundamental Theorem of Calculus,
-				integration techniques, volumes of revolution, Taylor series, the equations of motion, and
-				the generalized Stokes' theorem.
+				From this rule, together with smoothness assumptions, we derived the main derivative
+				families used in this course, proved the product/chain/quotient rules, established the
+				Fundamental Theorem of Calculus, and developed integration, series, multivariable methods,
+				and differential-forms unification.
 			</p>
 			<p style="color: var(--color-ink-light);">
-				All without limits. All without epsilon-delta. All from algebra and the geometry of
-				microstraightness.
+				The mainline presentation is algebraic and infinitesimal-first, with optional bridges to
+				limit-based analysis where those comparisons are useful.
 			</p>
 			<p style="font-style: italic; color: var(--color-d); margin-top: var(--space-lg);">
 				Neocalculus — calculus, reimagined from first principles.
@@ -143,47 +250,6 @@
 		line-height: 1.7;
 		max-width: 38rem;
 		margin-top: 1.2rem;
-	}
-
-	/* ── Table of Contents ── */
-	.toc {
-		margin-top: var(--space-lg);
-		animation: float-down 1.2s var(--ease-out-expo);
-	}
-
-	.toc ol {
-		list-style: none;
-		padding: 0;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: 0.4rem 1.2rem;
-		max-width: 36rem;
-	}
-
-	.toc li {
-		font-family: var(--font-sans);
-		font-size: 0.78rem;
-		color: var(--color-ink-faint);
-	}
-
-	.toc a {
-		color: var(--color-ink-faint);
-		text-decoration: none;
-		transition: color 0.15s;
-	}
-
-	.toc a:hover {
-		color: var(--color-d);
-	}
-
-	.toc-note {
-		margin-top: 0.8rem;
-		font-family: var(--font-sans);
-		font-size: 0.72rem;
-		color: var(--color-ink-faint);
-		max-width: 42rem;
-		text-align: center;
 	}
 
 	/* ── Scroll Hint ── */

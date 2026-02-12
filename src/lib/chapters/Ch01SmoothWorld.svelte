@@ -4,11 +4,12 @@
 	import Figure from '$lib/components/Figure.svelte';
 	import Exercise from '$lib/components/Exercise.svelte';
 	import HistoryBox from '$lib/components/HistoryBox.svelte';
-	import DigDeeper from '$lib/components/DigDeeper.svelte';
 	import ChapterSummary from '$lib/components/ChapterSummary.svelte';
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
-	import StandardCalcBox from '$lib/components/StandardCalcBox.svelte';
 	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
+	import RevealBox from '$lib/components/RevealBox.svelte';
+	import TranslationBox from '$lib/components/TranslationBox.svelte';
+	import ModelScopeBox from '$lib/components/ModelScopeBox.svelte';
 	import NextChapter from '$lib/components/NextChapter.svelte';
 	import PerfectZoom from '$lib/components/demos/PerfectZoom.svelte';
 	import FunctionMachine from '$lib/components/demos/FunctionMachine.svelte';
@@ -78,8 +79,8 @@
 			</ul>
 			<p>
 				In Neocalculus, we work exclusively with <strong>smooth</strong> functions: no corners, no jumps,
-				no breaks of any kind. This matches the physical world — temperature doesn't teleport, velocity
-				doesn't snap — and it makes calculus algebraic.
+				no breaks of any kind. This is a modeling choice that matches many physical regimes and keeps
+				the calculus workflow algebraic.
 			</p>
 		</div>
 
@@ -312,9 +313,9 @@
 
 		<Callout type="key-idea" title="The Smooth World">
 			<p>
-				In Neocalculus, every function is <strong>smooth</strong> — infinitely differentiable, with no
-				corners and no jumps. This is not a limitation; it is a design choice that eliminates pathological
-				edge cases and makes calculus algebraic.
+				In the Neocalculus mainline, every function we study is <strong>smooth</strong> by design — no
+				corners and no jumps. This choice removes nonsmooth edge cases and keeps the core derivations
+				first-order and algebraic.
 			</p>
 		</Callout>
 
@@ -324,8 +325,8 @@
 			<p>Take any smooth curve. Pick any point. Now zoom in. What happens?</p>
 			<p>
 				The curve flattens. The bends straighten out. And at the very bottom of the zoom — at a
-				scale we call <strong>infinitesimal</strong> — the curve becomes a perfectly straight line.
-				Not approximately straight. <strong>Exactly straight.</strong>
+				scale we call <strong>infinitesimal</strong> — the curve is represented by its straight, first-order
+				part.
 			</p>
 			<p>This is <strong>microstraightness</strong>. Try it yourself:</p>
 		</div>
@@ -339,10 +340,10 @@
 	<div class="content-width">
 		<div class="neo-prose" use:reveal>
 			<p>
-				No matter which function you chose, no matter where you placed the point — when you zoom far
-				enough, the curve and its tangent become identical. That infinitesimal straight segment has
-				a tiny width we call <span class="d-highlight"><strong>d</strong></span>, and its slope is
-				what we will call the <strong>derivative</strong>.
+				For smooth functions in this framework, zooming to infinitesimal scale makes the curve and
+				tangent agree to first order. That infinitesimal straight segment has a tiny width we call <span
+					class="d-highlight"><strong>d</strong></span
+				>, and its slope is what we call the <strong>derivative</strong>.
 			</p>
 		</div>
 
@@ -369,12 +370,11 @@
 			<p>
 				This is microstraightness stated algebraically: over a distance of <span class="d-highlight"
 					>d</span
-				>, every function is linear, because curvature requires a <Katex math="d^2" /> term, and <Katex
-					math="d^2 = 0"
-				/>.
+				>, smooth functions restrict to an affine first-order form, because curvature requires a <Katex
+					math="d^2"
+				/> term and <Katex math="d^2 = 0" /> on <Katex math="D" />.
 			</p>
 		</div>
-
 	</div>
 
 	<div class="wide-width" use:reveal>
@@ -426,8 +426,8 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				Expand normally, kill every <Katex math="d^2" /> and higher, done. The result is always a number
-				plus something times <Katex math="d" />.
+				Expand normally, kill every <Katex math="d^2" /> and higher, done. On <Katex math="D" />,
+				the result has the form "number + coefficient × <Katex math="d" />."
 			</p>
 		</div>
 
@@ -462,7 +462,8 @@
 				The slope of <Katex math="x^2" /> at any point <Katex math="x" /> is <Katex math="2x" />. At <Katex
 					math="x = 3"
 				/>, the slope is 6. At <Katex math="x = -1" />, it's &minus;2. We just computed the
-				derivative — and all we did was algebra. No limits, no epsilon-delta, no "approaching zero."
+				derivative — and all we did was algebra in the infinitesimal model. No limit computation was
+				needed for this derivation.
 			</p>
 		</div>
 
@@ -477,14 +478,14 @@
 		<!-- ═══ SECTION: The axiom ═══ -->
 		<Callout type="definition" title="The Kock-Lawvere Axiom">
 			<p>
-				For any function <Katex math={r`f`} /> and any infinitesimal <Katex math="d" />, there is a
-				<strong>unique</strong>
-				number <Katex math="s" /> such that
+				For any smooth map <Katex math={r`f \colon D \to \mathcal{R}`} />, there is a
+				<strong>unique</strong> number <Katex math="s" /> such that
 			</p>
 			<Katex math={r`f(d) = f(0) + s \cdot d`} display />
 			<p>
-				Every function on the infinitesimals is exactly linear. The unique slope <Katex math="s" /> is
-				the derivative.
+				Every smooth map on the infinitesimals is affine first-order. The unique slope <Katex
+					math="s"
+				/> is the derivative.
 			</p>
 		</Callout>
 
@@ -539,13 +540,30 @@
 				/> is compatible with <Katex math="d" /> being nonzero.
 			</p>
 			<p>
-				This is a feature: it prevents constructing pathological objects (step functions,
-				nowhere-differentiable curves) that require case-splitting on "is this number zero?" Every
-				function in our world is automatically smooth.
+				This is a feature: it blocks many case-split definitions of nonsmooth examples (such as step
+				functions) in the mainline model. In return, the functions we study are smooth by
+				construction.
 			</p>
 		</Callout>
 
-		<DigDeeper title="Why the classical proof fails">
+		<ModelScopeBox
+			title="Assumptions in This Chapter"
+			assumptions={[
+				'We are working in a smooth setting where functions are differentiable by design.',
+				'Reasoning is constructive: we do not assume excluded middle for infinitesimals.',
+				'Coefficient extraction uses uniqueness from the Kock-Lawvere form.'
+			]}
+			appliesTo={[
+				'Microcancellation arguments in later derivative proofs.',
+				'Statements about infinitesimals with d^2 = 0 but d not decidably zero.'
+			]}
+			doesNotClaim={[
+				'That every classical real-analysis theorem is available unchanged.',
+				'That excluded-middle-based case splits remain valid in this framework.'
+			]}
+		/>
+
+		<RevealBox title="Why the classical proof fails" subtitle="Optional logic detail" tone="math">
 			<p>
 				The classical argument has two steps. <strong>Step 1:</strong> Assume <Katex
 					math={r`d \neq 0`}
@@ -559,17 +577,37 @@
 				/>." In constructive logic, this inference is not valid — a number might be neither provably
 				zero nor provably nonzero. Infinitesimals live in this twilight.
 			</p>
-		</DigDeeper>
+		</RevealBox>
 
-		<StandardCalcBox>
+		{#snippet neoWorkflow()}
 			<p>
-				In standard calculus, the derivative is defined as a limit: <Katex
-					math={r`f'(x) = \lim_{h \to 0} \frac{f(x+h)-f(x)}{h}`}
-				/>. The epsilon-delta machinery exists precisely because the real numbers have no
-				infinitesimals. Neocalculus adds infinitesimals to the number line and skips the limit
-				entirely.
+				<strong>Derivative workflow:</strong> find the unique coefficient <Katex math="s" /> such that
+				<Katex math={r`f(x+d)=f(x)+s\,d`} />.
 			</p>
-		</StandardCalcBox>
+			<p>
+				Computationally: expand, drop <Katex math="d^2" />, then read the <Katex math="d" />
+				coefficient.
+			</p>
+		{/snippet}
+
+		{#snippet classicalWorkflow()}
+			<p>
+				<strong>Derivative workflow:</strong> evaluate the limit <Katex
+					math={r`f'(x)=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}`}
+				/>.
+			</p>
+			<p>
+				Computationally: simplify the quotient first, then justify the limiting step analytically.
+			</p>
+		{/snippet}
+
+		<TranslationBox
+			title="Two Equivalent Calculus Workflows"
+			leftTitle="Neocalculus Form"
+			rightTitle="Standard Calculus Form"
+			left={neoWorkflow}
+			right={classicalWorkflow}
+		/>
 
 		<!-- ═══ HISTORY ═══ -->
 		<HistoryBox name="Gottfried Wilhelm Leibniz" years="1646–1716">
@@ -597,11 +635,12 @@
 		<ChapterSummary>
 			<ul>
 				<li>
-					<strong>Smoothness:</strong> In Neocalculus, every function is smooth — no jumps, no corners.
+					<strong>Smoothness:</strong> In Neocalculus, every function we study is smooth by design — no
+					jumps, no corners.
 				</li>
 				<li>
-					<strong>Microstraightness:</strong> Zoom into any smooth curve far enough and it becomes perfectly
-					straight.
+					<strong>Microstraightness:</strong> Zoom into any smooth curve and its first-order behavior
+					is affine.
 				</li>
 				<li>
 					<strong>Infinitesimals:</strong> Quantities <Katex math="d" /> where <Katex
@@ -609,7 +648,7 @@
 					/> but <Katex math={r`d \neq 0`} />.
 				</li>
 				<li>
-					<strong>Kock-Lawvere axiom:</strong> Every function on <Katex math="D" /> is uniquely of the
+					<strong>Kock-Lawvere axiom:</strong> Every smooth map on <Katex math="D" /> is uniquely of the
 					form <Katex math="f(0) + s \cdot d" />.
 				</li>
 				<li>
@@ -767,8 +806,8 @@
 		<!-- ═══ LOOKING AHEAD ═══ -->
 		<LookingAhead>
 			<p>
-				In the next chapter, we'll use <Katex math="d^2 = 0" /> to find the slope of every function you've
-				ever seen — polynomials, trig, exponentials, logarithms — and the algebra will be shockingly simple.
+				In the next chapter, we'll use <Katex math="d^2 = 0" /> to find slopes for the core function families
+				— polynomials, trig, exponentials, logarithms — with the same coefficient-extraction workflow.
 				The key formula: <Katex math={r`f(x + d) = f(x) + f'(x) \cdot d`} />.
 			</p>
 		</LookingAhead>

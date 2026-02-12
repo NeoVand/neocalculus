@@ -22,7 +22,7 @@
 	<div class="content-width">
 		<div use:reveal>
 			<span class="chapter-number">Chapter 2</span>
-			<h2 class="chapter-title">The Slope Equation</h2>
+			<h2 class="chapter-title" id="ch2-slope-equation">The Slope Equation</h2>
 			<div class="chapter-epigraph">
 				<blockquote>
 					"It is useful to solve differential equations by means of infinite series, but I am
@@ -43,14 +43,15 @@
 			<p>
 				In traditional calculus, answering this requires limits — taking a ratio, letting the
 				denominator "approach" zero without ever reaching it, and hoping the expression simplifies.
-				In Neocalculus, there is no dance. There is just algebra.
+				In this chapter's infinitesimal model, the core derivation is algebraic coefficient
+				extraction.
 			</p>
 		</div>
 
 		<!-- ═══ SECTION: The Slope Equation ═══ -->
 		<Callout type="theorem" title="The Slope Equation">
 			<p>
-				For <em>any</em> function <Katex math="f" /> and any infinitesimal
+				For any smooth function <Katex math="f" /> in this setting, and any infinitesimal
 				<span class="d-highlight">d</span>, there exists a unique number <Katex math={r`f'(x)`} /> such
 				that:
 			</p>
@@ -63,8 +64,8 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				This follows directly from the Kock-Lawvere axiom we met in Chapter 1. Since any function
-				restricted to an infinitesimal interval is uniquely of the form <Katex
+				This follows directly from the Kock-Lawvere axiom we met in Chapter 1. Since any smooth
+				function restricted to an infinitesimal interval is uniquely of the form <Katex
 					math="f(0) + s \cdot d"
 				/>, the slope equation holds for every smooth function. The unique number <Katex math="s" /> is
 				what we call <Katex math={r`f'(x)`} /> — the derivative of <Katex math="f" /> at <Katex
@@ -115,13 +116,13 @@
 		<div class="neo-prose" use:reveal>
 			<p>
 				This is the line through <Katex math={r`(a, f(a))`} /> with slope <Katex math={r`f'(a)`} /> —
-				exactly the tangent line. In Neocalculus, the tangent line is not an "approximation" — at the
-				infinitesimal scale, it <em>is</em> the function.
+				the tangent line. In Neocalculus, at infinitesimal scale we work with this exact first-order model.
 			</p>
 			<p>
-				Now let's see the slope equation work on every important function. The technique is always
-				the same: expand <Katex math="f(x + d)" />, simplify using <Katex math="d^2 = 0" />, and
-				read off the coefficient of <Katex math="d" />.
+				Now let's see the slope equation work on the core function families in this course. The
+				technique is the same: expand <Katex math="f(x + d)" />, simplify using <Katex
+					math="d^2 = 0"
+				/>, and read off the coefficient of <Katex math="d" />.
 			</p>
 		</div>
 
@@ -826,18 +827,19 @@
 				</tbody>
 			</table>
 			<p style="font-size:0.9rem;margin-top:0.5rem;">
-				Every one of these was derived from a single rule: <Katex math="d^2 = 0" />.
+				In this chapter, each entry comes from the same first-order rule: <Katex math="d^2 = 0" />,
+				combined with the relevant identities.
 			</p>
 		</Callout>
 
 		<SDGAdvantage>
 			<p>
 				In a standard calculus course, students memorize this derivative table as a list of
-				formulas, often without seeing the proofs. In Neocalculus, every formula has been <em
+				formulas, often without seeing the proofs. In Neocalculus, each formula here is <em
 					>derived</em
 				>
-				from one algebraic rule — <Katex math="d^2 = 0" />. There is nothing to memorize that you
-				can't re-derive in minutes.
+				through the same coefficient-extraction workflow from <Katex math="d^2 = 0" /> plus a small set
+				of identities.
 			</p>
 		</SDGAdvantage>
 
@@ -853,8 +855,8 @@
 		<HistoryBox name="Anders Kock" years="born 1938">
 			<p>
 				Kock developed the axiomatic framework of Synthetic Differential Geometry, including the
-				axiom that bears his name. His work showed that all of differential calculus and geometry
-				can be rebuilt on the simple principle that infinitesimal segments cannot bend.
+				axiom that bears his name. His work showed how broad parts of differential calculus and
+				geometry can be organized around infinitesimal first-order structure.
 			</p>
 		</HistoryBox>
 
@@ -1103,8 +1105,8 @@
 					math={r`x^2 \sin x`}
 				/>, compositions like <Katex math={r`\sin(x^2)`} />, or quotients like <Katex
 					math={r`\sin x / x`}
-				/>? In the next chapter, we'll derive the product, chain, and quotient rules — and discover
-				they're all just algebra with <Katex math="d^2 = 0" />.
+				/>? In the next chapter, we'll derive the product, chain, and quotient rules using the same
+				infinitesimal algebraic workflow.
 			</p>
 		</LookingAhead>
 

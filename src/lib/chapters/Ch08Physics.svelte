@@ -10,6 +10,7 @@
 	import ChapterSummary from '$lib/components/ChapterSummary.svelte';
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
+	import FailureModeBox from '$lib/components/FailureModeBox.svelte';
 	import NextChapter from '$lib/components/NextChapter.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
@@ -773,6 +774,13 @@
 				infinitesimal statement <em>is</em> the conservation law.
 			</p>
 		</div>
+
+		<FailureModeBox
+			title="Failure Mode: Non-Smooth Physical Regimes"
+			trigger="Applying smooth ODE models through impacts, shocks, stick-slip, or discontinuous forcing"
+			symptom="Predictions miss jump behavior or impulse transfer concentrated at event times"
+			recovery="Model piecewise-smooth phases, add jump/impulse conditions at events, and re-enter smooth SDG analysis on each phase"
+		/>
 
 		<!-- ═══ SECTION: Separation of Variables ═══ -->
 		<div class="neo-prose" use:reveal>

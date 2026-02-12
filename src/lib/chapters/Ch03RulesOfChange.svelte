@@ -9,10 +9,59 @@
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import StandardCalcBox from '$lib/components/StandardCalcBox.svelte';
 	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
+	import DependencyMap from '$lib/components/DependencyMap.svelte';
+	import RevealBox from '$lib/components/RevealBox.svelte';
+	import ProofDrawer from '$lib/components/ProofDrawer.svelte';
+	import FailureModeBox from '$lib/components/FailureModeBox.svelte';
 	import NextChapter from '$lib/components/NextChapter.svelte';
 	import RuleProver from '$lib/components/demos/RuleProver.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
+
+	const chapterDependencyNodes = [
+		{
+			id: 'ch1-smooth',
+			label: 'Smoothness + microstraightness (Ch1)',
+			to: '#ch1',
+			lane: 'core',
+			note: 'Sets the infinitesimal model and uniqueness assumptions.'
+		},
+		{
+			id: 'ch2-slope',
+			label: 'Slope equation workflow (Ch2)',
+			to: '#ch2',
+			lane: 'core',
+			note: 'Derivative is the coefficient of d.'
+		},
+		{
+			id: 'ch3-rules',
+			label: 'Combination rules (this chapter)',
+			to: '#ch3-product-rule',
+			lane: 'core',
+			note: 'Product, chain, quotient, implicit, linearization.'
+		},
+		{
+			id: 'ch5-ftc',
+			label: 'FTC and antiderivative flow (Ch5)',
+			to: '#ch5-ftc-core',
+			lane: 'bridge',
+			note: 'Integration workflows rely on these derivative rules.'
+		},
+		{
+			id: 'ch7-series',
+			label: 'Taylor expansions (Ch7)',
+			to: '#ch7-taylor-coefficients',
+			lane: 'bridge',
+			note: 'Higher-order approximation extends rule grammar.'
+		}
+	] as const;
+
+	const chapterDependencyEdges = [
+		{ from: 'ch1-smooth', to: 'ch2-slope' },
+		{ from: 'ch2-slope', to: 'ch3-rules' },
+		{ from: 'ch3-rules', to: 'ch5-ftc' },
+		{ from: 'ch3-rules', to: 'ch7-series' }
+	] as const;
 </script>
 
 <section class="chapter" id="ch3">
@@ -40,11 +89,27 @@
 				temperature of a moving particle, <em>quotients</em> like efficiency ratios.
 			</p>
 			<p>
-				Now we learn combinations — and discover that the rules for differentiating them are just
-				algebra with <Katex math="d^2 = 0" />. No clever tricks, no limit arguments, no
-				epsilon-delta gymnastics. Just multiply out and drop <Katex math="d^2" />.
+				Now we learn combinations — and derive the rules by the same algebraic mechanism with <Katex
+					math="d^2 = 0"
+				/>. In this mainline approach, we multiply out and drop second-order terms.
 			</p>
 		</div>
+
+		<DependencyMap
+			title="Chapter 3 Dependency Network"
+			intro="Open for a compact graph of prerequisites and downstream uses."
+			returnLabel="Chapter 3 dependency map"
+			nodes={chapterDependencyNodes}
+			edges={chapterDependencyEdges}
+		/>
+
+		<Callout type="key-idea" title="Core Path (First Pass)">
+			<p>
+				If this is your first pass, focus on the product, chain, quotient, linearization, and
+				constancy sections. Open the extension drawers for L'Hôpital, related rates, and advanced
+				differentiation patterns.
+			</p>
+		</Callout>
 
 		<!-- ═══ MICROCANCELLATION RECAP ═══ -->
 		<Callout type="key-idea" title="Recall: Microcancellation">
@@ -69,7 +134,7 @@
 		<!-- SECTION: THE PRODUCT RULE                      -->
 		<!-- ═══════════════════════════════════════════════ -->
 		<div class="neo-prose" use:reveal>
-			<h3>The Product Rule</h3>
+			<h3 id="ch3-product-rule">The Product Rule</h3>
 			<p>
 				Suppose we know the derivatives of <Katex math="f" /> and <Katex math="g" /> individually. What
 				is the derivative of their product <Katex math="fg" />? The answer comes from literally
@@ -218,6 +283,34 @@
 				<span class="step-note">✓</span>
 			</div>
 		</div>
+
+		<ProofDrawer title="Proof Skeleton: Product Rule in Four Moves" stageCount={4}>
+			{#snippet children(phase)}
+				{#if phase >= 1}
+					<p>
+						<strong>1. Start local:</strong> write both factors using the slope equation at
+						<Katex math="x+d" />.
+					</p>
+					<Katex math={r`f(x+d)=f+f'd,\qquad g(x+d)=g+g'd`} display />
+				{/if}
+				{#if phase >= 2}
+					<p><strong>2. Multiply:</strong> expand the product of the two local forms.</p>
+					<Katex math={r`(fg)(x+d)=(f+f'd)(g+g'd)=fg+f'gd+fg'd+f'g'd^2`} display />
+				{/if}
+				{#if phase >= 3}
+					<p>
+						<strong>3. Truncate:</strong> remove the second-order term using <Katex math="d^2=0" />.
+					</p>
+					<Katex math={r`(fg)(x+d)=fg+(f'g+fg')d`} display />
+				{/if}
+				{#if phase >= 4}
+					<p>
+						<strong>4. Read coefficient:</strong> the <Katex math="d" /> coefficient is the derivative.
+					</p>
+					<Katex math={r`(fg)'=f'g+fg'`} display />
+				{/if}
+			{/snippet}
+		</ProofDrawer>
 
 		<div class="neo-prose" use:reveal>
 			<p>
@@ -480,6 +573,11 @@
 			</p>
 		</DigDeeper>
 
+		<RevealBox
+			title="Extension Studio: L'Hôpital and Related Rates"
+			subtitle="Optional first-pass branch"
+			tone="math"
+		>
 		<!-- ═══════════════════════════════════════════════ -->
 		<!-- SECTION: L'HÔPITAL'S RULE                     -->
 		<!-- ═══════════════════════════════════════════════ -->
@@ -679,6 +777,7 @@
 				/>" — just a single algebraic nudge.
 			</p>
 		</div>
+		</RevealBox>
 
 		<!-- ═══════════════════════════════════════════════ -->
 		<!-- SECTION: LINEARIZATION / DIFFERENTIALS         -->
@@ -793,6 +892,11 @@
 			</p>
 		</SDGAdvantage>
 
+		<RevealBox
+			title="Extension Studio: Implicit, Logarithmic, and Higher-Order Patterns"
+			subtitle="Optional first-pass branch"
+			tone="math"
+		>
 		<!-- ═══════════════════════════════════════════════ -->
 		<!-- SECTION: IMPLICIT DIFFERENTIATION              -->
 		<!-- ═══════════════════════════════════════════════ -->
@@ -1105,6 +1209,7 @@
 				same algebraic source: expanding products of sums involving nilpotent increments.
 			</p>
 		</div>
+		</RevealBox>
 
 		<!-- ═══════════════════════════════════════════════ -->
 		<!-- SECTION: MEAN VALUE THEOREM / CONSTANCY        -->
@@ -1140,11 +1245,12 @@
 			<p>
 				This is the key consequence of the MVT that we actually use: if the derivative is zero
 				everywhere, the function doesn't change. In SDG, this is taken as an axiom (it is a
-				consequence of the microaffine structure of the line). From it, all the standard corollaries
-				follow: if <Katex math={r`f' = g'`} /> then <Katex math={r`f = g + c`} /> (functions with the
-				same derivative differ by a constant), and if <Katex math={r`f' > 0`} /> then <Katex
-					math="f"
-				/> is increasing.
+				consequence of the microaffine structure of the line). From it, the standard corollaries
+				used in this course follow: if <Katex math={r`f' = g'`} /> then <Katex
+					math={r`f = g + c`}
+				/> (functions with the same derivative differ by a constant), and if <Katex
+					math={r`f' > 0`}
+				/> then <Katex math="f" /> is increasing.
 			</p>
 		</div>
 
@@ -1158,6 +1264,13 @@
 				which is the only consequence of the MVT used in practice.
 			</p>
 		</DigDeeper>
+
+		<FailureModeBox
+			title="Failure Mode: Direct Mean Value Theorem Invocation"
+			trigger="Using classical existence claims for a specific interior point c without a construction"
+			symptom="You obtain a theorem statement but no computational witness, and the proof depends on excluded middle"
+			recovery="Use the Constancy Principle directly when the target consequence is zero derivative implies constancy"
+		/>
 
 		<!-- ═══════════════════════════════════════════════ -->
 		<!-- SECTION: HISTORY BOXES / EXTRA                 -->
@@ -1370,6 +1483,11 @@
 					</p>{/snippet}
 			</Exercise>
 
+			<RevealBox
+				title="Extension Exercises (11-22)"
+				subtitle="Open for additional challenge and exploration problems"
+				tone="math"
+			>
 			<Exercise number={11}>
 				<p>
 					<strong>Core.</strong> Find <Katex math={r`f''(x)`} /> for <Katex math={r`f(x) = e^x`} />.
@@ -1550,6 +1668,7 @@
 						/>. So <Katex math={r`f(x) = g(x) + C`} />. ✓
 					</p>{/snippet}
 			</Exercise>
+			</RevealBox>
 		</details>
 
 		<!-- ═══ LOOKING AHEAD ═══ -->

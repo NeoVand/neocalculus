@@ -3,6 +3,7 @@
 Status: Active v1  
 Date: 2026-02-08  
 Scope: Full-course pedagogy, content architecture, rigor standards, and production roadmap
+Execution backlog: `/Users/neo/repos/neocalculus/IMPLEMENTATION_BACKLOG.md`
 
 ## 1. Mission
 
