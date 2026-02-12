@@ -7,15 +7,24 @@
 	let containerCos: HTMLDivElement;
 	let mounted = $state(false);
 
+	const D_MIN = 0.005;
+	const D_MAX = 1.2;
+
 	let angleSlider = $state(70);
 	// Map slider: 100 → 1.2 rad (big), 0 → 0.005 rad (tiny). Logarithmic.
-	let angle = $derived(0.005 * Math.pow(240, angleSlider / 100));
+	let angle = $derived(D_MIN * Math.pow(D_MAX / D_MIN, angleSlider / 100));
 
 	const PURPLE = '#a855f7';
 	const RED = '#ef4444';
 	const BLUE = '#3b82f6';
 	const INK = '#1a1a2e';
 	const FAINT = '#d0cec8';
+
+	function redraw() {
+		if (!mounted) return;
+		drawSine();
+		drawCosine();
+	}
 
 	function drawSine() {
 		if (!canvasSin) return;
@@ -31,24 +40,52 @@
 		const sinD = Math.sin(d);
 		const cosD = Math.cos(d);
 
-		// Bounding box: zoom on the region around (1, 0) where the arc lives.
-		// The arc goes from (1, 0) to (cos d, sin d).
-		// We want to frame that region with some margin.
-		const margin = d * 0.4;
-		const xMin = Math.min(cosD, 1) - margin;
-		const xMax = 1 + margin;
-		const yMin = -margin;
-		const yMax = sinD + margin;
-		// Ensure square aspect so circle stays circular
-		const xRange = xMax - xMin;
-		const yRange = yMax - yMin;
-		const maxRange = Math.max(xRange, yRange);
-		const cxMid = (xMin + xMax) / 2;
-		const cyMid = (yMin + yMax) / 2;
-		const vxMin = cxMid - maxRange / 2;
-		const vxMax = cxMid + maxRange / 2;
-		const vyMin = cyMid - maxRange / 2;
-		const vyMax = cyMid + maxRange / 2;
+		// Arc-focused camera:
+		// large d => near full-circle view; tiny d => zoom into the short arc near x = 1.
+		const tLarge = (Math.log(d) - Math.log(D_MIN)) / (Math.log(D_MAX) - Math.log(D_MIN));
+		const clampedLarge = Math.max(0, Math.min(1, tLarge));
+		const tinyProgress = 1 - clampedLarge; // 0 at large d, 1 at infinitesimal d
+
+		const fullRange = 2.6;
+		const zoomPow = 0.88;
+		const zoomFactor = Math.pow(D_MAX / d, zoomPow);
+		const vRange = Math.max(0.03, fullRange / zoomFactor);
+
+		// Focus around the arc midpoint, with smooth center shift.
+		const mid = d / 2;
+		const arcFocusX = (1 + Math.cos(mid)) / 2;
+		const arcFocusY = Math.sin(mid) * 0.55;
+		// Shift center toward the arc early enough so the arc never leaves frame.
+		const centerBlend = Math.pow(tinyProgress, 0.25);
+		let viewCx = arcFocusX * centerBlend;
+		let viewCy = arcFocusY * centerBlend;
+
+		// Hard-constraint: keep the whole highlighted arc segment inside the viewport.
+		const xArcMin = Math.min(cosD, 1);
+		const xArcMax = 1;
+		const yArcMin = 0;
+		const yArcMax = sinD;
+		const pad = Math.max(0.018, vRange * 0.12);
+
+		const minCx = xArcMax + pad - vRange / 2;
+		const maxCx = xArcMin - pad + vRange / 2;
+		if (minCx <= maxCx) {
+			viewCx = Math.min(maxCx, Math.max(minCx, viewCx));
+		} else {
+			viewCx = (xArcMin + xArcMax) / 2;
+		}
+
+		const minCy = yArcMax + pad - vRange / 2;
+		const maxCy = yArcMin - pad + vRange / 2;
+		if (minCy <= maxCy) {
+			viewCy = Math.min(maxCy, Math.max(minCy, viewCy));
+		} else {
+			viewCy = (yArcMin + yArcMax) / 2;
+		}
+		const vxMin = viewCx - vRange / 2;
+		const vxMax = viewCx + vRange / 2;
+		const vyMin = viewCy - vRange / 2;
+		const vyMax = viewCy + vRange / 2;
 
 		const toX = (x: number) => ((x - vxMin) / (vxMax - vxMin)) * W;
 		const toY = (y: number) => H - ((y - vyMin) / (vyMax - vyMin)) * H;
@@ -68,8 +105,8 @@
 		// Full unit circle (thin, as context)
 		const cx = toX(0), cy = toY(0);
 		const rPx = toX(1) - toX(0);
-		ctx.strokeStyle = '#e5e1d8';
-		ctx.lineWidth = 1 * dpr;
+		ctx.strokeStyle = '#cbc5bb';
+		ctx.lineWidth = 1.35 * dpr;
 		ctx.beginPath();
 		ctx.arc(cx, cy, rPx, 0, Math.PI * 2);
 		ctx.stroke();
@@ -84,7 +121,7 @@
 
 		// The highlighted arc from (1,0) to (cos d, sin d) — PURPLE
 		ctx.strokeStyle = PURPLE;
-		ctx.lineWidth = 3.5 * dpr;
+		ctx.lineWidth = (2.8 + 0.8 * tinyProgress) * dpr;
 		ctx.beginPath();
 		ctx.arc(cx, cy, rPx, -d, 0);
 		ctx.stroke();
@@ -120,7 +157,7 @@
 		ctx.fillStyle = PURPLE;
 		ctx.textAlign = 'left';
 		const midAngle = d / 2;
-		const labelR = 1 + maxRange * 0.05;
+		const labelR = 1 + vRange * 0.05;
 		ctx.fillText('arc = d', toX(Math.cos(midAngle) * labelR) + 4 * dpr, toY(Math.sin(midAngle) * labelR));
 
 		// Difference percentage
@@ -130,6 +167,12 @@
 		ctx.font = `${10 * dpr}px Inter, system-ui, sans-serif`;
 		ctx.textAlign = 'right';
 		ctx.fillText(`diff: ${pct.toFixed(pct < 0.1 ? 3 : 1)}%`, W - 6 * dpr, 14 * dpr);
+
+		// Zoom badge to make scale changes explicit.
+		const visibleZoom = fullRange / vRange;
+		ctx.textAlign = 'left';
+		ctx.fillStyle = '#8f8a98';
+		ctx.fillText(`zoom ×${visibleZoom >= 10 ? visibleZoom.toFixed(0) : visibleZoom.toFixed(1)}`, 6 * dpr, 14 * dpr);
 	}
 
 	function drawCosine() {
@@ -174,8 +217,8 @@
 		// Full unit circle
 		const cx = toX(0), cy = toY(0);
 		const rPx = toX(1) - toX(0);
-		ctx.strokeStyle = '#e5e1d8';
-		ctx.lineWidth = 1.5 * dpr;
+		ctx.strokeStyle = '#cdc7be';
+		ctx.lineWidth = 1.8 * dpr;
 		ctx.beginPath();
 		ctx.arc(cx, cy, rPx, 0, Math.PI * 2);
 		ctx.stroke();
@@ -245,17 +288,11 @@
 		ctx.fillText(`cos d = ${cosD.toFixed(4)}`, W - 6 * dpr, 14 * dpr);
 	}
 
-	$effect(() => {
-		angle;
-		if (mounted) { drawSine(); drawCosine(); }
-	});
-
 	onMount(() => {
 		mounted = true;
-		drawSine();
-		drawCosine();
-		const ro1 = new ResizeObserver(() => drawSine());
-		const ro2 = new ResizeObserver(() => drawCosine());
+		redraw();
+		const ro1 = new ResizeObserver(() => redraw());
+		const ro2 = new ResizeObserver(() => redraw());
 		ro1.observe(containerSin);
 		ro2.observe(containerCos);
 		return () => { ro1.disconnect(); ro2.disconnect(); };
@@ -273,7 +310,16 @@
 			<span>Angle <strong style="color: var(--color-d)">d</strong></span>
 			<span class="slider-value">{angle < 0.01 ? angle.toExponential(1) : angle.toFixed(3)} rad</span>
 		</label>
-		<input id="infinitesimal-trig-angle" type="range" min="0" max="100" step="0.5" bind:value={angleSlider} class="slider" />
+		<input
+			id="infinitesimal-trig-angle"
+			type="range"
+			min="0"
+			max="100"
+			step="0.5"
+			bind:value={angleSlider}
+			oninput={redraw}
+			class="slider"
+		/>
 		<div class="slider-labels">
 			<span>← infinitesimal</span>
 			<span>large →</span>

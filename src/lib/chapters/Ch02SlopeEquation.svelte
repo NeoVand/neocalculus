@@ -13,6 +13,7 @@
 	import InlinePlot from '$lib/components/InlinePlot.svelte';
 	import InfinitesimalTrig from '$lib/components/demos/InfinitesimalTrig.svelte';
 	import AlgebraMachine from '$lib/components/demos/AlgebraMachine.svelte';
+	import AngleAdditionLemma from '$lib/components/figures/AngleAdditionLemma.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
 </script>
@@ -445,6 +446,17 @@
 		<div use:reveal>
 			<InfinitesimalTrig />
 		</div>
+
+		<Callout type="theorem" title="Lemma: Angle Addition Formulas (Geometric Proof)">
+			<p>
+				Before differentiating trig functions, prove the identities once from unit-circle geometry.
+			</p>
+			<AngleAdditionLemma />
+			<p>
+				Now the derivative derivations below are direct substitutions using <Katex math="d^2=0" />,
+				<Katex math={r`\sin d=d`} />, and <Katex math={r`\cos d=1`} />.
+			</p>
+		</Callout>
 
 		<div class="derivation" use:reveal>
 			<div class="derivation-title">Derivative of sin(x)</div>
