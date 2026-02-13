@@ -72,30 +72,24 @@
 
 <!-- ═══ HERO ═══ -->
 <section class="hero">
-	<div class="hero-inner">
-		<h1 class="hero-title">Neocalculus</h1>
-		<p class="hero-subtitle">
-			Where smooth curves become infinitesimally linear,<br />and calculus becomes first-order
-			algebra.
-		</p>
-		<p class="hero-motivation">
-			Calculus is often introduced through limits. This book starts from a different,
-			infinitesimal-first model of smooth change. In that model we adopt the axiom that
-			infinitesimal quantities satisfy <Katex math="d^2=0" />, and we build core first-course
-			calculus results through algebraic coefficient extraction. Where extra assumptions matter, we
-			call them out explicitly.
-		</p>
-	</div>
-	<ChapterNav {chapters} />
-	<div class="scroll-hint" aria-hidden="true">
-		<svg
-			width="20"
-			height="20"
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7" /></svg
-		>
+	<div class="hero-shell">
+		<div class="hero-inner">
+			<h1 class="hero-title">Neocalculus</h1>
+			<p class="hero-author">By Mostafa 'Neo' Mohsenvand</p>
+			<p class="hero-subtitle">
+				Where smooth curves become infinitesimally linear,<br />and calculus becomes first-order
+				algebra.
+			</p>
+			<p class="hero-motivation">
+				Most courses start with limits. This one starts with an infinitesimal model where
+				<Katex math="d^2=0" /> and smoothness turns local change into first-order algebra. Core
+				calculus results are built by coefficient extraction, with assumptions stated only when they
+				matter.
+			</p>
+		</div>
+		<div class="hero-toc">
+			<ChapterNav {chapters} />
+		</div>
 	</div>
 </section>
 
@@ -201,53 +195,139 @@
 	.hero {
 		min-height: 100vh;
 		min-height: 100dvh;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		text-align: center;
-		padding: var(--space-lg);
+		display: grid;
+		place-items: center;
+		padding: clamp(1.2rem, 2.8vw, 2.3rem);
 		position: relative;
-		background: radial-gradient(ellipse at 50% 30%, rgba(168, 85, 247, 0.06) 0%, transparent 70%);
+		overflow: hidden;
+		background:
+			radial-gradient(120% 95% at 8% 12%, rgba(26, 60, 112, 0.14) 0%, transparent 50%),
+			radial-gradient(115% 90% at 92% 88%, rgba(143, 88, 40, 0.12) 0%, transparent 54%),
+			linear-gradient(180deg, #f5f2f8 0%, #f9f7fc 55%, #f3f7ff 100%);
+	}
+
+	.hero::before,
+	.hero::after {
+		content: '';
+		position: absolute;
+		pointer-events: none;
+	}
+
+	.hero::before {
+		width: min(42rem, 72vw);
+		aspect-ratio: 1;
+		left: -10rem;
+		top: -18rem;
+		border-radius: 50%;
+		background: radial-gradient(circle, rgba(73, 117, 204, 0.2) 0%, rgba(73, 117, 204, 0) 70%);
+		filter: blur(6px);
+	}
+
+	.hero::after {
+		width: min(44rem, 78vw);
+		aspect-ratio: 1;
+		right: -13rem;
+		bottom: -20rem;
+		border-radius: 50%;
+		background: radial-gradient(circle, rgba(180, 114, 64, 0.16) 0%, rgba(180, 114, 64, 0) 74%);
+		filter: blur(8px);
+	}
+
+	.hero-shell {
+		width: min(78rem, 100%);
+		display: grid;
+		gap: clamp(1.1rem, 2.2vw, 2rem);
+		align-items: center;
+	}
+
+	@media (min-width: 1120px) {
+		.hero-shell {
+			grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+			gap: clamp(1rem, 2vw, 1.8rem);
+		}
 	}
 
 	.hero-inner {
+		position: relative;
+		z-index: 1;
 		animation: float-down 1s var(--ease-out-expo);
+		text-align: left;
+		max-width: 38rem;
+		margin-inline: 0;
 	}
 
 	.hero-title {
 		font-family: var(--font-serif);
-		font-size: clamp(2.8rem, 7vw, 5rem);
-		font-weight: 300;
-		letter-spacing: 0.12em;
+		font-size: clamp(3rem, 6.9vw, 5.15rem);
+		font-weight: 320;
+		letter-spacing: 0.15em;
 		color: var(--color-ink);
-		margin-bottom: 0.8rem;
+		margin: 0 0 0.62rem;
 		text-transform: uppercase;
+		line-height: 0.95;
+	}
+
+	.hero-author {
+		margin: 0 0 0.88rem;
+		font-family: var(--font-sans);
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: color-mix(in srgb, var(--color-ink-light) 78%, var(--color-d) 22%);
 	}
 
 	.hero-subtitle {
 		font-family: var(--font-serif);
-		font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+		font-size: clamp(1.01rem, 2.05vw, 1.28rem);
 		color: var(--color-ink-light);
-		line-height: 1.7;
-		margin-bottom: 1rem;
+		line-height: 1.52;
+		margin: 0 0 0.92rem;
 	}
 
 	.hero-motivation {
 		font-family: var(--font-serif);
-		font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+		font-size: clamp(0.86rem, 1.5vw, 0.98rem);
 		color: var(--color-ink-faint);
-		line-height: 1.7;
-		max-width: 38rem;
-		margin-top: 1.2rem;
+		line-height: 1.6;
+		max-width: 36rem;
+		margin: 0;
 	}
 
-	/* ── Scroll Hint ── */
-	.scroll-hint {
-		position: absolute;
-		bottom: 2rem;
-		color: var(--color-ink-faint);
-		animation: scroll-hint 2.5s ease-in-out infinite;
+	.hero-toc {
+		position: relative;
+		z-index: 1;
+		display: grid;
+		align-items: center;
+		justify-items: end;
+	}
+
+	.hero-toc :global(.toc-card) {
+		margin-top: 0;
+		width: min(31rem, 100%);
+		margin-inline: auto;
+	}
+
+	@media (max-width: 1119px) {
+		.hero {
+			padding-top: 1.2rem;
+			padding-bottom: 1.1rem;
+		}
+
+		.hero-inner {
+			text-align: center;
+			max-width: 42rem;
+			margin-inline: auto;
+		}
+
+		.hero-subtitle br {
+			display: none;
+		}
+
+		.hero-motivation {
+			margin-left: auto;
+			margin-right: auto;
+		}
 	}
 
 	/* ── Closing ── */

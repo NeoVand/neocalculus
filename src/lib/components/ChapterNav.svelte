@@ -34,10 +34,6 @@
 		return Math.round((Math.min(activeIndex + 1, chapters.length) / chapters.length) * 100);
 	});
 
-	function chapterIndex(id: string) {
-		return chapters.findIndex((chapter) => chapter.id === id);
-	}
-
 	function jumpTo(id: string) {
 		if (typeof window === 'undefined') return;
 
@@ -124,9 +120,8 @@
 {#if mode === 'full'}
 	<nav class="toc-card" aria-label="Table of contents">
 		<div class="toc-card-head">
-			<p class="toc-card-eyebrow">Book Navigation</p>
 			<h3>Table of Contents</h3>
-			<p>Ten chapters, one continuous path. Jump directly to any chapter.</p>
+			<p>Ten chapters. Jump directly to any chapter.</p>
 		</div>
 
 		<ol>
@@ -136,9 +131,6 @@
 						<span class="toc-number">{chapter.number}</span>
 						<span class="toc-main">
 							<span class="toc-title">{chapter.title}</span>
-							{#if chapter.subtitle}
-								<span class="toc-subtitle">{chapter.subtitle}</span>
-							{/if}
 						</span>
 					</button>
 				</li>
@@ -216,15 +208,15 @@
 
 <style>
 	.toc-card {
-		margin-top: var(--space-lg);
-		max-width: 48rem;
-		width: min(48rem, 100%);
-		padding: 1.1rem 1.1rem 1rem;
+		margin-top: var(--space-sm);
+		max-width: 34rem;
+		width: min(34rem, 100%);
+		padding: 0.78rem 0.76rem 0.72rem;
 		border: 1px solid color-mix(in srgb, var(--color-border) 82%, #9ec5fe 18%);
-		border-radius: 0.95rem;
+		border-radius: 0.9rem;
 		background:
-			radial-gradient(circle at 85% 8%, rgba(30, 144, 255, 0.08), transparent 38%),
-			linear-gradient(165deg, #ffffff 0%, #f9fbff 55%, #f7f6ff 100%);
+			radial-gradient(circle at 90% 6%, rgba(30, 144, 255, 0.06), transparent 36%),
+			linear-gradient(165deg, #ffffff 0%, #fbfcff 55%, #f8f8ff 100%);
 		text-align: left;
 		animation: float-down 1.2s var(--ease-out-expo);
 	}
@@ -232,15 +224,15 @@
 	.toc-card-head h3 {
 		margin: 0;
 		font-family: var(--font-serif);
-		font-size: 1.25rem;
+		font-size: 0.98rem;
 		color: var(--color-ink);
 	}
 
 	.toc-card-head p {
-		margin: 0.45rem 0 0;
+		margin: 0.24rem 0 0;
 		font-family: var(--font-serif);
-		font-size: 0.94rem;
-		line-height: 1.6;
+		font-size: 0.76rem;
+		line-height: 1.4;
 		color: var(--color-ink-light);
 	}
 
@@ -264,9 +256,9 @@
 	}
 
 	.toc-card ol {
-		margin-top: 0.85rem;
+		margin-top: 0.5rem;
 		display: grid;
-		gap: 0.35rem;
+		gap: 0.12rem;
 	}
 
 	.toc-card li button,
@@ -276,8 +268,8 @@
 		background: none;
 		display: flex;
 		align-items: center;
-		gap: 0.65rem;
-		padding: 0.55rem 0.6rem;
+		gap: 0.56rem;
+		padding: 0.34rem 0.4rem;
 		border-radius: 0.6rem;
 		cursor: pointer;
 		text-align: left;
@@ -286,17 +278,28 @@
 
 	.toc-card li button:hover,
 	.toc-mobile-drawer li button:hover {
-		background: color-mix(in srgb, var(--color-d-soft) 60%, white 40%);
+		background: color-mix(in srgb, var(--color-d-soft) 54%, white 46%);
+	}
+
+	.toc-card .toc-number {
+		font-size: 0.66rem;
+		min-width: 1.45rem;
+	}
+
+	.toc-card .toc-title {
+		font-size: 0.77rem;
+		font-weight: 600;
+		line-height: 1.2;
 	}
 
 	.toc-number,
 	.toc-rail-number {
 		font-family: var(--font-sans);
-		font-size: 0.72rem;
+		font-size: 0.7rem;
 		font-weight: 700;
 		line-height: 1;
 		color: var(--color-ink-faint);
-		min-width: 2rem;
+		min-width: 1.9rem;
 	}
 
 	.toc-main,
@@ -311,7 +314,7 @@
 	.toc-title,
 	.toc-rail-title {
 		font-family: var(--font-sans);
-		font-size: 0.84rem;
+		font-size: 0.8rem;
 		font-weight: 600;
 		line-height: 1.25;
 		color: var(--color-ink-light);
@@ -320,8 +323,19 @@
 	.toc-subtitle,
 	.toc-rail-subtitle {
 		font-family: var(--font-sans);
-		font-size: 0.69rem;
+		font-size: 0.64rem;
 		color: var(--color-ink-faint);
+	}
+
+	@media (min-width: 1120px) {
+		.toc-card ol {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			column-gap: 0.52rem;
+		}
+
+		.toc-card li button {
+			align-items: flex-start;
+		}
 	}
 
 	.toc-rail {
