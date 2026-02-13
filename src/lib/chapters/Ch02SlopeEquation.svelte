@@ -12,6 +12,7 @@
 	import InlinePlot from '$lib/components/InlinePlot.svelte';
 	import InfinitesimalTrig from '$lib/components/demos/InfinitesimalTrig.svelte';
 	import AlgebraMachine from '$lib/components/demos/AlgebraMachine.svelte';
+	import SlopeEquationMachine from '$lib/components/demos/SlopeEquationMachine.svelte';
 	import AngleAdditionLemma from '$lib/components/figures/AngleAdditionLemma.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
@@ -46,7 +47,13 @@
 				extraction.
 			</p>
 		</div>
+	</div>
 
+	<div use:reveal>
+		<SlopeEquationMachine />
+	</div>
+
+	<div class="content-width">
 		<!-- ═══ SECTION: The Slope Equation ═══ -->
 		<Callout type="theorem" title="The Slope Equation">
 			<p>
