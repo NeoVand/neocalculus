@@ -12,7 +12,6 @@
 	import DependencyMap from '$lib/components/DependencyMap.svelte';
 	import RevealBox from '$lib/components/RevealBox.svelte';
 	import FailureModeBox from '$lib/components/FailureModeBox.svelte';
-	import NextChapter from '$lib/components/NextChapter.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
 
@@ -40,7 +39,7 @@
 		},
 		{
 			id: 'ch8-modeling',
-			label: 'DE modeling and approximations (Ch8)',
+			label: 'DE modeling and approximations (Ch7)',
 			to: '#ch8',
 			lane: 'bridge',
 			note: 'Series gives local models for differential systems.'
@@ -65,7 +64,7 @@
 <section class="chapter" id="ch7">
 	<div class="content-width">
 		<div use:reveal>
-			<span class="chapter-number">Chapter 7</span>
+			<span class="chapter-number">Chapter 8</span>
 			<h2 class="chapter-title">Series and Approximation</h2>
 			<div class="chapter-epigraph">
 				<blockquote>
@@ -101,9 +100,9 @@
 		</div>
 
 		<DependencyMap
-			title="Chapter 7 Dependency Network"
+			title="Chapter 8 Dependency Network"
 			intro="Open for prerequisite links and where series methods feed forward."
-			returnLabel="Chapter 7 dependency map"
+			returnLabel="Chapter 8 dependency map"
 			nodes={chapterDependencyNodes}
 			edges={chapterDependencyEdges}
 		/>
@@ -1504,11 +1503,10 @@
 		<!-- ═══ LOOKING AHEAD ═══ -->
 		<LookingAhead>
 			<p>
-				In Chapter 8, we move into many-variable calculus: partial derivatives, gradient, Jacobian
+				In Chapter 9, we move into many-variable calculus: partial derivatives, gradient, Jacobian
 				geometry, vector fields, divergence, curl, and line-integral reasoning.
 			</p>
 		</LookingAhead>
 
-		<NextChapter href="ch9" title="Multivariable and Vector Calculus" number="8" />
 	</div>
 </section>

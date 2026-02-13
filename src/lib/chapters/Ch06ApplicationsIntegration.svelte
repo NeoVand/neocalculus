@@ -9,7 +9,6 @@
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import StandardCalcBox from '$lib/components/StandardCalcBox.svelte';
 	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
-	import NextChapter from '$lib/components/NextChapter.svelte';
 	import InlinePlot from '$lib/components/InlinePlot.svelte';
 	import JSXGraphBoard from '$lib/components/JSXGraphBoard.svelte';
 	import { reveal } from '$lib/utils/scroll';
@@ -127,7 +126,7 @@
 <section class="chapter" id="ch6">
 	<div class="content-width">
 		<div use:reveal>
-			<span class="chapter-number">Chapter 5</span>
+			<span class="chapter-number">Chapter 6</span>
 			<h2 class="chapter-title">Integration Geometry and Techniques</h2>
 			<div class="chapter-epigraph">
 				<blockquote>"Give me a place to stand and I will move the Earth."</blockquote>
@@ -1419,12 +1418,11 @@
 		<!-- ═══ LOOKING AHEAD ═══ -->
 		<LookingAhead>
 			<p>
-				In Chapter 6 we shift from geometric accumulation to physical modeling. We will treat
+				In Chapter 7 we shift from geometric accumulation to physical modeling. We will treat
 				differential equations as local update rules and use them to model motion, energy, momentum,
 				cooling, and oscillation.
 			</p>
 		</LookingAhead>
 
-		<NextChapter href="ch8" title="Differential Equations and Physics Modeling" number="6" />
 	</div>
 </section>

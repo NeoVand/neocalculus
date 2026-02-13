@@ -11,7 +11,6 @@
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
 	import FailureModeBox from '$lib/components/FailureModeBox.svelte';
-	import NextChapter from '$lib/components/NextChapter.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
 
@@ -112,7 +111,7 @@
 <section class="chapter" id="ch8">
 	<div class="content-width">
 		<div use:reveal>
-			<span class="chapter-number">Chapter 6</span>
+			<span class="chapter-number">Chapter 7</span>
 			<h2 class="chapter-title">Differential Equations and Physics Modeling</h2>
 			<div class="chapter-epigraph">
 				<blockquote>"The book of nature is written in the language of mathematics."</blockquote>
@@ -432,7 +431,7 @@
 			<p>
 				In the previous chapter, we had merely <em>verified</em> that sine and cosine satisfy this
 				equation. Now let's do something more powerful: <strong>derive</strong> the solution using
-				the <Katex math="D_n" /> Taylor expansion from Chapter 7.
+				the <Katex math="D_n" /> Taylor expansion from Chapter 8.
 			</p>
 			<p>
 				Recall that for two independent infinitesimals <Katex math={r`d_1, d_2`} /> (each squaring to
@@ -523,7 +522,7 @@
 		</div>
 
 		<div class="neo-prose" use:reveal>
-			<p>Summing both chains and recalling the Taylor series from Chapter 7:</p>
+			<p>Summing both chains and recalling the Taylor series from Chapter 8:</p>
 		</div>
 
 		<div class="key-equation" use:reveal>
@@ -535,7 +534,7 @@
 				Sine and cosine don't appear from nowhere — they <strong>emerge</strong> from the recurrence <Katex
 					math={r`a_{n+2} = -\omega^2 a_n / [(n+2)(n+1)]`}
 				/>. The ODE <em>forces</em> the solution to be sinusoidal. This is the Taylor machinery of
-				Chapter 7 paying off beautifully: the <Katex math="D_n" /> expansion generates the recurrence,
+				Chapter 8 paying off beautifully: the <Katex math="D_n" /> expansion generates the recurrence,
 				and the recurrence builds the familiar trig functions term by term.
 			</p>
 		</div>
@@ -1401,12 +1400,11 @@
 		<!-- ═══ LOOKING AHEAD ═══ -->
 		<LookingAhead>
 			<p>
-				In Chapter 7, we turn to series and approximation. Higher-order infinitesimals and Taylor
+				In Chapter 8, we turn to series and approximation. Higher-order infinitesimals and Taylor
 				expansions will let us solve and approximate models that do not yield elementary closed
 				forms.
 			</p>
 		</LookingAhead>
 
-		<NextChapter href="ch7" title="Series and Approximation" number="7" />
 	</div>
 </section>

@@ -15,7 +15,7 @@
 		heroSelector?: string;
 	}
 
-	let { chapters, mode = 'floating', heroSelector = '.hero' }: Props = $props();
+	let { chapters, mode = 'full', heroSelector = '.hero' }: Props = $props();
 
 	let isPastHero = $state(false);
 	let isOpen = $state(false);
@@ -29,14 +29,13 @@
 
 	let activeChapter = $derived(chapters[activeIndex] ?? chapters[0]);
 	let progressText = $derived(`${Math.min(activeIndex + 1, chapters.length)} / ${chapters.length}`);
+	let progressPercent = $derived.by(() => {
+		if (chapters.length === 0) return 0;
+		return Math.round((Math.min(activeIndex + 1, chapters.length) / chapters.length) * 100);
+	});
 
 	function chapterIndex(id: string) {
 		return chapters.findIndex((chapter) => chapter.id === id);
-	}
-
-	function isVisited(id: string) {
-		const index = chapterIndex(id);
-		return index >= 0 && index < activeIndex;
 	}
 
 	function jumpTo(id: string) {
@@ -64,7 +63,7 @@
 		const updateState = () => {
 			const hero = document.querySelector<HTMLElement>(heroSelector);
 			if (hero) {
-				isPastHero = hero.getBoundingClientRect().bottom <= 96;
+				isPastHero = hero.getBoundingClientRect().bottom <= 88;
 			} else {
 				isPastHero = true;
 			}
@@ -127,12 +126,76 @@
 		<div class="toc-card-head">
 			<p class="toc-card-eyebrow">Book Navigation</p>
 			<h3>Table of Contents</h3>
-			<p>
-				The list below is the source of truth for chapter order, including the optimization extension.
-				Use it to jump to any chapter.
-			</p>
+			<p>Ten chapters, one continuous path. Jump directly to any chapter.</p>
 		</div>
 
+		<ol>
+			{#each chapters as chapter (chapter.id)}
+				<li>
+					<button type="button" onclick={() => jumpTo(chapter.id)}>
+						<span class="toc-number">{chapter.number}</span>
+						<span class="toc-main">
+							<span class="toc-title">{chapter.title}</span>
+							{#if chapter.subtitle}
+								<span class="toc-subtitle">{chapter.subtitle}</span>
+							{/if}
+						</span>
+					</button>
+				</li>
+			{/each}
+		</ol>
+	</nav>
+{:else if isPastHero}
+	<aside class="toc-rail" aria-label="Chapter navigator">
+		<header>
+			<p class="toc-rail-eyebrow">Chapter Navigator</p>
+			<p class="toc-rail-progress">{progressText}</p>
+		</header>
+		<div class="toc-rail-meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={progressPercent}>
+			<div class="toc-rail-meter-fill" style={`width: ${progressPercent}%`}></div>
+		</div>
+		<p class="toc-rail-active">
+			Now reading <strong>{activeChapter?.number}. {activeChapter?.title}</strong>
+		</p>
+		<ol>
+			{#each chapters as chapter (chapter.id)}
+				<li class:active={activeId === chapter.id}>
+					<button type="button" onclick={() => jumpTo(chapter.id)}>
+						<span class="toc-rail-number">{chapter.number}</span>
+						<span class="toc-rail-main">
+							<span class="toc-rail-title">{chapter.title}</span>
+							{#if chapter.subtitle}
+								<span class="toc-rail-subtitle">{chapter.subtitle}</span>
+							{/if}
+						</span>
+					</button>
+				</li>
+			{/each}
+		</ol>
+	</aside>
+
+	<button
+		class="toc-mobile-toggle"
+		type="button"
+		onclick={() => (isOpen = !isOpen)}
+		aria-label="Toggle chapter navigator"
+		aria-expanded={isOpen}
+	>
+		<span class="toc-mobile-meta">{progressText}</span>
+		<span class="toc-mobile-title">{activeChapter?.number}. {activeChapter?.title}</span>
+	</button>
+{/if}
+
+{#if mode === 'floating' && isOpen}
+	<button class="toc-mobile-backdrop" type="button" aria-label="Close chapter navigator" onclick={() => (isOpen = false)}></button>
+	<nav class="toc-mobile-drawer" aria-label="Chapter navigator drawer">
+		<header>
+			<p class="toc-card-eyebrow">Chapter Navigator</p>
+			<strong>{progressText}</strong>
+		</header>
+		<div class="toc-rail-meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={progressPercent}>
+			<div class="toc-rail-meter-fill" style={`width: ${progressPercent}%`}></div>
+		</div>
 		<ol>
 			{#each chapters as chapter (chapter.id)}
 				<li class:active={activeId === chapter.id}>
@@ -144,70 +207,6 @@
 								<span class="toc-subtitle">{chapter.subtitle}</span>
 							{/if}
 						</span>
-						{#if chapter.kind === 'extension'}
-							<span class="toc-kind">Extension</span>
-						{/if}
-					</button>
-				</li>
-			{/each}
-		</ol>
-
-		<p class="toc-card-note">
-			The floating TOC appears after the hero and tracks your live reading position.
-		</p>
-	</nav>
-{:else if isPastHero}
-	<aside class="toc-rail" aria-label="Chapter navigation">
-		<header>
-			<span class="toc-rail-label">Reading Position</span>
-			<strong>{progressText}</strong>
-		</header>
-		<ol>
-			{#each chapters as chapter (chapter.id)}
-				<li class:active={activeId === chapter.id} class:visited={isVisited(chapter.id)}>
-					<button type="button" onclick={() => jumpTo(chapter.id)}>
-						<span class="toc-rail-number">{chapter.number}</span>
-						<span class="toc-rail-title">{chapter.title}</span>
-					</button>
-				</li>
-			{/each}
-		</ol>
-		<button class="toc-top" type="button" onclick={() => jumpTo(chapters[0].id)}>Jump to Top</button>
-	</aside>
-
-	<button
-		class="toc-mobile-toggle"
-		type="button"
-		onclick={() => (isOpen = !isOpen)}
-		aria-label="Toggle table of contents"
-		aria-expanded={isOpen}
-	>
-		<span class="toc-mobile-progress">{progressText}</span>
-		<span class="toc-mobile-title">{activeChapter?.number}. {activeChapter?.title}</span>
-	</button>
-{/if}
-
-{#if mode === 'floating' && isOpen}
-	<button class="toc-mobile-backdrop" type="button" aria-label="Close table of contents" onclick={() => (isOpen = false)}></button>
-	<nav class="toc-mobile-drawer" aria-label="Table of contents drawer">
-		<header>
-			<p class="toc-card-eyebrow">Table of Contents</p>
-			<strong>Chapter {Math.min(activeIndex + 1, chapters.length)} of {chapters.length}</strong>
-		</header>
-		<ol>
-			{#each chapters as chapter (chapter.id)}
-				<li class:active={activeId === chapter.id} class:visited={isVisited(chapter.id)}>
-					<button type="button" onclick={() => jumpTo(chapter.id)}>
-						<span class="toc-number">{chapter.number}</span>
-						<span class="toc-main">
-							<span class="toc-title">{chapter.title}</span>
-							{#if chapter.subtitle}
-								<span class="toc-subtitle">{chapter.subtitle}</span>
-							{/if}
-						</span>
-						{#if chapter.kind === 'extension'}
-							<span class="toc-kind">Extension</span>
-						{/if}
 					</button>
 				</li>
 			{/each}
@@ -245,10 +244,11 @@
 		color: var(--color-ink-light);
 	}
 
-	.toc-card-eyebrow {
-		margin: 0 0 0.25rem;
+	.toc-card-eyebrow,
+	.toc-rail-eyebrow {
+		margin: 0;
 		font-family: var(--font-sans);
-		font-size: 0.7rem;
+		font-size: 0.68rem;
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
@@ -281,9 +281,7 @@
 		border-radius: 0.6rem;
 		cursor: pointer;
 		text-align: left;
-		transition:
-			background-color 0.16s ease,
-			border-color 0.16s ease;
+		transition: background-color 0.16s ease;
 	}
 
 	.toc-card li button:hover,
@@ -301,7 +299,8 @@
 		min-width: 2rem;
 	}
 
-	.toc-main {
+	.toc-main,
+	.toc-rail-main {
 		display: flex;
 		flex-direction: column;
 		gap: 0.12rem;
@@ -314,44 +313,14 @@
 		font-family: var(--font-sans);
 		font-size: 0.84rem;
 		font-weight: 600;
-		line-height: 1.3;
+		line-height: 1.25;
 		color: var(--color-ink-light);
 	}
 
-	.toc-subtitle {
+	.toc-subtitle,
+	.toc-rail-subtitle {
 		font-family: var(--font-sans);
-		font-size: 0.7rem;
-		color: var(--color-ink-faint);
-	}
-
-	.toc-kind {
-		font-family: var(--font-sans);
-		font-size: 0.63rem;
-		font-weight: 700;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		color: #8a4f00;
-		background: #fff4d6;
-		border: 1px solid #f4d9a0;
-		border-radius: 999px;
-		padding: 0.18rem 0.45rem;
-	}
-
-	.toc-card li.active button,
-	.toc-mobile-drawer li.active button {
-		background: var(--color-d-glow);
-	}
-
-	.toc-card li.active .toc-title,
-	.toc-mobile-drawer li.active .toc-title,
-	.toc-rail li.active .toc-rail-title {
-		color: var(--color-d);
-	}
-
-	.toc-card-note {
-		margin: 0.6rem 0 0;
-		font-family: var(--font-sans);
-		font-size: 0.72rem;
+		font-size: 0.69rem;
 		color: var(--color-ink-faint);
 	}
 
@@ -361,13 +330,16 @@
 		top: 50%;
 		transform: translateY(-50%);
 		z-index: 52;
-		width: 16rem;
 		display: none;
-		padding: 0.7rem;
+		width: min(18.25rem, calc(100vw - 1.5rem));
+		padding: 0.75rem;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.9rem;
-		background: color-mix(in srgb, white 92%, #edf4ff 8%);
-		box-shadow: 0 14px 36px rgba(18, 24, 33, 0.08);
+		background:
+			radial-gradient(circle at 94% 4%, rgba(168, 85, 247, 0.13), transparent 40%),
+			linear-gradient(170deg, rgba(255, 255, 255, 0.97), rgba(247, 250, 255, 0.97));
+		box-shadow: 0 16px 36px rgba(18, 24, 33, 0.12);
+		backdrop-filter: blur(2px);
 	}
 
 	@media (min-width: 1280px) {
@@ -380,72 +352,78 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: baseline;
-		margin-bottom: 0.55rem;
+		margin-bottom: 0.4rem;
 	}
 
-	.toc-rail-label {
+	.toc-rail-progress {
+		margin: 0;
 		font-family: var(--font-sans);
-		font-size: 0.66rem;
+		font-size: 0.73rem;
 		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--color-ink-faint);
-	}
-
-	.toc-rail header strong {
-		font-family: var(--font-sans);
-		font-size: 0.74rem;
 		color: var(--color-d);
 	}
 
+	.toc-rail-meter {
+		height: 0.32rem;
+		background: color-mix(in srgb, var(--color-border-light) 75%, white 25%);
+		border-radius: 999px;
+		overflow: hidden;
+	}
+
+	.toc-rail-meter-fill {
+		height: 100%;
+		background: linear-gradient(90deg, #7c3aed, #2563eb);
+		transition: width 0.18s ease;
+	}
+
+	.toc-rail-active {
+		margin: 0.5rem 0 0.6rem;
+		font-family: var(--font-sans);
+		font-size: 0.72rem;
+		line-height: 1.35;
+		color: var(--color-ink-faint);
+	}
+
+	.toc-rail-active strong {
+		color: var(--color-ink-light);
+		font-weight: 700;
+	}
+
 	.toc-rail ol {
-		display: flex;
-		flex-direction: column;
+		display: grid;
 		gap: 0.2rem;
 	}
 
 	.toc-rail li button {
 		width: 100%;
-		border: none;
+		border: 1px solid transparent;
 		background: none;
 		display: flex;
-		gap: 0.45rem;
 		align-items: center;
-		padding: 0.35rem 0.42rem;
-		border-radius: 0.45rem;
+		gap: 0.5rem;
+		padding: 0.4rem 0.42rem;
+		border-radius: 0.5rem;
 		text-align: left;
 		cursor: pointer;
+		transition:
+			background-color 0.16s ease,
+			border-color 0.16s ease,
+			transform 0.16s ease;
 	}
 
 	.toc-rail li button:hover {
-		background: var(--color-d-soft);
-	}
-
-	.toc-rail li.visited .toc-rail-title {
-		color: var(--color-ink-faint);
+		background: color-mix(in srgb, var(--color-d-soft) 70%, white 30%);
+		border-color: color-mix(in srgb, var(--color-border) 65%, #a855f7 35%);
 	}
 
 	.toc-rail li.active button {
-		background: var(--color-d-glow);
+		background: color-mix(in srgb, var(--color-d-glow) 70%, white 30%);
+		border-color: color-mix(in srgb, var(--color-border) 55%, #7c3aed 45%);
+		transform: translateX(-0.05rem);
 	}
 
-	.toc-top {
-		margin-top: 0.55rem;
-		width: 100%;
-		border: 1px solid var(--color-border);
-		background: white;
+	.toc-rail li.active .toc-rail-title {
 		color: var(--color-d);
-		border-radius: 999px;
-		font-family: var(--font-sans);
-		font-size: 0.7rem;
-		font-weight: 600;
-		padding: 0.35rem 0.55rem;
-		cursor: pointer;
-	}
-
-	.toc-top:hover {
-		border-color: var(--color-d);
-		background: var(--color-d-soft);
 	}
 
 	.toc-mobile-toggle {
@@ -467,7 +445,7 @@
 		box-shadow: 0 10px 24px rgba(18, 24, 33, 0.16);
 	}
 
-	.toc-mobile-progress {
+	.toc-mobile-meta {
 		font-family: var(--font-sans);
 		font-size: 0.63rem;
 		font-weight: 700;
@@ -530,7 +508,16 @@
 		color: var(--color-d);
 	}
 
-	.toc-mobile-drawer li.visited .toc-title {
-		color: var(--color-ink-faint);
+	.toc-mobile-drawer .toc-rail-meter {
+		margin-bottom: 0.55rem;
 	}
+
+	.toc-mobile-drawer li.active button {
+		background: var(--color-d-glow);
+	}
+
+	.toc-mobile-drawer li.active .toc-title {
+		color: var(--color-d);
+	}
+
 </style>

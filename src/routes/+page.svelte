@@ -11,71 +11,61 @@
 			id: 'ch1',
 			number: '1',
 			title: 'The Smooth World',
-			subtitle: 'Infinitesimal model and microstraightness',
-			kind: 'core'
+			subtitle: 'Infinitesimal model and microstraightness'
 		},
 		{
 			id: 'ch2',
 			number: '2',
 			title: 'The Slope Equation',
-			subtitle: 'Derivatives as coefficient extraction',
-			kind: 'core'
+			subtitle: 'Derivatives as coefficient extraction'
 		},
 		{
 			id: 'ch3',
 			number: '3',
 			title: 'Rules of Change and Local Models',
-			subtitle: 'Product, chain, quotient, and linearization',
-			kind: 'core'
+			subtitle: 'Product, chain, quotient, and linearization'
 		},
 		{
 			id: 'ch4',
-			number: '3E',
-			title: 'Optimization Extension',
-			subtitle: 'Critical points and Newton updates',
-			kind: 'extension'
+			number: '4',
+			title: 'Optimization and Local Analysis',
+			subtitle: 'Critical points, extrema, and Newton updates'
 		},
 		{
 			id: 'ch5',
-			number: '4',
+			number: '5',
 			title: 'Accumulation and the Fundamental Theorem',
-			subtitle: 'Area accumulation and antiderivatives',
-			kind: 'core'
+			subtitle: 'Area accumulation and antiderivatives'
 		},
 		{
 			id: 'ch6',
-			number: '5',
+			number: '6',
 			title: 'Integration Geometry and Techniques',
-			subtitle: 'Methods and geometric applications',
-			kind: 'core'
+			subtitle: 'Methods and geometric applications'
 		},
 		{
 			id: 'ch8',
-			number: '6',
+			number: '7',
 			title: 'Differential Equations and Physics Modeling',
-			subtitle: 'Dynamics from local laws',
-			kind: 'core'
+			subtitle: 'Dynamics from local laws'
 		},
 		{
 			id: 'ch7',
-			number: '7',
+			number: '8',
 			title: 'Series and Approximation',
-			subtitle: 'Taylor bridges and convergence',
-			kind: 'core'
+			subtitle: 'Taylor bridges and convergence'
 		},
 		{
 			id: 'ch9',
-			number: '8',
+			number: '9',
 			title: 'Multivariable and Vector Calculus',
-			subtitle: 'Partials, gradients, Jacobians, and fields',
-			kind: 'core'
+			subtitle: 'Partials, gradients, Jacobians, and fields'
 		},
 		{
 			id: 'ch10',
-			number: '9',
+			number: '10',
 			title: 'Differential Forms and Unification',
-			subtitle: 'Exterior derivative and Stokes unification',
-			kind: 'core'
+			subtitle: 'Exterior derivative and Stokes unification'
 		}
 	] as const;
 </script>
@@ -96,7 +86,7 @@
 			call them out explicitly.
 		</p>
 	</div>
-	<ChapterNav mode="full" {chapters} />
+	<ChapterNav {chapters} />
 	<div class="scroll-hint" aria-hidden="true">
 		<svg
 			width="20"
@@ -132,49 +122,49 @@
 	/>
 	<LazyChapter
 		id="ch4"
-		chapterNumber="3 Extension"
-		title="Optimization Extension"
-		preview="Critical points, extrema, and Newton's method as a compact extension module."
+		chapterNumber="4"
+		title="Optimization and Local Analysis"
+		preview="Critical points, extrema, curve behavior, and Newton's method from derivative structure."
 		load={() => import('$lib/chapters/Ch04Optimization.svelte')}
 	/>
 	<LazyChapter
 		id="ch5"
-		chapterNumber="4"
+		chapterNumber="5"
 		title="Accumulation and the Fundamental Theorem"
 		preview="Accumulation, antiderivatives, and the FTC through infinitesimal strips and cancellation."
 		load={() => import('$lib/chapters/Ch05WorldOfAreas.svelte')}
 	/>
 	<LazyChapter
 		id="ch6"
-		chapterNumber="5"
+		chapterNumber="6"
 		title="Integration Geometry and Techniques"
 		preview="Arc length, area and volume methods, and integration techniques in geometric form."
 		load={() => import('$lib/chapters/Ch06ApplicationsIntegration.svelte')}
 	/>
 	<LazyChapter
 		id="ch8"
-		chapterNumber="6"
+		chapterNumber="7"
 		title="Differential Equations and Physics Modeling"
 		preview="Local laws, separable equations, and physical modeling through differential equations."
 		load={() => import('$lib/chapters/Ch08Physics.svelte')}
 	/>
 	<LazyChapter
 		id="ch7"
-		chapterNumber="7"
+		chapterNumber="8"
 		title="Series and Approximation"
 		preview="Taylor expansions, convergence, and bridge points between nilpotent and classical series."
 		load={() => import('$lib/chapters/Ch07InfiniteSeries.svelte')}
 	/>
 	<LazyChapter
 		id="ch9"
-		chapterNumber="8"
+		chapterNumber="9"
 		title="Multivariable and Vector Calculus"
 		preview="Partials, gradient, Jacobian, and vector-field integrals in multiple dimensions."
 		load={() => import('$lib/chapters/Ch09ManyDimensions.svelte')}
 	/>
 	<LazyChapter
 		id="ch10"
-		chapterNumber="9"
+		chapterNumber="10"
 		title="Differential Forms and Unification"
 		preview="Exterior derivative, Stokes-style unification, and topological scope notes."
 		load={() => import('$lib/chapters/Ch10LanguageOfForms.svelte')}

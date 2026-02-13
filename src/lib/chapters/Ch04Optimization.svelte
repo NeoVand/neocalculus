@@ -11,7 +11,6 @@
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import StandardCalcBox from '$lib/components/StandardCalcBox.svelte';
 	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
-	import NextChapter from '$lib/components/NextChapter.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
 
@@ -392,8 +391,8 @@
 <section class="chapter" id="ch4">
 	<div class="content-width">
 		<div use:reveal>
-			<span class="chapter-number">Chapter 3 Extension</span>
-			<h2 class="chapter-title">Optimization and Local Analysis Lab</h2>
+			<span class="chapter-number">Chapter 4</span>
+			<h2 class="chapter-title">Optimization and Local Analysis</h2>
 			<div class="chapter-epigraph">
 				<blockquote>
 					"Nothing takes place in the world whose meaning is not that of some maximum or minimum."
@@ -1214,7 +1213,7 @@
 				/> independent infinitesimals) gives the <Katex math="n" />-th Taylor polynomial. The error
 				from truncating at order <Katex math="n" /> is proportional to <Katex
 					math={r`(\Delta x)^{n+1}`}
-				/>. We'll formalize this in Chapter 6 when we study Taylor series.
+				/>. We'll formalize this in Chapter 8 when we study Taylor series.
 			</p>
 		</div>
 
@@ -2011,12 +2010,11 @@
 		<!-- ═══════════════════════════════════════════════════════ -->
 		<LookingAhead>
 			<p>
-				After this extension, we move to Chapter 4 and reverse direction: given a rate of change,
+				After this chapter, we move to Chapter 5 and reverse direction: given a rate of change,
 				can we reconstruct the total quantity? This is integration, and the Fundamental Theorem of
 				Calculus will emerge from first-order accumulation.
 			</p>
 		</LookingAhead>
 
-		<NextChapter href="ch5" title="Accumulation and the Fundamental Theorem" number="4" />
 	</div>
 </section>

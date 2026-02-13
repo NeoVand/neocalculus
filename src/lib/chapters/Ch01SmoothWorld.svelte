@@ -10,7 +10,6 @@
 	import RevealBox from '$lib/components/RevealBox.svelte';
 	import TranslationBox from '$lib/components/TranslationBox.svelte';
 	import ModelScopeBox from '$lib/components/ModelScopeBox.svelte';
-	import NextChapter from '$lib/components/NextChapter.svelte';
 	import PerfectZoom from '$lib/components/demos/PerfectZoom.svelte';
 	import FunctionMachine from '$lib/components/demos/FunctionMachine.svelte';
 	import MicrostraightnessBridge from '$lib/components/figures/MicrostraightnessBridge.svelte';
@@ -812,7 +811,6 @@
 			</p>
 		</LookingAhead>
 
-		<NextChapter href="ch2" title="The Slope Equation" number="2" />
 	</div>
 </section>
 

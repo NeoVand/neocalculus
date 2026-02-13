@@ -992,8 +992,6 @@ h4 {
 	.chapter-mobile-drawer,
 	.chapter-mobile-backdrop,
 	.scroll-hint,
-	.next-chapter-nav,
-	.back-to-top,
 	.exercise-toggle {
 		display: none !important;
 	}

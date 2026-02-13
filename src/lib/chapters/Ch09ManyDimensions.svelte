@@ -9,7 +9,6 @@
 	import ChapterSummary from '$lib/components/ChapterSummary.svelte';
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
-	import NextChapter from '$lib/components/NextChapter.svelte';
 	import GradientJacobianExplorer from '$lib/components/demos/GradientJacobianExplorer.svelte';
 	import SurfaceTangent3D from '$lib/components/demos/SurfaceTangent3D.svelte';
 	import { reveal } from '$lib/utils/scroll';
@@ -96,7 +95,7 @@
 <section class="chapter" id="ch9">
 	<div class="content-width">
 		<div use:reveal>
-			<span class="chapter-number">Chapter 8</span>
+			<span class="chapter-number">Chapter 9</span>
 			<h2 class="chapter-title">Multivariable and Vector Calculus</h2>
 			<div class="chapter-epigraph">
 				<blockquote>
@@ -1608,6 +1607,5 @@
 			</p>
 		</LookingAhead>
 
-		<NextChapter href="ch10" title="Differential Forms and Unification" number="9" />
 	</div>
 </section>

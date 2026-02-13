@@ -13,7 +13,6 @@
 	import RevealBox from '$lib/components/RevealBox.svelte';
 	import ProofDrawer from '$lib/components/ProofDrawer.svelte';
 	import FailureModeBox from '$lib/components/FailureModeBox.svelte';
-	import NextChapter from '$lib/components/NextChapter.svelte';
 	import RuleProver from '$lib/components/demos/RuleProver.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
@@ -1674,11 +1673,10 @@
 		<!-- ═══ LOOKING AHEAD ═══ -->
 		<LookingAhead>
 			<p>
-				Next comes a short extension module that applies these rules to optimization, curve
-				behavior, and Newton's method. After that we begin accumulation and integration.
+				Next comes Chapter 4, where we apply these rules to optimization, curve behavior, and
+				Newton's method. After that we begin accumulation and integration.
 			</p>
 		</LookingAhead>
 
-		<NextChapter href="ch4" title="Optimization Extension" number="3E" />
 	</div>
 </section>

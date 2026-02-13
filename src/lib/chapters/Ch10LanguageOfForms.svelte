@@ -63,7 +63,7 @@
 <section class="chapter" id="ch10">
 	<div class="content-width">
 		<div use:reveal>
-			<span class="chapter-number">Chapter 9</span>
+			<span class="chapter-number">Chapter 10</span>
 			<h2 class="chapter-title">Differential Forms and Unification</h2>
 			<div class="chapter-epigraph">
 				<blockquote>
@@ -104,9 +104,9 @@
 		</div>
 
 		<DependencyMap
-			title="Chapter 9 Dependency Network"
+			title="Chapter 10 Dependency Network"
 			intro="Open for the prerequisite spine from FTC and vector calculus into generalized Stokes."
-			returnLabel="Chapter 9 dependency map"
+			returnLabel="Chapter 10 dependency map"
 			nodes={chapterDependencyNodes}
 			edges={chapterDependencyEdges}
 		/>

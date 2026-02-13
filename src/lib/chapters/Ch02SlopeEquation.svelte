@@ -9,7 +9,6 @@
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import StandardCalcBox from '$lib/components/StandardCalcBox.svelte';
 	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
-	import NextChapter from '$lib/components/NextChapter.svelte';
 	import InlinePlot from '$lib/components/InlinePlot.svelte';
 	import InfinitesimalTrig from '$lib/components/demos/InfinitesimalTrig.svelte';
 	import AlgebraMachine from '$lib/components/demos/AlgebraMachine.svelte';
@@ -1110,6 +1109,5 @@
 			</p>
 		</LookingAhead>
 
-		<NextChapter href="ch3" title="Rules of Change and Local Models" number="3" />
 	</div>
 </section>

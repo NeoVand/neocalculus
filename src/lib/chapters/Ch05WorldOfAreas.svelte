@@ -13,7 +13,6 @@
 	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
 	import DependencyMap from '$lib/components/DependencyMap.svelte';
 	import RevealBox from '$lib/components/RevealBox.svelte';
-	import NextChapter from '$lib/components/NextChapter.svelte';
 	import InfinitesimalStrip from '$lib/components/demos/InfinitesimalStrip.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
@@ -294,7 +293,7 @@
 <section class="chapter" id="ch5">
 	<div class="content-width">
 		<div use:reveal>
-			<span class="chapter-number">Chapter 4</span>
+			<span class="chapter-number">Chapter 5</span>
 			<h2 class="chapter-title">Accumulation and the Fundamental Theorem</h2>
 			<div class="chapter-epigraph">
 				<blockquote>
@@ -307,9 +306,9 @@
 		</div>
 
 		<DependencyMap
-			title="Chapter 4 Dependency Network"
+			title="Chapter 5 Dependency Network"
 			intro="Open for the prerequisite chain behind FTC and where it propagates next."
-			returnLabel="Chapter 4 dependency map"
+			returnLabel="Chapter 5 dependency map"
 			nodes={chapterDependencyNodes}
 			edges={chapterDependencyEdges}
 		/>
@@ -1677,12 +1676,11 @@
 		<!-- ═══ LOOKING AHEAD ═══ -->
 		<LookingAhead>
 			<p>
-				In Chapter 5, we extend integration into geometry and technique: volumes, shells, surface
+				In Chapter 6, we extend integration into geometry and technique: volumes, shells, surface
 				area, work, center of mass, and structured integration methods.
 			</p>
 		</LookingAhead>
 
-		<NextChapter href="ch6" title="Integration Geometry and Techniques" number="5" />
 	</div>
 </section>
 
