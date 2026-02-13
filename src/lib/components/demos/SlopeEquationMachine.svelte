@@ -226,8 +226,11 @@
 	});
 </script>
 
-<div class="demo-container content-width">
-	<div class="demo-label">Explore local linearization on a strongly curved smooth function</div>
+<div class="demo-container content-width slope-shell">
+	<div class="hero">
+		<div class="hero-eyebrow">Local Linearization Lab</div>
+		<div class="hero-title">One perturbation, one tangent model, one visible error</div>
+	</div>
 
 	<div class="equation-block">
 		<div class="equation-main"><Katex math="f(a+d)=f(a)+f'(a)d" /></div>
@@ -236,16 +239,19 @@
 
 	<div class="verify-row" aria-live="polite">
 		<div class="verify-cell">
-			<span class="verify-label">f(a+d)</span>
+			<span class="verify-label">Exact Value</span>
 			<span class="verify-value">{leftValue}</span>
+			<span class="verify-caption">f(a+d)</span>
 		</div>
 		<div class="verify-cell">
-			<span class="verify-label">f(a)+f'(a)d</span>
+			<span class="verify-label">Linear Model</span>
 			<span class="verify-value">{rightValue}</span>
+			<span class="verify-caption">f(a)+f'(a)d</span>
 		</div>
-		<div class="verify-cell">
-			<span class="verify-label">abs deviation</span>
+		<div class="verify-cell verify-cell-accent">
+			<span class="verify-label">Deviation</span>
 			<span class="verify-value">{devAbsValue}</span>
+			<span class="verify-caption">absolute gap</span>
 		</div>
 	</div>
 
@@ -259,165 +265,246 @@
 		<div class="stat-cell"><span>f'(a)d</span><strong>{linearValue}</strong></div>
 	</div>
 
-	<div class="toolbar">
-		<span class="toolbar-lbl">Zoom</span>
-		<input
-			type="range"
-			min="0"
-			max="100"
-			step="0.5"
-			bind:value={zoomSlider}
-			oninput={requestDraw}
-			class="toolbar-slider"
-		/>
-		<span class="toolbar-val">{zoom.toFixed(zoom < 10 ? 1 : 0)}x</span>
-	</div>
+	<div class="controls-panel">
+		<div class="toolbar">
+			<span class="toolbar-lbl">Zoom</span>
+			<input
+				type="range"
+				min="0"
+				max="100"
+				step="0.5"
+				bind:value={zoomSlider}
+				oninput={requestDraw}
+				class="toolbar-slider"
+			/>
+			<span class="toolbar-val">{zoom.toFixed(zoom < 10 ? 1 : 0)}x</span>
+		</div>
 
-	<div class="toolbar">
-		<span class="toolbar-lbl">a</span>
-		<input
-			type="range"
-			min="0"
-			max="1000"
-			step="1"
-			bind:value={pointSlider}
-			oninput={requestDraw}
-			class="toolbar-slider"
-		/>
-		<span class="toolbar-val">{a.toFixed(3)}</span>
-	</div>
+		<div class="toolbar">
+			<span class="toolbar-lbl">a</span>
+			<input
+				type="range"
+				min="0"
+				max="1000"
+				step="1"
+				bind:value={pointSlider}
+				oninput={requestDraw}
+				class="toolbar-slider"
+			/>
+			<span class="toolbar-val">{a.toFixed(3)}</span>
+		</div>
 
-	<div class="toolbar">
-		<span class="toolbar-lbl">d</span>
-		<input
-			type="range"
-			min="-180"
-			max="180"
-			step="1"
-			bind:value={dSlider}
-			oninput={requestDraw}
-			class="toolbar-slider"
-		/>
-		<span class="toolbar-val">{dValue}</span>
+		<div class="toolbar">
+			<span class="toolbar-lbl">d</span>
+			<input
+				type="range"
+				min="-180"
+				max="180"
+				step="1"
+				bind:value={dSlider}
+				oninput={requestDraw}
+				class="toolbar-slider"
+			/>
+			<span class="toolbar-val">{dValue}</span>
+		</div>
 	</div>
 </div>
 
 <style>
-	.demo-label {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
+	.slope-shell {
+		--panel-bg: linear-gradient(165deg, #fefcf9 0%, #f8f5ff 48%, #f5f8ff 100%);
+		--panel-stroke: #e4dbef;
+		--tile-bg: #fbf9ff;
+		--tile-stroke: #e5ddf4;
+		--tile-shadow: 0 12px 24px rgba(82, 53, 128, 0.07);
+		background: var(--panel-bg);
+		border: 1px solid var(--panel-stroke);
+		border-radius: 1.75rem;
+		padding: clamp(1rem, 2.3vw, 1.7rem);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.8),
+			0 22px 34px rgba(37, 17, 64, 0.06);
+	}
+
+	.hero {
+		display: grid;
+		justify-items: center;
+		text-align: center;
+		gap: 0.38rem;
+		margin-bottom: 0.72rem;
+	}
+
+	.hero-eyebrow {
 		font-family: var(--font-sans);
-		font-size: 0.74rem;
-		font-weight: 600;
-		letter-spacing: 0.08em;
+		font-size: 0.69rem;
+		font-weight: 700;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
-		color: var(--color-ink-faint);
-		margin-bottom: 0.6rem;
+		color: #8d86a0;
+	}
+
+	.hero-title {
+		font-family: var(--font-serif);
+		font-size: clamp(0.96rem, 1.5vw, 1.13rem);
+		letter-spacing: 0.01em;
+		color: #3f3655;
+		line-height: 1.3;
 	}
 
 	.equation-block {
 		display: grid;
-		gap: 0.35rem;
+		gap: 0.32rem;
 		justify-items: center;
-		margin-bottom: 0.55rem;
+		background: linear-gradient(180deg, #ffffff8c 0%, #f9f3ff99 100%);
+		border: 1px solid #e8def6;
+		border-radius: 1rem;
+		padding: 0.72rem 0.85rem;
+		margin: 0 0 0.7rem;
 	}
 
 	.equation-main :global(.katex) {
-		font-size: 1.3em;
-		color: var(--color-d);
+		font-size: 1.36em;
+		color: #7c3aed;
 	}
 
 	.equation-sub :global(.katex) {
-		font-size: 1.05em;
-		color: var(--color-ink-light);
+		font-size: 1.03em;
+		color: #5b4d78;
 	}
 
 	.verify-row,
 	.stats-row {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.5rem;
-		margin-bottom: 0.6rem;
+		gap: 0.62rem;
+		margin-bottom: 0.66rem;
 	}
 
 	.verify-cell,
 	.stat-cell {
 		display: grid;
-		gap: 0.18rem;
+		gap: 0.15rem;
 		align-items: center;
 		justify-items: center;
-		padding: 0.55rem 0.5rem;
-		border: 1px solid var(--color-border-light);
-		border-radius: 0.55rem;
-		background: #faf8ff;
+		padding: 0.72rem 0.62rem;
+		border: 1px solid var(--tile-stroke);
+		border-radius: 0.85rem;
+		background: var(--tile-bg);
+		box-shadow: var(--tile-shadow);
+	}
+
+	.verify-cell-accent {
+		background: linear-gradient(180deg, #fffaf5 0%, #fff5ef 100%);
+		border-color: #f1d5bf;
 	}
 
 	.verify-label,
 	.stat-cell span {
 		font-family: var(--font-sans);
-		font-size: 0.68rem;
-		font-weight: 600;
-		letter-spacing: 0.06em;
+		font-size: 0.62rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: var(--color-ink-faint);
+		color: #8a819d;
 	}
 
 	.verify-value,
 	.stat-cell strong {
 		font-family: var(--font-mono);
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: var(--color-ink);
+		font-size: 1rem;
+		font-weight: 700;
+		color: #1f1836;
 		font-variant-numeric: tabular-nums;
 	}
 
-	.toolbar {
-		display: flex;
-		align-items: center;
-		gap: 0.6rem;
-		padding: 0.33rem 0;
-	}
-
-	.toolbar-lbl {
-		font-family: var(--font-sans);
+	.verify-caption {
+		font-family: var(--font-serif);
 		font-size: 0.75rem;
-		color: var(--color-ink-faint);
-		white-space: nowrap;
-		min-width: 2rem;
-	}
-
-	.toolbar-slider {
-		flex: 1;
-		accent-color: var(--color-d);
-		cursor: pointer;
-		height: 4px;
-	}
-
-	.toolbar-val {
-		font-family: var(--font-mono);
-		font-size: 0.75rem;
-		font-weight: 600;
-		color: var(--color-d);
-		min-width: 5.3em;
-		text-align: right;
-		font-variant-numeric: tabular-nums;
+		font-style: italic;
+		color: #7f7397;
 	}
 
 	.canvas-wrapper {
 		width: 100%;
 		aspect-ratio: 16 / 9;
-		border-radius: 0.75rem;
+		border-radius: 1.05rem;
 		overflow: hidden;
-		border: 1px solid var(--color-border-light);
+		border: 1px solid var(--tile-stroke);
 		position: relative;
-		margin: 0.3rem 0 0.65rem;
+		margin: 0.35rem 0 0.72rem;
+		background: #fff;
+		box-shadow: inset 0 1px 0 #fff;
 	}
 
 	canvas {
 		width: 100%;
 		height: 100%;
 		display: block;
+	}
+
+	.controls-panel {
+		display: grid;
+		gap: 0.22rem;
+		background: linear-gradient(180deg, #ffffff80 0%, #f5f3fb 100%);
+		border: 1px solid #e3dae9;
+		border-radius: 1rem;
+		padding: 0.28rem 0.62rem 0.44rem;
+	}
+
+	.toolbar {
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: center;
+		gap: 0.7rem;
+		padding: 0.28rem 0;
+	}
+
+	.toolbar-lbl {
+		font-family: var(--font-sans);
+		font-size: 0.74rem;
+		font-weight: 600;
+		color: #7e7590;
+		white-space: nowrap;
+		min-width: 2rem;
+	}
+
+	.toolbar-slider {
+		flex: 1;
+		cursor: pointer;
+		height: 5px;
+		appearance: none;
+		background: linear-gradient(90deg, #7c3aed, #a78bfa);
+		border-radius: 999px;
+		outline: none;
+	}
+
+	.toolbar-slider::-webkit-slider-thumb {
+		appearance: none;
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: #7c3aed;
+		border: 2px solid #f8f4ff;
+		box-shadow: 0 2px 6px rgba(124, 58, 237, 0.38);
+	}
+
+	.toolbar-slider::-moz-range-thumb {
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: #7c3aed;
+		border: 2px solid #f8f4ff;
+		box-shadow: 0 2px 6px rgba(124, 58, 237, 0.38);
+	}
+
+	.toolbar-val {
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: #7c3aed;
+		min-width: 6.2em;
+		text-align: right;
+		font-variant-numeric: tabular-nums;
 	}
 
 	@media (max-width: 760px) {
@@ -428,7 +515,11 @@
 
 		.verify-value,
 		.stat-cell strong {
-			font-size: 0.84rem;
+			font-size: 0.88rem;
+		}
+
+		.toolbar-val {
+			min-width: 5.2em;
 		}
 	}
 </style>

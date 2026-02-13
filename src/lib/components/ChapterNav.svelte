@@ -19,6 +19,7 @@
 
 	let isPastHero = $state(false);
 	let isOpen = $state(false);
+	let railCollapsed = $state(false);
 	let activeId = $state('');
 
 	let activeIndex = $derived.by(() => {
@@ -51,8 +52,20 @@
 		target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 	}
 
+	function toggleRailCollapsed() {
+		railCollapsed = !railCollapsed;
+		if (typeof window !== 'undefined') {
+			window.localStorage.setItem('toc-rail-collapsed', railCollapsed ? '1' : '0');
+		}
+	}
+
 	onMount(() => {
 		if (mode !== 'floating') return;
+
+		const storedRailState = window.localStorage.getItem('toc-rail-collapsed');
+		if (storedRailState === '1') {
+			railCollapsed = true;
+		}
 
 		let rafPending = false;
 
@@ -138,32 +151,49 @@
 		</ol>
 	</nav>
 {:else if isPastHero}
-	<aside class="toc-rail" aria-label="Chapter navigator">
+	<aside class="toc-rail" class:collapsed={railCollapsed} aria-label="Chapter navigator">
 		<header>
 			<p class="toc-rail-eyebrow">Chapter Navigator</p>
-			<p class="toc-rail-progress">{progressText}</p>
+			<button
+				class="toc-rail-collapse"
+				type="button"
+				onclick={toggleRailCollapsed}
+				aria-label={railCollapsed ? 'Expand chapter navigator' : 'Collapse chapter navigator'}
+				aria-expanded={!railCollapsed}
+			>
+				<span class="toc-rail-collapse-icon-wrap" aria-hidden="true">
+					<svg class="toc-rail-collapse-icon toc-rail-collapse-icon-list" viewBox="0 0 16 16" fill="none">
+						<circle cx="2.6" cy="3.8" r="1" fill="currentColor"></circle>
+						<circle cx="2.6" cy="8" r="1" fill="currentColor"></circle>
+						<circle cx="2.6" cy="12.2" r="1" fill="currentColor"></circle>
+						<path d="M5 3.8H13M5 8H13M5 12.2H13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path>
+					</svg>
+					<svg class="toc-rail-collapse-icon toc-rail-collapse-icon-close" viewBox="0 0 16 16" fill="none">
+						<path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+					</svg>
+				</span>
+			</button>
 		</header>
-		<div class="toc-rail-meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={progressPercent}>
-			<div class="toc-rail-meter-fill" style={`width: ${progressPercent}%`}></div>
+		<div class="toc-rail-body" aria-hidden={railCollapsed}>
+			<div class="toc-rail-meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={progressPercent}>
+				<div class="toc-rail-meter-fill" style={`width: ${progressPercent}%`}></div>
+			</div>
+			<ol>
+				{#each chapters as chapter (chapter.id)}
+					<li class:active={activeId === chapter.id}>
+						<button type="button" onclick={() => jumpTo(chapter.id)}>
+							<span class="toc-rail-number">{chapter.number}</span>
+							<span class="toc-rail-main">
+								<span class="toc-rail-title">{chapter.title}</span>
+								{#if chapter.subtitle}
+									<span class="toc-rail-subtitle">{chapter.subtitle}</span>
+								{/if}
+							</span>
+						</button>
+					</li>
+				{/each}
+			</ol>
 		</div>
-		<p class="toc-rail-active">
-			Now reading <strong>{activeChapter?.number}. {activeChapter?.title}</strong>
-		</p>
-		<ol>
-			{#each chapters as chapter (chapter.id)}
-				<li class:active={activeId === chapter.id}>
-					<button type="button" onclick={() => jumpTo(chapter.id)}>
-						<span class="toc-rail-number">{chapter.number}</span>
-						<span class="toc-rail-main">
-							<span class="toc-rail-title">{chapter.title}</span>
-							{#if chapter.subtitle}
-								<span class="toc-rail-subtitle">{chapter.subtitle}</span>
-							{/if}
-						</span>
-					</button>
-				</li>
-			{/each}
-		</ol>
 	</aside>
 
 	<button
@@ -343,17 +373,30 @@
 		right: 1rem;
 		top: 50%;
 		transform: translateY(-50%);
+		transform-origin: right center;
 		z-index: 52;
 		display: none;
-		width: min(18.25rem, calc(100vw - 1.5rem));
-		padding: 0.75rem;
-		border: 1px solid var(--color-border-light);
-		border-radius: 0.9rem;
+		width: min(17.5rem, calc(100vw - 1.5rem));
+		padding: 0.68rem;
+		border: 1px solid color-mix(in srgb, var(--color-border-light) 78%, white 22%);
+		border-radius: 0.95rem;
 		background:
-			radial-gradient(circle at 94% 4%, rgba(168, 85, 247, 0.13), transparent 40%),
-			linear-gradient(170deg, rgba(255, 255, 255, 0.97), rgba(247, 250, 255, 0.97));
-		box-shadow: 0 16px 36px rgba(18, 24, 33, 0.12);
+			radial-gradient(circle at 94% 6%, rgba(168, 85, 247, 0.08), transparent 45%),
+			linear-gradient(172deg, rgba(255, 255, 255, 0.97), rgba(251, 250, 255, 0.95));
+		box-shadow: 0 14px 30px rgba(18, 24, 33, 0.1);
 		backdrop-filter: blur(2px);
+		overflow: clip;
+		--toc-motion: cubic-bezier(0.22, 1, 0.36, 1);
+		transition:
+			width 0.24s var(--toc-motion),
+			padding 0.24s var(--toc-motion),
+			border-radius 0.24s var(--toc-motion);
+	}
+
+	.toc-rail.collapsed {
+		width: 3rem;
+		padding: 0.5rem 0.45rem;
+		border-radius: 0.9rem;
 	}
 
 	@media (min-width: 1280px) {
@@ -365,52 +408,143 @@
 	.toc-rail header {
 		display: flex;
 		justify-content: space-between;
-		align-items: baseline;
-		margin-bottom: 0.4rem;
+		align-items: center;
+		margin-bottom: 0.46rem;
+		min-height: 1.9rem;
+		transition: margin-bottom 0.24s var(--toc-motion);
 	}
 
-	.toc-rail-progress {
-		margin: 0;
-		font-family: var(--font-sans);
-		font-size: 0.73rem;
-		font-weight: 700;
-		color: var(--color-d);
+	.toc-rail.collapsed header {
+		justify-content: center;
+		margin-bottom: 0;
+	}
+
+	.toc-rail-eyebrow {
+		white-space: nowrap;
+		max-width: 11rem;
+		overflow: hidden;
+		transition:
+			max-width 0.24s var(--toc-motion),
+			opacity 0.16s ease,
+			transform 0.2s var(--toc-motion);
+	}
+
+	.toc-rail.collapsed .toc-rail-eyebrow {
+		max-width: 0;
+		opacity: 0;
+		transform: translateX(0.2rem);
+	}
+
+	.toc-rail-collapse {
+		width: 1.9rem;
+		height: 1.9rem;
+		border: none;
+		border-radius: 0.58rem;
+		background: color-mix(in srgb, var(--color-d-soft) 60%, white 40%);
+		color: color-mix(in srgb, var(--color-d) 82%, #6d28d9 18%);
+		display: grid;
+		place-items: center;
+		flex-shrink: 0;
+		position: relative;
+		cursor: pointer;
+		transition:
+			background-color 0.16s ease,
+			color 0.16s ease;
+	}
+
+	.toc-rail-collapse:hover {
+		background: color-mix(in srgb, var(--color-d-soft) 78%, white 22%);
+	}
+
+	.toc-rail-collapse:focus-visible {
+		outline: 2px solid color-mix(in srgb, var(--color-d) 70%, white 30%);
+		outline-offset: 2px;
+	}
+
+	.toc-rail-collapse-icon-wrap {
+		display: block;
+		width: 0.98rem;
+		height: 0.98rem;
+		position: relative;
+	}
+
+	.toc-rail-collapse-icon {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		inset: 0;
+		transition:
+			opacity 0.16s ease,
+			transform 0.2s var(--toc-motion);
+	}
+
+	.toc-rail-collapse-icon-list {
+		opacity: 0;
+		transform: scale(0.84) rotate(-8deg);
+	}
+
+	.toc-rail-collapse-icon-close {
+		opacity: 1;
+		transform: scale(1) rotate(0deg);
+	}
+
+	.toc-rail.collapsed .toc-rail-collapse-icon-list {
+		opacity: 1;
+		transform: scale(1) rotate(0deg);
+	}
+
+	.toc-rail.collapsed .toc-rail-collapse-icon-close {
+		opacity: 0;
+		transform: scale(0.84) rotate(8deg);
+	}
+
+	.toc-rail-body {
+		opacity: 1;
+		max-height: 80vh;
+		visibility: visible;
+		transform: translateX(0);
+		transition:
+			max-height 0.24s var(--toc-motion),
+			opacity 0.18s ease,
+			transform 0.2s var(--toc-motion),
+			visibility 0s linear;
+	}
+
+	.toc-rail.collapsed .toc-rail-body {
+		opacity: 0;
+		max-height: 0;
+		visibility: hidden;
+		transform: translateX(0.35rem);
+		pointer-events: none;
+		transition:
+			max-height 0.2s var(--toc-motion),
+			opacity 0.12s ease,
+			transform 0.16s ease,
+			visibility 0s linear 0.2s;
 	}
 
 	.toc-rail-meter {
 		height: 0.32rem;
-		background: color-mix(in srgb, var(--color-border-light) 75%, white 25%);
+		background: color-mix(in srgb, var(--color-d-soft) 72%, white 28%);
 		border-radius: 999px;
 		overflow: hidden;
 	}
 
 	.toc-rail-meter-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #7c3aed, #2563eb);
+		background: linear-gradient(90deg, #8b5cf6 0%, #a855f7 55%, #d8b4fe 100%);
 		transition: width 0.18s ease;
-	}
-
-	.toc-rail-active {
-		margin: 0.5rem 0 0.6rem;
-		font-family: var(--font-sans);
-		font-size: 0.72rem;
-		line-height: 1.35;
-		color: var(--color-ink-faint);
-	}
-
-	.toc-rail-active strong {
-		color: var(--color-ink-light);
-		font-weight: 700;
 	}
 
 	.toc-rail ol {
 		display: grid;
 		gap: 0.2rem;
+		margin-top: 0.55rem;
 	}
 
 	.toc-rail li button {
 		width: 100%;
-		border: 1px solid transparent;
+		border: none;
 		background: none;
 		display: flex;
 		align-items: center;
@@ -419,25 +553,24 @@
 		border-radius: 0.5rem;
 		text-align: left;
 		cursor: pointer;
-		transition:
-			background-color 0.16s ease,
-			border-color 0.16s ease,
-			transform 0.16s ease;
+		transition: background-color 0.16s ease;
 	}
 
 	.toc-rail li button:hover {
-		background: color-mix(in srgb, var(--color-d-soft) 70%, white 30%);
-		border-color: color-mix(in srgb, var(--color-border) 65%, #a855f7 35%);
+		background: rgba(168, 85, 247, 0.11);
 	}
 
 	.toc-rail li.active button {
-		background: color-mix(in srgb, var(--color-d-glow) 70%, white 30%);
-		border-color: color-mix(in srgb, var(--color-border) 55%, #7c3aed 45%);
-		transform: translateX(-0.05rem);
+		background: rgba(168, 85, 247, 0.14);
+	}
+
+	.toc-rail li.active .toc-rail-title,
+	.toc-rail li.active .toc-rail-number {
+		color: var(--color-d);
 	}
 
 	.toc-rail li.active .toc-rail-title {
-		color: var(--color-d);
+		font-weight: 700;
 	}
 
 	.toc-mobile-toggle {
@@ -527,7 +660,7 @@
 	}
 
 	.toc-mobile-drawer li.active button {
-		background: var(--color-d-glow);
+		background: rgba(168, 85, 247, 0.14);
 	}
 
 	.toc-mobile-drawer li.active .toc-title {

@@ -201,9 +201,16 @@
 		position: relative;
 		overflow: hidden;
 		background:
-			radial-gradient(120% 95% at 8% 12%, rgba(26, 60, 112, 0.14) 0%, transparent 50%),
-			radial-gradient(115% 90% at 92% 88%, rgba(143, 88, 40, 0.12) 0%, transparent 54%),
-			linear-gradient(180deg, #f5f2f8 0%, #f9f7fc 55%, #f3f7ff 100%);
+			radial-gradient(126% 96% at 8% 12%, rgba(26, 60, 112, 0.12) 0%, transparent 56%),
+			radial-gradient(118% 92% at 95% 14%, rgba(163, 116, 74, 0.07) 0%, transparent 64%),
+			linear-gradient(
+				180deg,
+				#f5f2f8 0%,
+				#f8f7fb 44%,
+				#f4f7fb 74%,
+				#f8f8f9 90%,
+				var(--color-paper) 100%
+			);
 	}
 
 	.hero::before,
@@ -211,6 +218,7 @@
 		content: '';
 		position: absolute;
 		pointer-events: none;
+		z-index: 0;
 	}
 
 	.hero::before {
@@ -224,13 +232,17 @@
 	}
 
 	.hero::after {
-		width: min(44rem, 78vw);
-		aspect-ratio: 1;
-		right: -13rem;
-		bottom: -20rem;
-		border-radius: 50%;
-		background: radial-gradient(circle, rgba(180, 114, 64, 0.16) 0%, rgba(180, 114, 64, 0) 74%);
-		filter: blur(8px);
+		left: 0;
+		right: 0;
+		bottom: -1px;
+		height: clamp(5rem, 14vh, 8rem);
+		background: linear-gradient(
+			180deg,
+			rgba(253, 251, 247, 0) 0%,
+			rgba(253, 251, 247, 0.48) 45%,
+			rgba(253, 251, 247, 0.84) 78%,
+			var(--color-paper) 100%
+		);
 	}
 
 	.hero-shell {
