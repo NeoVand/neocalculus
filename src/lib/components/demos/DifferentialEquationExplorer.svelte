@@ -24,7 +24,7 @@
 		const segments: { x1: number; y1: number; x2: number; y2: number }[] = [];
 		const halfLength = 10;
 		for (let t = 0.25; t < tMax; t += 0.5) {
-			for (let y = 0.5; y < yMax; y += 0.75) {
+			for (let y = 0.75; y < yMax; y += 1.5) {
 				const pixelSlope = -(k * y) * (plotHeight / yMax) / (plotWidth / tMax);
 				const angle = Math.atan(pixelSlope);
 				const dx = halfLength * Math.cos(angle);
@@ -105,11 +105,9 @@
 			</defs>
 
 			{#each [0, 1, 2, 3, 4, 5] as t (t)}
-				<line class="grid" x1={sx(t)} y1={margin.top} x2={sx(t)} y2={margin.top + plotHeight} />
 				<text class="tick" x={sx(t)} y={height - 20} text-anchor="middle">{t}</text>
 			{/each}
 			{#each [0, 2, 4, 6, 8] as y (y)}
-				<line class="grid" x1={margin.left} y1={sy(y)} x2={margin.left + plotWidth} y2={sy(y)} />
 				<text class="tick" x={margin.left - 13} y={sy(y) + 4} text-anchor="end">{y}</text>
 			{/each}
 
@@ -159,7 +157,7 @@
 		padding: 0.5rem;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.75rem;
-		background: linear-gradient(180deg, #fff 0%, rgba(37, 99, 235, 0.025) 100%);
+		background: var(--plot-background);
 	}
 
 	.plot-key {
@@ -186,28 +184,23 @@
 	}
 
 	.plot-key .field-swatch {
-		background: color-mix(in srgb, var(--color-d) 45%, white);
+		background: color-mix(in srgb, var(--plot-tangent) 68%, var(--plot-axis));
 	}
 
 	.plot-key .solution-swatch {
-		background: var(--color-result);
+		background: var(--plot-curve);
 	}
 
 	.plot-key .start-swatch {
 		width: 0.48rem;
 		height: 0.48rem;
-		background: #f59e0b;
+		background: var(--plot-point);
 	}
 
 	svg {
 		display: block;
 		width: 100%;
 		height: auto;
-	}
-
-	.grid {
-		stroke: var(--color-border-light);
-		stroke-width: 1;
 	}
 
 	.axis {
@@ -230,22 +223,22 @@
 	}
 
 	.field-mark {
-		stroke: color-mix(in srgb, var(--color-d) 45%, white);
+		stroke: color-mix(in srgb, var(--plot-tangent) 68%, var(--plot-axis));
 		stroke-width: 1.6;
 		stroke-linecap: round;
 	}
 
 	.solution {
 		fill: none;
-		stroke: var(--color-result);
-		stroke-width: 4;
+		stroke: var(--plot-curve);
+		stroke-width: 3;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 	}
 
 	.initial-point {
-		fill: #f59e0b;
-		stroke: #fff;
+		fill: var(--plot-point);
+		stroke: var(--plot-background);
 		stroke-width: 2;
 	}
 
@@ -255,15 +248,15 @@
 	}
 
 	.endpoint {
-		fill: var(--color-result);
-		stroke: #fff;
+		fill: var(--plot-curve);
+		stroke: var(--plot-background);
 		stroke-width: 2;
 	}
 
 	.endpoint-label {
 		font-size: 12px;
 		font-weight: 650;
-		fill: var(--color-result);
+		fill: var(--plot-curve);
 	}
 
 	@media (max-width: 700px) {
