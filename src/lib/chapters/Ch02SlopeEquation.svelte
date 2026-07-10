@@ -1,20 +1,17 @@
 <script lang="ts">
 	import Katex from '$lib/components/Katex.svelte';
 	import Callout from '$lib/components/Callout.svelte';
-	import Figure from '$lib/components/Figure.svelte';
 	import Exercise from '$lib/components/Exercise.svelte';
-	import HistoryBox from '$lib/components/HistoryBox.svelte';
-	import DigDeeper from '$lib/components/DigDeeper.svelte';
+	import RevealBox from '$lib/components/RevealBox.svelte';
 	import ChapterSummary from '$lib/components/ChapterSummary.svelte';
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
-	import StandardCalcBox from '$lib/components/StandardCalcBox.svelte';
-	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
 	import InlinePlot from '$lib/components/InlinePlot.svelte';
 	import InfinitesimalTrig from '$lib/components/demos/InfinitesimalTrig.svelte';
 	import AlgebraMachine from '$lib/components/demos/AlgebraMachine.svelte';
 	import SlopeEquationMachine from '$lib/components/demos/SlopeEquationMachine.svelte';
 	import AngleAdditionLemma from '$lib/components/figures/AngleAdditionLemma.svelte';
 	import { reveal } from '$lib/utils/scroll';
+
 	const r = String.raw;
 </script>
 
@@ -24,351 +21,199 @@
 			<span class="chapter-number">Chapter 2</span>
 			<h2 class="chapter-title" id="ch2-slope-equation">The Slope Equation</h2>
 			<div class="chapter-epigraph">
-				<blockquote>
-					"It is useful to solve differential equations by means of infinite series, but I am
-					surprised that no one likes the method of infinitely small quantities, which is shorter
-					and more direct."
-				</blockquote>
-				<p class="epigraph-attr">— Gottfried Wilhelm Leibniz, letter to Johann Bernoulli, 1695</p>
+				<blockquote>“If the derivative is a coefficient, how do we find it?”</blockquote>
+				<p class="epigraph-attr">The task of this chapter</p>
 			</div>
 			<hr class="chapter-divider" />
 		</div>
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				A ball is falling. Its height at time <Katex math="t" /> is <Katex
-					math={r`h(t) = 100 - 5t^2`}
-				/> meters. How fast is it falling at <Katex math="t = 3" /> seconds?
+				Chapter 1 ended with one exact first-order equation. For a smooth function and a first-order
+				displacement <Katex math="d" />,
+			</p>
+		</div>
+
+		<div class="key-equation" use:reveal>
+			<Katex math={r`f(x+d)=f(x)+f'(x)d`} display />
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>
+				The equation separates the output into two pieces: the original value
+				<Katex math="f(x)" /> and the first-order change <Katex math="f'(x)d" />. This chapter turns
+				that observation into a repeatable calculation.
+			</p>
+		</div>
+
+		<Callout type="key-idea" title="The Coefficient-Extraction Method">
+			<p>
+				<strong>1. Change the input.</strong> Replace <Katex math="x" /> by <Katex math="x+d" />.
 			</p>
 			<p>
-				In traditional calculus, answering this requires limits — taking a ratio, letting the
-				denominator "approach" zero without ever reaching it, and hoping the expression simplifies.
-				In this chapter's infinitesimal model, the core derivation is algebraic coefficient
-				extraction.
+				<strong>2. Simplify.</strong> Use ordinary algebra together with <Katex math="d^2=0" />.
+			</p>
+			<p>
+				<strong>3. Read the coefficient.</strong> Rewrite the result as
+				<Katex math={r`f(x)+(\text{coefficient})d`} />. That coefficient is
+				<Katex math="f'(x)" />.
+			</p>
+		</Callout>
+
+		<div class="neo-prose" use:reveal>
+			<h3>What the coefficient tells us</h3>
+			<p>
+				If an input changes by a first-order amount <Katex math="d" />, then the output changes by
+				<Katex math="f'(x)d" />. The coefficient <Katex math="f'(x)" /> therefore answers a simple question:
+				how much output change belongs to one unit of input change at this point?
+			</p>
+			<p>
+				On a graph, that coefficient is the slope of the tangent line. In an applied problem, it is
+				an instantaneous rate. Its units are always “output units per input unit.” If height is
+				measured in meters and time in seconds, its derivative is measured in meters per second.
+			</p>
+			<p>
+				For an ordinary finite step <Katex math="\Delta x" />, the same coefficient gives the local
+				line prediction
+			</p>
+		</div>
+
+		<div class="key-equation" use:reveal>
+			<Katex math={r`f(a+\Delta x)\approx f(a)+f'(a)\Delta x`} display />
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>
+				The approximation sign matters: <Katex math="\Delta x" /> is an ordinary number, so a finite gap
+				can remain. In the lab below, move <Katex math="\Delta x" /> and increase the zoom. The blue segment
+				measures that gap.
 			</p>
 		</div>
 	</div>
 
 	<div use:reveal>
-		<SlopeEquationMachine />
+		<figure class="neo-figure">
+			<SlopeEquationMachine />
+			<figcaption>
+				<span class="figure-number">Figure 2.1.</span>
+				A finite input step leaves a visible gap between the curve and its local-line prediction.
+			</figcaption>
+		</figure>
 	</div>
 
 	<div class="content-width">
-		<!-- ═══ SECTION: The Slope Equation ═══ -->
-		<Callout type="theorem" title="The Slope Equation">
-			<p>
-				For any smooth function <Katex math="f" /> in this setting, and any infinitesimal
-				<span class="d-highlight">d</span>, there exists a unique number <Katex math={r`f'(x)`} /> such
-				that:
-			</p>
-			<Katex math={r`f(x + d) = f(x) + f'(x) \cdot d`} display />
-			<p>
-				The quantity <Katex math={r`f'(x)`} /> is the <strong>derivative</strong> — the coefficient
-				of <span class="d-highlight">d</span>.
-			</p>
-		</Callout>
-
 		<div class="neo-prose" use:reveal>
 			<p>
-				This follows directly from the Kock-Lawvere axiom we met in Chapter 1. Since any smooth
-				function restricted to an infinitesimal interval is uniquely of the form <Katex
-					math="f(0) + s \cdot d"
-				/>, the slope equation holds for every smooth function. The unique number <Katex math="s" /> is
-				what we call <Katex math={r`f'(x)`} /> — the derivative of <Katex math="f" /> at <Katex
-					math="x"
-				/>.
-			</p>
-		</div>
-
-		<!-- ═══ SECTION: What the derivative means ═══ -->
-		<div class="neo-prose" use:reveal>
-			<h3>What the derivative means</h3>
-			<p>Before we compute a single derivative, let's understand what this number tells us.</p>
-			<p>
-				<strong>Geometrically:</strong>
-				<Katex math={r`f'(x)`} /> is the <em>slope of the tangent line</em> to the graph of <Katex
-					math="f"
-				/> at the point <Katex math="x" />. At the infinitesimal scale, the curve <em>is</em> its tangent
-				line (by microstraightness), so the derivative is the slope of the curve itself.
-			</p>
-			<p>
-				<strong>Physically:</strong>
-				<Katex math={r`f'(x)`} /> is the <em>instantaneous rate of change</em> of <Katex
-					math="f"
-				/>. If <Katex math="f(t)" /> is the position of a car at time <Katex math="t" />, then <Katex
-					math={r`f'(t)`}
-				/> is its velocity — how fast the position is changing at that instant.
-			</p>
-			<p>
-				<strong>Units:</strong> If <Katex math="x" /> is in seconds and <Katex math="f(x)" /> is in meters,
-				then <Katex math={r`f'(x)`} /> is in meters per second. The derivative always has units of "output
-				per input."
-			</p>
-		</div>
-
-		<div class="neo-prose" use:reveal>
-			<p>
-				The slope equation also immediately gives us the <strong
-					>equation of the tangent line</strong
-				>
-				at any point <Katex math="a" />:
+				The local line through <Katex math={r`(a,f(a))`} /> with slope <Katex math="f'(a)" /> has the
+				equation
 			</p>
 		</div>
 
 		<div class="key-equation" use:reveal>
-			<Katex math={r`y = f(a) + f'(a)(x - a)`} display />
+			<Katex math={r`y=f(a)+f'(a)(x-a)`} display />
 		</div>
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				This is the line through <Katex math={r`(a, f(a))`} /> with slope <Katex math={r`f'(a)`} /> —
-				the tangent line. In Neocalculus, at infinitesimal scale we work with this exact first-order model.
-			</p>
-			<p>
-				Now let's see the slope equation work on the core function families in this course. The
-				technique is the same: expand <Katex math="f(x + d)" />, simplify using <Katex
-					math="d^2 = 0"
-				/>, and read off the coefficient of <Katex math="d" />.
-			</p>
-		</div>
-
-		<!-- ═══ SECTION: Basic rules ═══ -->
-		<div class="neo-prose" use:reveal>
-			<h3>The simplest rules</h3>
-			<p>
-				Before tackling individual functions, let's establish the rules for combining derivatives.
+				Now consider a falling ball whose height is <Katex math={r`h(t)=100-5t^2`} /> meters. Its derivative
+				will tell us its vertical velocity.
 			</p>
 		</div>
 
 		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of a constant: (c)' = 0</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`f(x+d) = c = c + 0 \cdot d`} display /></div>
-				<span class="step-note">constant doesn't change</span>
-			</div>
-			<div class="step step-result">
-				<div class="step-math"><Katex math={r`f'(x) = 0`} display /></div>
-				<span class="step-note">makes sense: no change ✓</span>
-			</div>
-		</div>
-
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of a linear function: (mx + b)' = m</div>
+			<div class="derivation-title">Velocity of the falling ball</div>
 			<div class="step">
 				<div class="step-math">
-					<Katex math={r`f(x+d) = m(x+d) + b = mx + b + m \cdot d`} display />
+					<Katex math={r`h(t+d)=100-5(t+d)^2`} display />
 				</div>
-				<span class="step-note">distribute</span>
-			</div>
-			<div class="step step-result">
-				<div class="step-math"><Katex math={r`f'(x) = m`} display /></div>
-				<span class="step-note">the slope of a line is its slope ✓</span>
-			</div>
-		</div>
-
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Sum rule: (f + g)' = f' + g'</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`(f+g)(x+d) = f(x+d) + g(x+d)`} display /></div>
-				<span class="step-note">definition</span>
-			</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`= [f(x) + f'(x)d] + [g(x) + g'(x)d]`} display /></div>
-				<span class="step-note">slope equation on each</span>
-			</div>
-			<div class="step step-result">
-				<div class="step-math">
-					<Katex math={r`= (f+g)(x) + [f'(x) + g'(x)] \cdot d`} display />
-				</div>
-				<span class="step-note">(f+g)' = f' + g' ✓</span>
-			</div>
-		</div>
-
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Constant multiple rule: (cf)' = cf'</div>
-			<div class="step">
-				<div class="step-math">
-					<Katex
-						math={r`(cf)(x+d) = c \cdot f(x+d) = c[f(x) + f'(x)d] = cf(x) + cf'(x) \cdot d`}
-						display
-					/>
-				</div>
-				<span class="step-note">factor out c</span>
-			</div>
-			<div class="step step-result">
-				<div class="step-math"><Katex math={r`(cf)' = cf'`} display /></div>
-				<span class="step-note">✓</span>
-			</div>
-		</div>
-
-		<!-- ═══ SECTION: Polynomials ═══ -->
-		<div class="neo-prose" use:reveal>
-			<h3>Polynomials</h3>
-			<p>Let's start with the simplest functions and work our way up.</p>
-		</div>
-
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of x²</div>
-			<div class="step">
-				<div class="step-math"><Katex math="f(x+d) = (x+d)^2" display /></div>
-				<span class="step-note">substitute</span>
+				<div class="step-note">change the input</div>
 			</div>
 			<div class="step">
 				<div class="step-math">
-					<Katex math={r`= x^2 + 2xd + \textcolor{#ef4444}{d^2}`} display />
+					<Katex math={r`=100-5t^2-10td-5d^2`} display />
 				</div>
-				<span class="step-note">expand</span>
+				<div class="step-note">expand</div>
 			</div>
 			<div class="step">
-				<div class="step-math"><Katex math={r`= x^2 + 2xd`} display /></div>
-				<span class="step-note">d² = 0</span>
+				<div class="step-math"><Katex math={r`=h(t)+(-10t)d`} display /></div>
+				<div class="step-note"><Katex math="d^2=0" /></div>
 			</div>
 			<div class="step step-result">
-				<div class="step-math"><Katex math="f'(x) = 2x" display /></div>
-				<span class="step-note">coefficient of d ✓</span>
+				<div class="step-math"><Katex math={r`h'(t)=-10t`} display /></div>
+				<div class="step-note">coefficient of <Katex math="d" /></div>
 			</div>
 		</div>
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				Let's apply this. For <Katex math="f(x) = x^2" />, we get <Katex math="f'(3) = 6" />. This
-				means the tangent line at <Katex math="x = 3" /> has slope 6 — the curve is rising 6 units for
-				every 1 unit to the right.
+				At <Katex math="t=3" />, the velocity is <Katex math={r`h'(3)=-30`} /> meters per second. The
+				negative sign says the height is decreasing; the ball’s downward speed is 30 meters per second.
 			</p>
-		</div>
 
-		<InlinePlot
-			fn={(x) => x * x}
-			domain={[-2.5, 2.5]}
-			tangentAt={1}
-			caption="f(x) = x² with tangent at x = 1 (slope = 2)"
-		/>
-
-		<div class="neo-prose" use:reveal>
+			<h3>Powers: one pattern</h3>
 			<p>
-				Now let's answer the opening question: how fast is a ball falling at <Katex math="t = 3" />?
+				Two warm-ups require almost no calculation. A constant never changes, so
+				<Katex math={r`(c)'=0`} />. A line <Katex math={r`f(x)=mx+b`} /> already has the form
+				<Katex math={r`f(x+d)=f(x)+md`} />, so <Katex math={r`f'(x)=m`} />.
 			</p>
+			<p>The same pattern handles every positive integer power. The binomial expansion begins</p>
 		</div>
 
 		<div class="derivation" use:reveal>
-			<div class="derivation-title">Example: velocity of a falling ball</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`h(t) = 100 - 5t^2`} display /></div>
-				<span class="step-note">height function</span>
-			</div>
+			<div class="derivation-title">The first-order part of a power</div>
 			<div class="step">
 				<div class="step-math">
-					<Katex math={r`h(t+d) = 100 - 5(t+d)^2 = 100 - 5t^2 - 10td`} display />
+					<Katex math={r`(x+d)^n=x^n+nx^{n-1}d+\binom{n}{2}x^{n-2}d^2+\cdots`} display />
 				</div>
-				<span class="step-note">expand, d² = 0</span>
-			</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`h'(t) = -10t`} display /></div>
-				<span class="step-note">velocity</span>
+				<div class="step-note">binomial expansion</div>
 			</div>
 			<div class="step step-result">
-				<div class="step-math"><Katex math={r`h'(3) = -30 \text{ m/s}`} display /></div>
-				<span class="step-note">falling at 30 m/s ✓</span>
+				<div class="step-math"><Katex math={r`(x+d)^n=x^n+nx^{n-1}d`} display /></div>
+				<div class="step-note">all later terms contain <Katex math="d^2" /></div>
 			</div>
-		</div>
-
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of x³</div>
-			<div class="step">
-				<div class="step-math"><Katex math="f(x+d) = (x+d)^3 " display /></div>
-				<span class="step-note">substitute</span>
-			</div>
-			<div class="step">
-				<div class="step-math">
-					<Katex math={r`= x^3 + 3x^2 d + \textcolor{#ef4444}{3xd^2 + d^3}`} display />
-				</div>
-				<span class="step-note">expand</span>
-			</div>
-			<div class="step">
-				<div class="step-math"><Katex math="= x^3 + 3x^2 d" display /></div>
-				<span class="step-note">d² = 0 kills higher terms</span>
-			</div>
-			<div class="step step-result">
-				<div class="step-math"><Katex math="f'(x) = 3x^2" display /></div>
-				<span class="step-note">coefficient of d ✓</span>
-			</div>
-		</div>
-
-		<div class="neo-prose" use:reveal>
-			<p>
-				See the pattern? For <em>any</em> positive integer power <Katex math="x^n" />, the binomial
-				expansion gives:
-			</p>
-			<Katex
-				math={r`(x+d)^n = x^n + nx^{n-1}d + \binom{n}{2}x^{n-2}\textcolor{#ef4444}{d^2} + \cdots`}
-				display
-			/>
-			<p>
-				Since <Katex math="d^2 = 0" /> kills every term from the second onward, only the first two survive:
-			</p>
 		</div>
 
 		<Callout type="theorem" title="The Power Rule">
-			<Katex math={r`\frac{d}{dx}\!\left(x^n\right) = nx^{n-1}`} display />
-			<p>
-				This holds for any positive integer <Katex math="n" />. We'll extend it to all real
-				exponents using the chain rule in Chapter 3.
-			</p>
+			<Katex math={r`f(x)=x^n\quad\Longrightarrow\quad f'(x)=nx^{n-1}`} display />
+			<p>This version holds for positive integers <Katex math="n" />.</p>
 		</Callout>
 
 		<div class="neo-prose" use:reveal>
-			<p>With the sum rule and power rule, we can now differentiate any polynomial:</p>
-		</div>
-
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Example: a multi-term polynomial</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`f(x) = 2x^3 - 5x^2 + x - 3`} display /></div>
-				<span class="step-note">given</span>
-			</div>
-			<div class="step">
-				<div class="step-math">
-					<Katex math={r`f'(x) = 2 \cdot 3x^2 - 5 \cdot 2x + 1 - 0`} display />
-				</div>
-				<span class="step-note">power rule + sum rule</span>
-			</div>
-			<div class="step step-result">
-				<div class="step-math"><Katex math={r`f'(x) = 6x^2 - 10x + 1`} display /></div>
-				<span class="step-note">✓</span>
-			</div>
-		</div>
-
-		<!-- ═══ SECTION: Rational & Radical ═══ -->
-		<div class="neo-prose" use:reveal>
-			<h3>Rational and radical functions</h3>
 			<p>
-				Neocalculus isn't limited to polynomials. The same rule handles functions that require
-				clever tricks in classical calculus.
+				The rule gives <Katex math={r`(x^2)'=2x`} />, <Katex math={r`(x^3)'=3x^2`} />, and
+				<Katex math={r`(x^4)'=4x^3`} /> without three separate proofs. Rules for combining several terms
+				will come in Chapter 3.
+			</p>
+
+			<h3>Two useful algebra tricks</h3>
+			<p>
+				Powers expand directly. Reciprocals and roots need one additional idea, but the goal is
+				unchanged: isolate the coefficient of <Katex math="d" />.
+			</p>
+			<p>
+				For the reciprocal, assume <Katex math="x\ne0" />. The product
+				<Katex math={r`(x+d)(x-d)=x^2-d^2=x^2`} /> gives the inverse of
+				<Katex math="x+d" /> immediately.
 			</p>
 		</div>
 
 		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of 1/x</div>
+			<div class="derivation-title">The reciprocal function</div>
 			<div class="step">
-				<div class="step-math"><Katex math={r`f(x+d) = \frac{1}{x+d}`} display /></div>
-				<span class="step-note">substitute</span>
+				<div class="step-math">
+					<Katex math={r`\frac{1}{x+d}=\frac{x-d}{x^2}`} display />
+				</div>
+				<div class="step-note"><Katex math={r`(x+d)(x-d)=x^2`} /></div>
 			</div>
 			<div class="step">
 				<div class="step-math">
-					<Katex
-						math={r`= \frac{1}{x+d} \cdot \frac{x-d}{x-d} = \frac{x-d}{x^2 - \textcolor{#ef4444}{d^2}} = \frac{x-d}{x^2}`}
-						display
-					/>
+					<Katex math={r`\frac{1}{x+d}=\frac1x-\frac{1}{x^2}d`} display />
 				</div>
-				<span class="step-note">conjugate, d² = 0</span>
-			</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`= \frac{1}{x} - \frac{d}{x^2}`} display /></div>
-				<span class="step-note">separate</span>
+				<div class="step-note">separate constant and first-order parts</div>
 			</div>
 			<div class="step step-result">
-				<div class="step-math"><Katex math={r`f'(x) = -\frac{1}{x^2}`} display /></div>
-				<span class="step-note">coefficient of d ✓</span>
+				<div class="step-math"><Katex math={r`\left(\frac1x\right)'=-\frac1{x^2}`} display /></div>
+				<div class="step-note">for <Katex math="x\ne0" /></div>
 			</div>
 		</div>
 
@@ -376,40 +221,40 @@
 			fn={(x) => 1 / x}
 			domain={[0.3, 5]}
 			tangentAt={1}
-			caption="f(x) = 1/x with tangent at x = 1 (slope = −1)"
+			caption="The reciprocal function and its local line at x = 1, where the slope is −1."
 		/>
 
+		<div class="neo-prose" use:reveal>
+			<p>
+				For the square root, assume <Katex math="x>0" />. Smoothness gives a unique coefficient
+				<Katex math="k" /> in <Katex math={r`\sqrt{x+d}=\sqrt{x}+kd`} />. Squaring both sides will
+				reveal it.
+			</p>
+		</div>
+
 		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of √x</div>
+			<div class="derivation-title">The square-root function</div>
 			<div class="step">
 				<div class="step-math">
-					<Katex
-						math={r`\sqrt{x+d} = \sqrt{x} + k \cdot d \quad \text{(find } k \text{)}`}
-						display
-					/>
+					<Katex math={r`x+d=(\sqrt{x}+kd)^2`} display />
 				</div>
-				<span class="step-note">K-L axiom guarantees this form</span>
+				<div class="step-note">square both sides</div>
 			</div>
 			<div class="step">
 				<div class="step-math">
-					<Katex
-						math={r`\text{Square: } x + d = x + 2k\sqrt{x}\,d + \textcolor{#ef4444}{k^2 d^2}`}
-						display
-					/>
+					<Katex math={r`x+d=x+2k\sqrt{x}\,d+k^2d^2`} display />
 				</div>
-				<span class="step-note">square both sides</span>
+				<div class="step-note">expand</div>
 			</div>
 			<div class="step">
-				<div class="step-math"><Katex math={r`x + d = x + 2k\sqrt{x}\,d`} display /></div>
-				<span class="step-note">d² = 0</span>
-			</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`1 = 2k\sqrt{x}`} display /></div>
-				<span class="step-note">match d coefficients (microcancellation)</span>
+				<div class="step-math"><Katex math={r`1=2k\sqrt{x}`} display /></div>
+				<div class="step-note">match the coefficients of <Katex math="d" /></div>
 			</div>
 			<div class="step step-result">
-				<div class="step-math"><Katex math={r`f'(x) = \frac{1}{2\sqrt{x}}`} display /></div>
-				<span class="step-note">✓</span>
+				<div class="step-math">
+					<Katex math={r`(\sqrt{x})'=\frac{1}{2\sqrt{x}}`} display />
+				</div>
+				<div class="step-note">for <Katex math="x>0" /></div>
 			</div>
 		</div>
 
@@ -417,459 +262,236 @@
 			fn={(x) => Math.sqrt(Math.max(x, 0))}
 			domain={[0, 5]}
 			tangentAt={1}
-			caption="f(x) = √x with tangent at x = 1 (slope = ½)"
+			caption="The square-root function and its local line at x = 1, where the slope is 1/2."
 		/>
 
-		<!-- ═══ SECTION: Trig ═══ -->
-		<div class="neo-prose" use:reveal>
-			<h3>Trigonometric functions</h3>
-			<p>
-				Here's where Neocalculus shines with a beautiful geometric argument. The key fact is that
-				for an infinitesimal angle <span class="d-highlight">d</span> on the unit circle:
-			</p>
-		</div>
-
-		<Callout type="key-idea" title="The Infinitesimal Triangle">
-			<p>
-				For infinitesimal <Katex math="d" />, draw a right triangle inscribed in the unit circle
-				with angle <Katex math="d" />. The hypotenuse has length 1 (the radius). By the Kock-Lawvere
-				axiom, the arc of length <Katex math="d" /> is a straight line (microstraightness), so:
-			</p>
-			<Katex math={r`\sin(d) = d, \qquad \cos(d) = \sqrt{1 - d^2} = \sqrt{1} = 1`} display />
-			<p>
-				These are <strong>exact</strong>, not approximations. The sine of an infinitesimal
-				<em>is</em>
-				that infinitesimal; the cosine <em>is</em> 1.
-			</p>
-		</Callout>
-
 		<div class="neo-prose" use:reveal>
 			<p>
-				The demo below lets you see this geometrically — as the angle shrinks toward the
-				infinitesimal, the chord, arc, and sine become identical:
+				We compared coefficients; we did not divide by <Katex math="d" />. The condition
+				<Katex math="x>0" /> also matters: the square-root graph does not have a finite slope at
+				<Katex math="x=0" />.
+			</p>
+
+			<h3>Angles and growth</h3>
+			<h4>Sine and cosine</h4>
+			<p>
+				The next demo uses an ordinary finite angle <Katex math="\theta" />, measured in radians. As <Katex
+					math="\theta"
+				/> approaches zero, the arc length and vertical coordinate approach one another, while the horizontal
+				coordinate approaches 1. The demo illustrates a limiting pattern; it does not turn a numerical
+				angle into an infinitesimal.
 			</p>
 		</div>
+	</div>
 
-		<div use:reveal>
+	<div use:reveal>
+		<figure class="neo-figure">
 			<InfinitesimalTrig />
-		</div>
+			<figcaption>
+				<span class="figure-number">Figure 2.2.</span>
+				For finite angles, the differences become small but remain numerical differences.
+			</figcaption>
+		</figure>
+	</div>
 
-		<Callout type="theorem" title="Lemma: Angle Addition Formulas (Geometric Proof)">
+	<div class="content-width">
+		<Callout type="key-idea" title="The First-Order Circle Facts">
+			<p>For a first-order angle <Katex math="d" /> measured in radians,</p>
+			<Katex math={r`\sin d=d,\qquad \cos d=1`} display />
 			<p>
-				Before differentiating trig functions, prove the identities once from unit-circle geometry.
+				These equations are exact for <Katex math="d^2=0" />. They are not equations for an ordinary
+				nonzero angle.
 			</p>
+		</Callout>
+
+		<RevealBox
+			title="Under the hood: the unit circle and angle addition"
+			subtitle="Optional geometry window"
+			tone="math"
+		>
+			<p>
+				At angle zero, the unit-circle point is <Katex math={r`(1,0)`} />. Radian measure makes
+				motion around the unit circle have unit speed, and the tangent direction there is vertical.
+				A first-order angle <Katex math="d" /> therefore moves the point to
+				<Katex math={r`(1,d)`} />. Since its coordinates are
+				<Katex math={r`(\cos d,\sin d)`} />, we obtain <Katex math={r`\cos d=1`} /> and
+				<Katex math={r`\sin d=d`} />.
+			</p>
+			<p>The remaining ingredients are the angle-addition identities:</p>
 			<AngleAdditionLemma />
-			<p>
-				Now the derivative derivations below are direct substitutions using <Katex math="d^2=0" />,
-				<Katex math={r`\sin d=d`} />, and <Katex math={r`\cos d=1`} />.
-			</p>
-		</Callout>
+		</RevealBox>
 
 		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of sin(x)</div>
+			<div class="derivation-title">The sine function</div>
 			<div class="step">
 				<div class="step-math">
-					<Katex math={r`\sin(x+d) = \sin x \cos d + \cos x \sin d`} display />
+					<Katex math={r`\sin(x+d)=\sin x\cos d+\cos x\sin d`} display />
 				</div>
-				<span class="step-note">angle addition formula</span>
+				<div class="step-note">angle addition</div>
 			</div>
 			<div class="step">
-				<div class="step-math"><Katex math={r`= \sin x \cdot 1 + \cos x \cdot d`} display /></div>
-				<span class="step-note">cos(d)=1, sin(d)=d</span>
+				<div class="step-math"><Katex math={r`\sin(x+d)=\sin x+(\cos x)d`} display /></div>
+				<div class="step-note"><Katex math={r`\cos d=1,\ \sin d=d`} /></div>
 			</div>
 			<div class="step step-result">
-				<div class="step-math"><Katex math={r`\sin'(x) = \cos x`} display /></div>
-				<span class="step-note">coefficient of d ✓</span>
+				<div class="step-math"><Katex math={r`(\sin x)'=\cos x`} display /></div>
+				<div class="step-note">coefficient of <Katex math="d" /></div>
 			</div>
 		</div>
 
 		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of cos(x)</div>
+			<div class="derivation-title">The cosine function</div>
 			<div class="step">
 				<div class="step-math">
-					<Katex math={r`\cos(x+d) = \cos x \cos d - \sin x \sin d`} display />
+					<Katex math={r`\cos(x+d)=\cos x\cos d-\sin x\sin d`} display />
 				</div>
-				<span class="step-note">angle addition</span>
+				<div class="step-note">angle addition</div>
 			</div>
 			<div class="step">
-				<div class="step-math"><Katex math={r`= \cos x - \sin x \cdot d`} display /></div>
-				<span class="step-note">cos(d)=1, sin(d)=d</span>
+				<div class="step-math"><Katex math={r`\cos(x+d)=\cos x-(\sin x)d`} display /></div>
+				<div class="step-note"><Katex math={r`\cos d=1,\ \sin d=d`} /></div>
 			</div>
 			<div class="step step-result">
-				<div class="step-math"><Katex math={r`\cos'(x) = -\sin x`} display /></div>
-				<span class="step-note">coefficient of d ✓</span>
-			</div>
-		</div>
-
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of tan(x)</div>
-			<div class="step">
-				<div class="step-math">
-					<Katex
-						math={r`\tan(x+d) = \frac{\sin(x+d)}{\cos(x+d)} = \frac{\sin x + \cos x \cdot d}{\cos x - \sin x \cdot d}`}
-						display
-					/>
-				</div>
-				<span class="step-note">substitute</span>
-			</div>
-			<div class="step">
-				<div class="step-math">
-					<Katex
-						math={r`= \frac{(\sin x + \cos x \, d)(\cos x + \sin x \, d)}{\cos^2 x - \textcolor{#ef4444}{\sin^2\!x\, d^2}}`}
-						display
-					/>
-				</div>
-				<span class="step-note">conjugate</span>
-			</div>
-			<div class="step">
-				<div class="step-math">
-					<Katex
-						math={r`= \frac{\sin x \cos x + d(\cos^2\!x + \sin^2\!x)}{\cos^2 x} = \tan x + \frac{d}{\cos^2 x}`}
-						display
-					/>
-				</div>
-				<span class="step-note">d²=0, Pythagorean identity</span>
-			</div>
-			<div class="step step-result">
-				<div class="step-math">
-					<Katex math={r`\tan'(x) = \frac{1}{\cos^2 x} = \sec^2 x`} display />
-				</div>
-				<span class="step-note">coefficient of d ✓</span>
-			</div>
-		</div>
-
-		<InlinePlot
-			fn={(x) => Math.sin(x)}
-			domain={[-4, 4]}
-			tangentAt={Math.PI / 4}
-			secondFn={(x) => Math.cos(x)}
-			caption="sin(x) (solid) and cos(x) (dashed blue). Tangent to sin at x = π/4."
-		/>
-
-		<StandardCalcBox>
-			<p>
-				In standard calculus, proving <Katex math={r`\sin'(x) = \cos x`} /> requires the squeeze theorem
-				to show <Katex math={r`\lim_{h \to 0} \frac{\sin h}{h} = 1`} />, which itself requires a
-				geometric area argument. In Neocalculus, the same result follows from one axiom
-				(microstraightness) and one identity (angle addition). Three lines.
-			</p>
-		</StandardCalcBox>
-
-		<!-- ═══ SECTION: Exponential & Log ═══ -->
-		<div class="neo-prose" use:reveal>
-			<h3>Exponential and logarithmic functions</h3>
-			<p>
-				The exponential function <Katex math="e^x" /> is one of the most important in all of mathematics.
-				We <em>define</em> it as the unique function that is its own derivative:
-			</p>
-		</div>
-
-		<Callout type="definition" title="The exponential function">
-			<p>
-				<Katex math="e^x" /> is defined as the unique function satisfying <Katex
-					math={r`f'(x) = f(x)`}
-				/> and <Katex math="f(0) = 1" />. It is "the function whose rate of change equals itself."
-			</p>
-			<p>
-				Such a function exists and is unique (by the existence theorem for differential equations).
-				This definition is not circular — it tells us <em>what property characterizes</em>
-				<Katex math="e^x" />, and the derivative follows directly.
-			</p>
-		</Callout>
-
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of eˣ and the infinitesimal exponential</div>
-			<div class="step">
-				<div class="step-math">
-					<Katex math={r`e^{x+d} = e^x + (e^x)' \cdot d = e^x + e^x \cdot d`} display />
-				</div>
-				<span class="step-note">slope equation + definition</span>
-			</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`= e^x(1+d)`} display /></div>
-				<span class="step-note">factor</span>
-			</div>
-			<div class="step">
-				<div class="step-math">
-					<Katex math={r`\text{But also } e^{x+d} = e^x \cdot e^d`} display />
-				</div>
-				<span class="step-note">exponential law</span>
-			</div>
-			<div class="step step-result">
-				<div class="step-math">
-					<Katex math={r`\therefore\; e^d = 1 + d \quad \text{for infinitesimal } d`} display />
-				</div>
-				<span class="step-note">the infinitesimal exponential ✓</span>
+				<div class="step-math"><Katex math={r`(\cos x)'=-\sin x`} display /></div>
+				<div class="step-note">coefficient of <Katex math="d" /></div>
 			</div>
 		</div>
 
 		<div class="neo-prose" use:reveal>
+			<h4>Exponential and logarithmic functions</h4>
 			<p>
-				This gives us one of the most beautiful facts in Neocalculus: <strong
-					>the number <Katex math="e" /> is the base whose infinitesimal power is <Katex
-						math="1 + d"
-					/></strong
-				>.
-			</p>
-		</div>
-
-		<InlinePlot
-			fn={(x) => Math.exp(x)}
-			domain={[-2, 3]}
-			tangentAt={1}
-			caption="f(x) = eˣ with tangent at x = 1 (slope = e ≈ 2.718). The tangent slope equals the function value!"
-		/>
-
-		<!-- General exponential -->
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of aˣ (general exponential)</div>
-			<div class="step">
-				<div class="step-math">
-					<Katex math={r`a^{x+d} = a^x \cdot a^d = a^x \cdot e^{d \ln a}`} display />
-				</div>
-				<span class="step-note"><Katex math={r`a^d = e^{d \ln a}`} /></span>
-			</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`= a^x(1 + d \ln a)`} display /></div>
-				<span class="step-note"
-					><Katex math={r`e^\varepsilon = 1 + \varepsilon`} /> for infinitesimal <Katex
-						math={r`\varepsilon = d\ln a`}
-					/></span
-				>
-			</div>
-			<div class="step step-result">
-				<div class="step-math"><Katex math={r`(a^x)' = a^x \ln a`} display /></div>
-				<span class="step-note">coefficient of d ✓</span>
-			</div>
-		</div>
-
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of ln(x)</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`y = \ln(x) \implies e^y = x`} display /></div>
-				<span class="step-note">inverse definition</span>
-			</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`e^{y + y'd} = x + d`} display /></div>
-				<span class="step-note">nudge both sides</span>
-			</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`e^y(1 + y'\!d) = x + d`} display /></div>
-				<span class="step-note"><Katex math={r`e^\varepsilon = 1+\varepsilon`} /></span>
-			</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`x + xy'\!d = x + d`} display /></div>
-				<span class="step-note"><Katex math="e^y = x" /></span>
-			</div>
-			<div class="step step-result">
-				<div class="step-math"><Katex math={r`\ln'(x) = \frac{1}{x}`} display /></div>
-				<span class="step-note">match d coefficients ✓</span>
-			</div>
-		</div>
-
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of log_a(x)</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`\log_a(x) = \frac{\ln x}{\ln a}`} display /></div>
-				<span class="step-note">change of base</span>
-			</div>
-			<div class="step step-result">
-				<div class="step-math"><Katex math={r`(\log_a x)' = \frac{1}{x \ln a}`} display /></div>
-				<span class="step-note">constant multiple rule ✓</span>
-			</div>
-		</div>
-
-		<HistoryBox name="Jacob Bernoulli" years="1655–1705">
-			<p>
-				The number <Katex math="e" /> was discovered by Bernoulli while studying compound interest. He
-				asked: what happens when you compound interest continuously? The answer is <Katex
-					math={r`e = \lim_{n \to \infty}(1 + 1/n)^n \approx 2.718`}
-				/>. In Neocalculus, we see this differently: <Katex math={r`e^d = 1 + d`} /> for infinitesimal
-				<Katex math="d" /> — <Katex math="e" /> is the base whose infinitesimal growth is exactly linear.
-			</p>
-		</HistoryBox>
-
-		<!-- ═══ SECTION: Inverse Trig ═══ -->
-		<div class="neo-prose" use:reveal>
-			<h4>Inverse trigonometric functions</h4>
-			<p>
-				The same "nudge both sides" technique works for any inverse function. If <Katex
-					math={r`y = f^{-1}(x)`}
-				/>, then <Katex math={r`f(y) = x`} />. Nudging both sides: <Katex
-					math={r`f'(y) \cdot y'd = d`}
-				/>, so:
+				Equal input steps on an exponential curve produce equal multiplication factors. The natural
+				base <Katex math="e" /> is normalized so that a first-order step satisfies
 			</p>
 		</div>
 
 		<div class="key-equation" use:reveal>
-			<Katex math={r`\left(f^{-1}\right)'(x) = \frac{1}{f'(f^{-1}(x))}`} display />
+			<Katex math={r`e^d=1+d`} display />
 		</div>
 
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of arcsin(x)</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`y = \arcsin(x) \implies \sin(y) = x`} display /></div>
-				<span class="step-note">inverse definition</span>
-			</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`\cos(y) \cdot y'\!d = d`} display /></div>
-				<span class="step-note">nudge: sin'(y)=cos(y)</span>
-			</div>
-			<div class="step">
-				<div class="step-math">
-					<Katex math={r`y' = \frac{1}{\cos(y)} = \frac{1}{\sqrt{1-x^2}}`} display />
-				</div>
-				<span class="step-note">Pythagorean identity</span>
-			</div>
-			<div class="step step-result">
-				<div class="step-math">
-					<Katex math={r`\arcsin'(x) = \frac{1}{\sqrt{1-x^2}}`} display />
-				</div>
-				<span class="step-note">✓</span>
-			</div>
-		</div>
-
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Derivative of arctan(x)</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`y = \arctan(x) \implies \tan(y) = x`} display /></div>
-				<span class="step-note">inverse definition</span>
-			</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`\sec^2(y) \cdot y'\!d = d`} display /></div>
-				<span class="step-note">nudge: tan'(y)=sec²(y)</span>
-			</div>
-			<div class="step">
-				<div class="step-math">
-					<Katex math={r`y' = \frac{1}{1+\tan^2(y)} = \frac{1}{1+x^2}`} display />
-				</div>
-				<span class="step-note">identity</span>
-			</div>
-			<div class="step step-result">
-				<div class="step-math"><Katex math={r`\arctan'(x) = \frac{1}{1+x^2}`} display /></div>
-				<span class="step-note">✓</span>
-			</div>
-		</div>
-
-		<!-- ═══ Tangent line example ═══ -->
 		<div class="neo-prose" use:reveal>
-			<h4>Finding tangent lines</h4>
 			<p>
-				Let's put the derivative to use. The tangent line to <Katex math="f(x) = x^2" /> at <Katex
-					math="x = 3"
-				/> has slope <Katex math="f'(3) = 6" /> and passes through <Katex math="(3, 9)" />:
+				This is an exact first-order identity, not a statement about an ordinary finite exponent.
+				The exponential law now exposes the derivative:
 			</p>
 		</div>
 
 		<div class="derivation" use:reveal>
-			<div class="derivation-title">Example: tangent line to x² at x = 3</div>
+			<div class="derivation-title">The natural exponential</div>
 			<div class="step">
-				<div class="step-math">
-					<Katex math={r`y = f(3) + f'(3)(x - 3) = 9 + 6(x - 3)`} display />
-				</div>
-				<span class="step-note">tangent line formula</span>
+				<div class="step-math"><Katex math={r`e^{x+d}=e^x e^d`} display /></div>
+				<div class="step-note">exponential law</div>
+			</div>
+			<div class="step">
+				<div class="step-math"><Katex math={r`e^{x+d}=e^x(1+d)=e^x+e^x d`} display /></div>
+				<div class="step-note"><Katex math={r`e^d=1+d`} /></div>
 			</div>
 			<div class="step step-result">
-				<div class="step-math"><Katex math={r`y = 6x - 9`} display /></div>
-				<span class="step-note">the tangent line ✓</span>
+				<div class="step-math"><Katex math={r`(e^x)'=e^x`} display /></div>
+				<div class="step-note">coefficient of <Katex math="d" /></div>
 			</div>
 		</div>
 
-		<!-- ═══ Derivative Summary ═══ -->
-		<Callout type="key-idea" title="Complete Derivative Table">
+		<div class="neo-prose" use:reveal>
+			<p>
+				The natural logarithm is the inverse of <Katex math="e^x" />. For <Katex math="x>0" />,
+				write its unknown first-order coefficient as <Katex math="k" />:
+				<Katex math={r`\ln(x+d)=\ln x+kd`} />. Exponentiating both sides gives
+			</p>
+		</div>
+
+		<div class="derivation" use:reveal>
+			<div class="derivation-title">The natural logarithm</div>
+			<div class="step">
+				<div class="step-math"><Katex math={r`x+d=e^{\ln x+kd}`} display /></div>
+				<div class="step-note">exponentiate</div>
+			</div>
+			<div class="step">
+				<div class="step-math"><Katex math={r`x+d=x e^{kd}=x(1+kd)`} display /></div>
+				<div class="step-note"><Katex math={r`(kd)^2=0`} /></div>
+			</div>
+			<div class="step">
+				<div class="step-math"><Katex math={r`1=xk`} display /></div>
+				<div class="step-note">match coefficients</div>
+			</div>
+			<div class="step step-result">
+				<div class="step-math"><Katex math={r`(\ln x)'=\frac1x`} display /></div>
+				<div class="step-note">for <Katex math="x>0" /></div>
+			</div>
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>
+				For any positive base <Katex math="a" />, the identity
+				<Katex math={r`a^x=e^{x\ln a}`} /> similarly gives
+				<Katex math={r`(a^x)'=a^x\ln a`} />.
+			</p>
+
+			<h3>A small derivative library</h3>
+			<p>
+				Every result below came from the same question: what is the coefficient of
+				<Katex math="d" />? The conditions in the last column are part of each result, not fine
+				print.
+			</p>
+		</div>
+
+		<Callout type="key-idea" title="Derivative Library">
 			<table class="neo-table">
-				<thead><tr><th>Function</th><th>Derivative</th><th>Method</th></tr></thead>
+				<thead>
+					<tr><th>Function</th><th>Derivative</th><th>Condition</th></tr>
+				</thead>
 				<tbody>
-					<tr><td><Katex math="c" /> (constant)</td><td><Katex math="0" /></td><td>direct</td></tr>
+					<tr><td><Katex math="c" /></td><td><Katex math="0" /></td><td>constant</td></tr>
+					<tr
+						><td><Katex math="mx+b" /></td><td><Katex math="m" /></td><td>all <Katex math="x" /></td
+						></tr
+					>
 					<tr
 						><td><Katex math="x^n" /></td><td><Katex math={r`nx^{n-1}`} /></td><td
-							>binomial, d²=0</td
+							>positive integer <Katex math="n" /></td
 						></tr
 					>
 					<tr
-						><td><Katex math={r`\sin x`} /></td><td><Katex math={r`\cos x`} /></td><td
-							>infinitesimal triangle</td
+						><td><Katex math={r`1/x`} /></td><td><Katex math={r`-1/x^2`} /></td><td
+							><Katex math="x\ne0" /></td
 						></tr
 					>
 					<tr
-						><td><Katex math={r`\cos x`} /></td><td><Katex math={r`-\sin x`} /></td><td
-							>infinitesimal triangle</td
+						><td><Katex math={r`\sqrt{x}`} /></td><td><Katex math={r`1/(2\sqrt{x})`} /></td><td
+							><Katex math="x>0" /></td
 						></tr
 					>
 					<tr
-						><td><Katex math={r`\tan x`} /></td><td><Katex math={r`\sec^2 x`} /></td><td
-							>sin/cos + conjugate</td
+						><td><Katex math={r`\sin x`} /></td><td><Katex math={r`\cos x`} /></td><td>radians</td
 						></tr
 					>
 					<tr
-						><td><Katex math="e^x" /></td><td><Katex math="e^x" /></td><td>definition (f'=f)</td
+						><td><Katex math={r`\cos x`} /></td><td><Katex math={r`-\sin x`} /></td><td>radians</td
 						></tr
 					>
 					<tr
-						><td><Katex math="a^x" /></td><td><Katex math={r`a^x \ln a`} /></td><td
-							><Katex math={r`e^{d\ln a}=1+d\ln a`} /></td
+						><td><Katex math="e^x" /></td><td><Katex math="e^x" /></td><td
+							>all <Katex math="x" /></td
+						></tr
+					>
+					<tr
+						><td><Katex math="a^x" /></td><td><Katex math={r`a^x\ln a`} /></td><td
+							><Katex math="a>0" /></td
 						></tr
 					>
 					<tr
 						><td><Katex math={r`\ln x`} /></td><td><Katex math={r`1/x`} /></td><td
-							>inverse of exp</td
-						></tr
-					>
-					<tr
-						><td><Katex math={r`\log_a x`} /></td><td><Katex math={r`1/(x \ln a)`} /></td><td
-							>change of base</td
-						></tr
-					>
-					<tr
-						><td><Katex math={r`\arcsin x`} /></td><td><Katex math={r`1/\sqrt{1-x^2}`} /></td><td
-							>inverse of sin</td
-						></tr
-					>
-					<tr
-						><td><Katex math={r`\arctan x`} /></td><td><Katex math={r`1/(1+x^2)`} /></td><td
-							>inverse of tan</td
+							><Katex math="x>0" /></td
 						></tr
 					>
 				</tbody>
 			</table>
-			<p style="font-size:0.9rem;margin-top:0.5rem;">
-				In this chapter, each entry comes from the same first-order rule: <Katex math="d^2 = 0" />,
-				combined with the relevant identities.
-			</p>
 		</Callout>
-
-		<SDGAdvantage>
-			<p>
-				In a standard calculus course, students memorize this derivative table as a list of
-				formulas, often without seeing the proofs. In Neocalculus, each formula here is <em
-					>derived</em
-				>
-				through the same coefficient-extraction workflow from <Katex math="d^2 = 0" /> plus a small set
-				of identities.
-			</p>
-		</SDGAdvantage>
-
-		<!-- ═══ History ═══ -->
-		<HistoryBox name="F. William Lawvere" years="1937–2023">
-			<p>
-				Lawvere envisioned a mathematical universe where infinitesimals exist naturally within
-				"smooth toposes." His insight — that the right logical framework makes infinitesimals
-				rigorous — is the foundation on which Neocalculus is built.
-			</p>
-		</HistoryBox>
-
-		<HistoryBox name="Anders Kock" years="born 1938">
-			<p>
-				Kock developed the axiomatic framework of Synthetic Differential Geometry, including the
-				axiom that bears his name. His work showed how broad parts of differential calculus and
-				geometry can be organized around infinitesimal first-order structure.
-			</p>
-		</HistoryBox>
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				Try any of these interactively — pick a function, step through the algebra, and verify
-				numerically:
+				Use the lab to revisit a derivation. Each tab follows the same three steps from the
+				beginning of the chapter.
 			</p>
 		</div>
 	</div>
@@ -879,242 +501,134 @@
 	</div>
 
 	<div class="content-width">
-		<!-- ═══ CHAPTER SUMMARY ═══ -->
 		<ChapterSummary>
 			<ul>
 				<li>
-					The <strong>slope equation</strong>
-					<Katex math={r`f(x+d) = f(x) + f'(x) \cdot d`} /> gives the derivative as the coefficient of
-					<Katex math="d" />.
+					To find a derivative, compute <Katex math="f(x+d)" />, use <Katex math="d^2=0" />, and
+					read the coefficient of <Katex math="d" />.
 				</li>
 				<li>
-					<strong>Geometrically:</strong> the derivative is the slope of the tangent line.
-					<strong>Physically:</strong> it is the instantaneous rate of change.
+					The derivative is a local slope and an instantaneous rate, with units of output per input.
 				</li>
 				<li>
-					The <strong>tangent line</strong> at <Katex math="a" />: <Katex
-						math={r`y = f(a) + f'(a)(x-a)`}
-					/>.
+					For finite <Katex math="\Delta x" />, the local line is generally an approximation; for
+					first-order <Katex math="d" />, the slope equation is exact.
 				</li>
 				<li>
-					<strong>Sum rule:</strong>
-					<Katex math={r`(f+g)' = f' + g'`} />. <strong>Constant multiple:</strong>
-					<Katex math={r`(cf)' = cf'`} />.
+					Powers, reciprocals, and roots use different algebraic moves but the same coefficient
+					rule.
 				</li>
 				<li>
-					<strong>Power rule:</strong>
-					<Katex math={r`(x^n)' = nx^{n-1}`} />. Every polynomial can be differentiated term by
-					term.
-				</li>
-				<li>
-					<strong>Trig:</strong>
-					<Katex math={r`\sin' = \cos, \; \cos' = -\sin`} /> from the infinitesimal triangle (<Katex
-						math={r`\sin d = d, \cos d = 1`}
-					/>).
-				</li>
-				<li>
-					<strong>Exponential:</strong>
-					<Katex math={r`(e^x)' = e^x`} /> and <Katex math={r`e^d = 1+d`} />. <strong>Log:</strong>
-					<Katex math={r`(\ln x)' = 1/x`} />.
-				</li>
-				<li>
-					<strong>Inverse functions:</strong>
-					<Katex math={r`(f^{-1})' = 1/f'(f^{-1})`} />, giving arcsin, arctan, etc.
+					The identities <Katex math={r`\sin d=d`} />, <Katex math={r`\cos d=1`} />, and
+					<Katex math={r`e^d=1+d`} /> reveal the basic trigonometric and exponential derivatives.
 				</li>
 			</ul>
 		</ChapterSummary>
 
-		<!-- ═══ EXERCISES ═══ -->
 		<details class="exercises-group" use:reveal>
-			<summary class="exercises-group-title">Exercises (Core 1-10, Extension optional)</summary>
+			<summary class="exercises-group-title">Practice (six core, two explorations)</summary>
 
 			<Exercise number={1}>
 				<p>
-					<strong>Warm-up.</strong> Use <Katex math="d^2 = 0" /> to find the derivative of <Katex
-						math={r`f(x) = x^4`}
-					/>.
+					<strong>Core.</strong> Use coefficient extraction to find the derivative of
+					<Katex math={r`f(x)=7x-4`} />.
 				</p>
-				{#snippet solution()}<Katex
-						math={r`(x+d)^4 = x^4 + 4x^3 d + \ldots = x^4 + 4x^3 d. \text{ So } f'(x)=4x^3.`}
-						display
-					/>{/snippet}
+				{#snippet solution()}
+					<Katex math={r`f(x+d)=7(x+d)-4=f(x)+7d`} display />
+					<p>Therefore <Katex math={r`f'(x)=7`} />.</p>
+				{/snippet}
 			</Exercise>
 
 			<Exercise number={2}>
 				<p>
-					<strong>Warm-up.</strong> Find <Katex math={r`f'(x)`} /> for <Katex
-						math={r`f(x) = x^2 + 3x`}
-					/>.
+					<strong>Core.</strong> Derive the derivative of <Katex math={r`x^4`} /> directly from
+					<Katex math={r`(x+d)^4`} />.
 				</p>
-				{#snippet solution()}<Katex math={r`f'(x)=2x+3.`} display />
-					<p>Sum rule + power rule.</p>{/snippet}
+				{#snippet solution()}
+					<Katex math={r`(x+d)^4=x^4+4x^3d+6x^2d^2+4xd^3+d^4=x^4+4x^3d`} display />
+					<p>Thus <Katex math={r`(x^4)'=4x^3`} />.</p>
+				{/snippet}
 			</Exercise>
 
 			<Exercise number={3}>
 				<p>
-					<strong>Core.</strong> Find <Katex math={r`f'(x)`} /> for <Katex
-						math={r`f(x) = 5x^3 - 2x + 1`}
-					/>.
+					<strong>Core.</strong> A stone’s height is <Katex math={r`h(t)=45-5t^2`} /> meters. Find its
+					velocity at <Katex math="t=2" /> and explain the sign.
 				</p>
-				{#snippet solution()}<Katex math={r`f'(x) = 15x^2 - 2`} display />{/snippet}
+				{#snippet solution()}
+					<p>
+						Coefficient extraction gives <Katex math={r`h'(t)=-10t`} />, so
+						<Katex math={r`h'(2)=-20`} /> m/s. The negative sign means the height is decreasing.
+					</p>
+				{/snippet}
 			</Exercise>
 
 			<Exercise number={4}>
 				<p>
-					<strong>Core.</strong> Find <Katex math={r`f'(x)`} /> for <Katex
-						math={r`f(x) = 1/x^2`}
-					/>. (Hint: write as <Katex math={r`x^{-2}`} /> and use the power rule, or use the conjugate
-					trick.)
+					<strong>Core.</strong> Find the slope of <Katex math={r`f(x)=1/x`} /> at
+					<Katex math="x=2" />.
 				</p>
-				{#snippet solution()}<p>
-						Using the power rule: <Katex math={r`(x^{-2})' = -2x^{-3} = -2/x^3`} />.
-					</p>{/snippet}
+				{#snippet solution()}
+					<Katex math={r`f'(2)=-\frac1{2^2}=-\frac14`} display />
+				{/snippet}
 			</Exercise>
 
 			<Exercise number={5}>
 				<p>
-					<strong>Core.</strong> Find the equation of the tangent line to <Katex
-						math={r`f(x) = x^3`}
-					/> at <Katex math="x = 2" />.
+					<strong>Core.</strong> Use the square-root derivative to find the slope at
+					<Katex math="x=4" />.
 				</p>
-				{#snippet solution()}<p>
-						<Katex math={r`f(2) = 8, \; f'(x) = 3x^2, \; f'(2) = 12`} />. Tangent line: <Katex
-							math={r`y = 8 + 12(x-2) = 12x - 16`}
-						/>.
-					</p>{/snippet}
+				{#snippet solution()}
+					<Katex math={r`(\sqrt{x})'\big|_{x=4}=\frac1{2\sqrt4}=\frac14`} display />
+				{/snippet}
 			</Exercise>
 
 			<Exercise number={6}>
 				<p>
-					<strong>Core.</strong> Find where the tangent to <Katex math={r`f(x) = x^2 - 4x + 3`} /> is
-					horizontal.
+					<strong>Core.</strong> Starting from the angle-addition formula, derive
+					<Katex math={r`(\cos x)'=-\sin x`} />.
 				</p>
-				{#snippet solution()}<p>
-						<Katex math={r`f'(x) = 2x - 4 = 0 \implies x = 2`} />. The tangent is horizontal at <Katex
-							math="x = 2"
-						/>.
-					</p>{/snippet}
+				{#snippet solution()}
+					<Katex math={r`\cos(x+d)=\cos x\cos d-\sin x\sin d=\cos x-(\sin x)d`} display />
+					<p>The coefficient of <Katex math="d" /> is <Katex math={r`-\sin x`} />.</p>
+				{/snippet}
 			</Exercise>
 
 			<Exercise number={7}>
 				<p>
-					<strong>Core.</strong> A car's position is <Katex math={r`s(t) = t^2 + 3t`} /> meters. Find
-					its velocity at <Katex math="t = 4" /> seconds.
+					<strong>Explore.</strong> Use <Katex math={r`2^x=e^{x\ln2}`} /> to show that
+					<Katex math={r`(2^x)'=2^x\ln2`} />.
 				</p>
-				{#snippet solution()}<p>
-						<Katex math={r`v(t) = s'(t) = 2t + 3`} />. At <Katex math="t=4" />: <Katex
-							math={r`v(4) = 11`}
-						/> m/s.
-					</p>{/snippet}
+				{#snippet solution()}
+					<Katex math={r`2^{x+d}=2^x e^{d\ln2}=2^x(1+d\ln2)`} display />
+					<p>The coefficient is <Katex math={r`2^x\ln2`} />.</p>
+				{/snippet}
 			</Exercise>
 
 			<Exercise number={8}>
 				<p>
-					<strong>Core.</strong> Verify that <Katex math="e^x" /> is its own derivative by computing <Katex
-						math={r`e^{x+d}`}
-					/> directly using <Katex math={r`e^d = 1+d`} />.
+					<strong>Explore.</strong> Use the local-line approximation at <Katex math="x=4" /> to estimate
+					<Katex math={r`\sqrt{4.01}`} /> without a calculator.
 				</p>
-				{#snippet solution()}<p>
-						<Katex math={r`e^{x+d} = e^x \cdot e^d = e^x(1+d) = e^x + e^x \cdot d`} />. The
-						coefficient of <Katex math="d" /> is <Katex math="e^x" />, confirming <Katex
-							math={r`(e^x)' = e^x`}
-						/>.
-					</p>{/snippet}
-			</Exercise>
-
-			<Exercise number={9}>
-				<p>
-					<strong>Core.</strong> Show that <Katex math={r`(e^{2x})' = 2e^{2x}`} /> using <Katex
-						math={r`e^d = 1 + d`}
-					/>. (Hint: <Katex math={r`e^{2(x+d)} = e^{2x} \cdot e^{2d}`} /> and <Katex math={r`2d`} /> is
-					infinitesimal.)
-				</p>
-				{#snippet solution()}<p>
-						<Katex math={r`e^{2(x+d)} = e^{2x} \cdot e^{2d} = e^{2x}(1+2d)`} />. Coefficient of d is <Katex
-							math={r`2e^{2x}`}
-						/> ✓
-					</p>{/snippet}
-			</Exercise>
-
-			<Exercise number={10}>
-				<p>
-					<strong>Core.</strong> Compute <Katex math={r`\sin'(x)`} /> from scratch using the angle addition
-					formula and <Katex math={r`\sin(d) = d, \cos(d) = 1`} />.
-				</p>
-				{#snippet solution()}<p>
-						<Katex math={r`\sin(x+d) = \sin x \cos d + \cos x \sin d = \sin x + \cos x \cdot d`} />.
-						So <Katex math={r`\sin'(x) = \cos x`} />.
-					</p>{/snippet}
-			</Exercise>
-
-			<Exercise number={11}>
-				<p>
-					<strong>Core.</strong> Derive the derivative of <Katex math={r`\arccos(x)`} /> using the inverse
-					function technique.
-				</p>
-				{#snippet solution()}<p>
-						<Katex math={r`y = \arccos(x) \implies \cos(y) = x`} />. Nudge: <Katex
-							math={r`-\sin(y) \cdot y'd = d`}
-						/>, so <Katex math={r`y' = -1/\sin(y) = -1/\sqrt{1-x^2}`} />.
-					</p>{/snippet}
-			</Exercise>
-
-			<Exercise number={12}>
-				<p>
-					<strong>Challenge.</strong> Find <Katex math={r`f'(x)`} /> for <Katex
-						math={r`f(x) = \sec(x) = 1/\cos(x)`}
-					/> using the conjugate technique from the <Katex math="1/x" /> derivation.
-				</p>
-				{#snippet solution()}<p>
-						<Katex math={r`\frac{1}{\cos(x+d)} = \frac{1}{\cos x - \sin x \, d}`} />. Multiply top
-						and bottom by <Katex math={r`\cos x + \sin x \, d`} />:
-					</p>
-					<Katex
-						math={r`= \frac{\cos x + \sin x \, d}{\cos^2 x - \sin^2 x \, d^2} = \frac{\cos x + \sin x \, d}{\cos^2 x} = \sec x + \frac{\sin x}{\cos^2 x} d`}
-						display
-					/>
-					<p>So <Katex math={r`\sec'(x) = \sec x \tan x`} /> ✓</p>{/snippet}
-			</Exercise>
-
-			<Exercise number={13}>
-				<p>
-					<strong>Challenge.</strong> What is <Katex math={r`(2^x)'`} />? (Use the general
-					exponential derivative.)
-				</p>
-				{#snippet solution()}<p><Katex math={r`(2^x)' = 2^x \ln 2`} /> ✓</p>{/snippet}
-			</Exercise>
-
-			<Exercise number={14}>
-				<p>
-					<strong>Exploration.</strong> The tangent line to <Katex math="f(x)" /> at <Katex
-						math="x = a"
-					/> gives a "linear approximation": <Katex
-						math={r`f(a + \Delta x) \approx f(a) + f'(a) \cdot \Delta x`}
-					/> for small <Katex math={r`\Delta x`} />. Use this to estimate <Katex
-						math={r`\sqrt{4.01}`}
-					/> without a calculator. (Hint: <Katex math={r`f(x) = \sqrt{x}`} />, <Katex
-						math="a = 4"
-					/>, <Katex math={r`\Delta x = 0.01`} />.)
-				</p>
-				{#snippet solution()}<p>
-						<Katex
-							math={r`\sqrt{4.01} \approx \sqrt{4} + \frac{1}{2\sqrt{4}} \cdot 0.01 = 2 + \frac{0.01}{4} = 2.0025`}
-						/>. (Exact value: 2.002498...) The approximation is excellent!
-					</p>{/snippet}
+				{#snippet solution()}
+					<Katex math={r`\sqrt{4.01}\approx2+\frac14(0.01)=2.0025`} display />
+				{/snippet}
 			</Exercise>
 		</details>
 
-		<!-- ═══ LOOKING AHEAD ═══ -->
 		<LookingAhead>
 			<p>
-				We can now differentiate individual functions. But what about products like <Katex
-					math={r`x^2 \sin x`}
-				/>, compositions like <Katex math={r`\sin(x^2)`} />, or quotients like <Katex
-					math={r`\sin x / x`}
-				/>? In the next chapter, we'll derive the product, chain, and quotient rules using the same
-				infinitesimal algebraic workflow.
+				We can now differentiate several individual function families. Chapter 3 asks what happens
+				when functions are added, multiplied, divided, composed, or inverted, and derives the rules
+				for each operation from the same first-order equation.
 			</p>
 		</LookingAhead>
-
 	</div>
 </section>
+
+<style>
+	:global(#ch2 > .neo-figure figcaption) {
+		max-width: var(--w-content);
+		margin-inline: auto;
+	}
+</style>

@@ -27,7 +27,7 @@
 					latex: String.raw`=fg+(f'g+fg')d+\textcolor{#ef4444}{f'g'd^2}`,
 					note: 'expand and collect first-order terms'
 				},
-				{ latex: String.raw`=fg+(f'g+fg')d`, note: String.raw`drop d^2 because d^2=0` }
+				{ latex: String.raw`=fg+(f'g+fg')d`, note: 'the second-order term vanishes' }
 			]
 		},
 		chain: {
@@ -63,7 +63,10 @@
 					latex: String.raw`=\frac{fg+(f'g-fg')d+\textcolor{#ef4444}{(\cdots)d^2}}{g^2}`,
 					note: 'expand and collect terms'
 				},
-				{ latex: String.raw`=\frac{f}{g}+\frac{f'g-fg'}{g^2}d`, note: String.raw`drop d^2 and read coefficient` }
+				{
+					latex: String.raw`=\frac{f}{g}+\frac{f'g-fg'}{g^2}d`,
+					note: 'second-order terms vanish; read the coefficient'
+				}
 			]
 		}
 	};
@@ -76,7 +79,7 @@
 
 	<DemoCard>
 		<div class="rule-tabs" role="tablist" aria-label="Rule proofs">
-			{#each Object.entries(rules) as [key, rule]}
+			{#each Object.entries(rules) as [key, rule] (key)}
 				<button
 					role="tab"
 					aria-selected={selected === key}
@@ -91,7 +94,7 @@
 		<div class="rule-title">{rules[selected].title}</div>
 
 		<div class="rule-steps">
-			{#each rules[selected].steps as step}
+			{#each rules[selected].steps as step (step.latex)}
 				<div class="rule-step">
 					<div class="rule-math"><Katex math={step.latex} display /></div>
 					<div class="rule-note">{step.note}</div>

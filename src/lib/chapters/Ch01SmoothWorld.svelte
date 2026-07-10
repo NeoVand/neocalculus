@@ -3,17 +3,15 @@
 	import Callout from '$lib/components/Callout.svelte';
 	import Figure from '$lib/components/Figure.svelte';
 	import Exercise from '$lib/components/Exercise.svelte';
-	import HistoryBox from '$lib/components/HistoryBox.svelte';
 	import ChapterSummary from '$lib/components/ChapterSummary.svelte';
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
-	import SDGAdvantage from '$lib/components/SDGAdvantage.svelte';
 	import RevealBox from '$lib/components/RevealBox.svelte';
-	import TranslationBox from '$lib/components/TranslationBox.svelte';
-	import ModelScopeBox from '$lib/components/ModelScopeBox.svelte';
 	import PerfectZoom from '$lib/components/demos/PerfectZoom.svelte';
 	import FunctionMachine from '$lib/components/demos/FunctionMachine.svelte';
 	import MicrostraightnessBridge from '$lib/components/figures/MicrostraightnessBridge.svelte';
+	import SmoothnessComparison from '$lib/components/figures/SmoothnessComparison.svelte';
 	import { reveal } from '$lib/utils/scroll';
+
 	const r = String.raw;
 </script>
 
@@ -23,315 +21,94 @@
 			<span class="chapter-number">Chapter 1</span>
 			<h2 class="chapter-title">The Smooth World</h2>
 			<div class="chapter-epigraph">
-				<blockquote>"Nature never makes jumps."</blockquote>
-				<p class="epigraph-attr">— Gottfried Wilhelm Leibniz, <em>New Essays</em>, 1704</p>
+				<blockquote>
+					“A curve bends. A line does not. So how can a line tell us what a curve is doing?”
+				</blockquote>
+				<p class="epigraph-attr">The question that opens calculus</p>
 			</div>
 			<hr class="chapter-divider" />
 		</div>
 
-		<!-- ═══ SECTION: What is a function? ═══ -->
 		<div class="neo-prose" use:reveal>
-			<h3>What is a function?</h3>
+			<h3>First: what is a function?</h3>
 			<p>
-				A function is a machine: something goes in, something comes out — always the same output for
-				the same input. Functions are far more general than "plug in a number, get a number." They
-				are the universal language of transformation:
+				Before we study change, we need one simple piece of language. A <strong>function</strong>
+				is a rule that accepts an input and gives back exactly one output.
+			</p>
+			<p>
+				We usually call the input <Katex math="x" />. If the function is named
+				<Katex math="f" />, its output is written <Katex math="f(x)" />, read “f of x.” Thus
+				<Katex math={r`f(x)=x^2`} /> means “square the input.” For example,
+				<Katex math={r`f(3)=9`} /> and <Katex math={r`f(-2)=4`} />. The parentheses in
+				<Katex math="f(x)" /> do not mean multiplication; they tell us which input was given to
+				<Katex math="f" />.
+			</p>
+			<p>
+				Watch one cycle of the machine below. A number enters from the left. The displayed rule acts
+				on it, and the result leaves on the right. The dot on the small graph marks that same
+				input-output pair.
 			</p>
 		</div>
 	</div>
 
-	<!-- Function Machine Demo — full width -->
 	<div class="content-width" use:reveal>
-		<FunctionMachine />
+		<figure class="neo-figure">
+			<FunctionMachine />
+			<figcaption>
+				<span class="figure-number">Figure 1.1.</span>
+				A function is a rule that turns an input into an output: x goes in, and f(x) comes out.
+			</figcaption>
+		</figure>
 	</div>
 
 	<div class="content-width">
 		<div class="neo-prose" use:reveal>
 			<p>
-				A function can square a number, measure the length of a word, take the derivative of another
-				function, or compute the divergence of a vector field. In every case the contract is the
-				same: one input, one output, deterministic. In calculus we focus on functions from numbers
-				to numbers — like <Katex math={r`f(x) = x^2`} /> — but the deeper idea is universal.
+				Each cycle uses a different rule, but the notation keeps the same meaning. A graph is a
+				picture of all the input-output pairs: when the input <Katex math="x" /> produces the output
+				<Katex math="f(x)" />, the point <Katex math={r`(x,f(x))`} /> lies on the graph.
 			</p>
 			<p>
-				Calculus studies <em>how functions change</em>: how the output responds when you nudge the
-				input. To do that cleanly, we need to be precise about what kind of functions we allow.
+				Now we can ask the question that begins calculus: when <Katex math="x" /> changes, how does
+				<Katex math="f(x)" /> change? To answer it at one particular input, we look closely at the graph
+				near the corresponding point. Sometimes the graph settles toward one line direction. Sometimes
+				it does not.
+			</p>
+
+			<h3>Which curves have a local direction?</h3>
+			<p>
+				For now, call a graph <strong>smooth at a point</strong> when magnifying near that point
+				reveals one line direction. A parabola has one. At the corner of <Katex math={r`|x|`} />,
+				the directions from the left and right disagree. At a jump, the two nearby pieces do not
+				even connect.
 			</p>
 		</div>
 
-		<!-- ═══ SECTION: Smoothness ═══ -->
-		<div class="neo-prose" use:reveal>
-			<h3>Smoothness</h3>
-			<p>
-				Not all functions change the same way. Some flow gently — a ball arcing through the sky
-				traces a smooth curve. Others break. There are two ways a function can fail to be smooth:
-			</p>
-			<ul>
-				<li>
-					<strong>A corner</strong> — like <Katex math={r`|x|`} /> at the origin, where the slope changes
-					abruptly.
-				</li>
-				<li>
-					<strong>A jump</strong> — like a step function that leaps from 0 to 1, with no intermediate
-					values.
-				</li>
-			</ul>
-			<p>
-				In Neocalculus, we work exclusively with <strong>smooth</strong> functions: no corners, no jumps,
-				no breaks of any kind. This is a modeling choice that matches many physical regimes and keeps
-				the calculus workflow algebraic.
-			</p>
-		</div>
-
-		<!-- ═══ FIGURE 1.1: Three-panel comparison ═══ -->
 		<Figure
-			number="1.1"
-			caption="Three kinds of functions. Left: x² is smooth — at every point, zooming in reveals a straight tangent line. Center: |x| has a corner at x = 0 that persists at every zoom level. Right: a step function has a jump discontinuity — the output teleports."
+			number="1.2"
+			caption="At the marked point, a smooth curve has one line direction. A corner has two competing directions, while a jump has no connected direction through the point."
 		>
-			<svg
-				viewBox="0 0 690 210"
-				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-				style="max-width:690px"
-			>
-				<!-- ──── Panel 1: SMOOTH (x²) ──── -->
-				<rect
-					x="6"
-					y="6"
-					width="210"
-					height="198"
-					rx="10"
-					fill="white"
-					stroke="#e5e1d8"
-					stroke-width="1"
-				/>
-				<text
-					x="111"
-					y="25"
-					text-anchor="middle"
-					font-size="10"
-					font-family="Inter,sans-serif"
-					fill="#a855f7"
-					font-weight="700"
-					letter-spacing="0.04em">SMOOTH</text
-				>
-				<!-- axes at origin (111, 152) -->
-				<line x1="22" y1="152" x2="200" y2="152" stroke="#d4d0c8" stroke-width="0.6" />
-				<line x1="111" y1="32" x2="111" y2="192" stroke="#d4d0c8" stroke-width="0.6" />
-				<!-- x² parabola: origin=(111,152), scaleX=40px/unit, scaleY=25px/unit -->
-				<!-- 25 computed points from x=-2.2 to x=2.2 -->
-				<polyline
-					points="23,31 30,50 38,68 45,84 52,98 60,111 67,122 74,131 82,139 89,144 96,149 104,151 111,152 118,151 126,149 133,144 140,139 148,131 155,122 162,111 170,98 177,84 184,68 192,50 199,31"
-					stroke="#1a1a2e"
-					stroke-width="2"
-					fill="none"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				/>
-				<!-- tangent at x=1: point=(151,127), slope=2 -->
-				<line
-					x1="123"
-					y1="162"
-					x2="179"
-					y2="92"
-					stroke="#a855f7"
-					stroke-width="1.5"
-					stroke-dasharray="5,3"
-				/>
-				<circle cx="151" cy="127" r="3" fill="#a855f7" />
-				<text
-					x="180"
-					y="86"
-					font-size="8.5"
-					font-family="Inter,sans-serif"
-					fill="#a855f7"
-					font-weight="600">tangent</text
-				>
-				<text
-					x="111"
-					y="190"
-					text-anchor="middle"
-					font-size="10"
-					font-family="var(--font-mono)"
-					fill="#1a1a2e">f(x) = x²</text
-				>
-
-				<!-- ──── Panel 2: CORNER (|x|) ──── -->
-				<rect
-					x="240"
-					y="6"
-					width="210"
-					height="198"
-					rx="10"
-					fill="white"
-					stroke="#e5e1d8"
-					stroke-width="1"
-				/>
-				<text
-					x="345"
-					y="25"
-					text-anchor="middle"
-					font-size="10"
-					font-family="Inter,sans-serif"
-					fill="#a855f7"
-					font-weight="700"
-					letter-spacing="0.04em">CORNER</text
-				>
-				<!-- axes at origin (345, 152) -->
-				<line x1="256" y1="152" x2="434" y2="152" stroke="#d4d0c8" stroke-width="0.6" />
-				<line x1="345" y1="32" x2="345" y2="192" stroke="#d4d0c8" stroke-width="0.6" />
-				<!-- |x|: V at origin. scale ~40px/unit both directions -->
-				<line x1="265" y1="72" x2="345" y2="152" stroke="#1a1a2e" stroke-width="2" />
-				<line x1="345" y1="152" x2="425" y2="72" stroke="#1a1a2e" stroke-width="2" />
-				<circle cx="345" cy="152" r="3.5" fill="#a855f7" />
-				<!-- conflicting slopes shown as dashed extensions -->
-				<line
-					x1="308"
-					y1="180"
-					x2="345"
-					y2="152"
-					stroke="#a855f7"
-					stroke-width="1.2"
-					stroke-dasharray="4,3"
-					opacity="0.7"
-				/>
-				<line
-					x1="345"
-					y1="152"
-					x2="382"
-					y2="180"
-					stroke="#a855f7"
-					stroke-width="1.2"
-					stroke-dasharray="4,3"
-					opacity="0.7"
-				/>
-				<text
-					x="282"
-					y="182"
-					font-size="7.5"
-					font-family="Inter,sans-serif"
-					fill="#a855f7"
-					font-weight="500"
-					opacity="0.8">−1</text
-				>
-				<text
-					x="384"
-					y="182"
-					font-size="7.5"
-					font-family="Inter,sans-serif"
-					fill="#a855f7"
-					font-weight="500"
-					opacity="0.8">+1</text
-				>
-				<text
-					x="345"
-					y="190"
-					text-anchor="middle"
-					font-size="10"
-					font-family="var(--font-mono)"
-					fill="#1a1a2e">f(x) = |x|</text
-				>
-
-				<!-- ──── Panel 3: JUMP (step function) ──── -->
-				<rect
-					x="474"
-					y="6"
-					width="210"
-					height="198"
-					rx="10"
-					fill="white"
-					stroke="#e5e1d8"
-					stroke-width="1"
-				/>
-				<text
-					x="579"
-					y="25"
-					text-anchor="middle"
-					font-size="10"
-					font-family="Inter,sans-serif"
-					fill="#a855f7"
-					font-weight="700"
-					letter-spacing="0.04em">JUMP</text
-				>
-				<!-- axes at origin (579, 132) -->
-				<line x1="490" y1="132" x2="668" y2="132" stroke="#d4d0c8" stroke-width="0.6" />
-				<line x1="579" y1="32" x2="579" y2="192" stroke="#d4d0c8" stroke-width="0.6" />
-				<!-- Step: y=0 for x<0, y=1 for x≥0 -->
-				<line x1="496" y1="132" x2="579" y2="132" stroke="#1a1a2e" stroke-width="2" />
-				<line x1="579" y1="72" x2="662" y2="72" stroke="#1a1a2e" stroke-width="2" />
-				<!-- dashed gap -->
-				<line
-					x1="579"
-					y1="132"
-					x2="579"
-					y2="72"
-					stroke="#a855f7"
-					stroke-width="1.3"
-					stroke-dasharray="3,3"
-					opacity="0.6"
-				/>
-				<!-- open/filled circles -->
-				<circle cx="579" cy="132" r="3.5" fill="white" stroke="#1a1a2e" stroke-width="1.5" />
-				<circle cx="579" cy="72" r="3.5" fill="#1a1a2e" />
-				<!-- annotation -->
-				<text
-					x="596"
-					y="106"
-					font-size="8"
-					font-family="Inter,sans-serif"
-					fill="#a855f7"
-					font-weight="600"
-					opacity="0.8">jump!</text
-				>
-				<text
-					x="572"
-					y="136"
-					text-anchor="end"
-					font-size="8"
-					font-family="Inter,sans-serif"
-					fill="#94919b">0</text
-				>
-				<text
-					x="572"
-					y="76"
-					text-anchor="end"
-					font-size="8"
-					font-family="Inter,sans-serif"
-					fill="#94919b">1</text
-				>
-				<text
-					x="579"
-					y="190"
-					text-anchor="middle"
-					font-size="10"
-					font-family="var(--font-mono)"
-					fill="#1a1a2e">step function</text
-				>
-			</svg>
+			<SmoothnessComparison />
 		</Figure>
 
-		<Callout type="key-idea" title="The Smooth World">
+		<Callout type="key-idea" title="Our Working World">
 			<p>
-				In the Neocalculus mainline, every function we study is <strong>smooth</strong> by design — no
-				corners and no jumps. This choice removes nonsmooth edge cases and keeps the core derivations
-				first-order and algebraic.
+				The first chapters assume that our functions are smooth at the points we study. Corners and
+				jumps are not mistakes; they simply require additional questions. We will return to them
+				after the basic machinery is in place.
 			</p>
 		</Callout>
 
-		<!-- ═══ SECTION: Zooming in ═══ -->
 		<div class="neo-prose" use:reveal>
-			<h3>Zooming in: the key insight</h3>
-			<p>Take any smooth curve. Pick any point. Now zoom in. What happens?</p>
+			<h3>Look through a first-order lens</h3>
 			<p>
-				The curve flattens. The bends straighten out. And at the very bottom of the zoom — at a
-				scale we call <strong>infinitesimal</strong> — the curve is represented by its straight, first-order
-				part.
+				The purple dashed line in the demo is the <strong>tangent line</strong>: it passes through
+				the chosen point and points in the graph’s local direction. Keep the parabola selected, turn
+				on the tangent, and increase the zoom. Watch the gap between the curve and the line.
 			</p>
-			<p>This is <strong>microstraightness</strong>. Try it yourself:</p>
 		</div>
 	</div>
 
-	<!-- The Perfect Zoom demo -->
 	<div use:reveal={{ delay: 80 }}>
 		<PerfectZoom />
 	</div>
@@ -339,48 +116,55 @@
 	<div class="content-width">
 		<div class="neo-prose" use:reveal>
 			<p>
-				For smooth functions in this framework, zooming to infinitesimal scale makes the curve and
-				tangent agree to first order. That infinitesimal straight segment has a tiny width we call <span
-					class="d-highlight"><strong>d</strong></span
-				>, and its slope is what we call the <strong>derivative</strong>.
+				At ordinary scale, the parabola and the tangent are visibly different. As the window shrinks
+				around the chosen point, the bend becomes harder to see and the graph looks more like the
+				line. Numerical zoom reveals this pattern, but it never reaches a final smallest
+				magnification.
 			</p>
-		</div>
-
-		<!-- ═══ SECTION: Meet d ═══ -->
-		<div class="neo-prose" use:reveal>
-			<h3>Meet <span class="d-highlight">d</span></h3>
 			<p>
-				Infinitesimals live on the number line alongside 1, ½, and π. They obey one special rule:
+				Synthetic differential geometry asks an exact version of the zooming question. It represents
+				a first-order change in the input by
+				<span class="d-highlight"><strong>d</strong></span> and uses the rule
 			</p>
 		</div>
 
 		<div class="key-equation" use:reveal>
-			<Katex math="d^2 = 0" display />
+			<Katex math="d^2=0" display />
 		</div>
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				When you multiply an infinitesimal by itself, you get exactly zero. But <span
-					class="d-highlight">d</span
-				>
-				itself is <em>not</em> zero — it has direction and slope. It is the mathematical atom of change:
-				too small to measure, but large enough to carry information.
+				This <span class="d-highlight">d</span> is not an ordinary real number that happens to be
+				very small. It is a <strong>first-order displacement</strong> in the model. The term
+				<Katex math="d" /> records the direct response to an input change; <Katex math="d^2" />
+				records a second-order effect such as bending. The first-order lens discards the latter. It does
+				not discard terms such as <Katex math="6d" />: their coefficients still tell us how the
+				output responds.
 			</p>
 			<p>
-				This is microstraightness stated algebraically: over a distance of <span class="d-highlight"
-					>d</span
-				>, smooth functions restrict to an affine first-order form, because curvature requires a <Katex
-					math="d^2"
-				/> term and <Katex math="d^2 = 0" /> on <Katex math="D" />.
+				Now fix an input <Katex math="a" />. Smoothness says that, for first-order displacements,
+				the output has one and only one form
+			</p>
+		</div>
+
+		<div class="key-equation" use:reveal>
+			<Katex math={r`f(a+d)=f(a)+md`} display />
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>
+				Here <Katex math="f(a)" /> is the original output, and <Katex math="md" /> is its first-order
+				change. The number <Katex math="m" /> is determined by the function and the point. We will calculate
+				it before giving it a name.
 			</p>
 		</div>
 	</div>
 
 	<div class="wide-width" use:reveal>
 		<Figure
-			number="1.2"
-			class="figure-1-2"
-			caption="Microstraightness bridge. From a to a+d, the curve and tangent differ by a second-order residual r(d) ~ d². On D where d² = 0, only the first-order term remains."
+			number="1.3"
+			class="figure-1-3"
+			caption="An ordinary finite step leaves a visible gap between the curve and its local line. The first-order lens keeps only their shared linear behavior."
 		>
 			<MicrostraightnessBridge />
 		</Figure>
@@ -389,433 +173,268 @@
 	<div class="content-width">
 		<div class="neo-prose" use:reveal>
 			<p>
-				We write <Katex math={r`D = \{d \in \mathcal{R} : d^2 = 0\}`} /> for the set of all infinitesimals
-				— the infinitesimal neighborhood of zero. Our number line <Katex math={r`\mathcal{R}`} /> contains
-				everything you already know (integers, fractions, irrationals) plus these infinitesimals.
-			</p>
-		</div>
-
-		<!-- ═══ SECTION: Infinitesimal arithmetic ═══ -->
-		<div class="neo-prose" use:reveal>
-			<h3>Arithmetic with infinitesimals</h3>
-			<p>The only new rule is <Katex math="d^2 = 0" />. Everything else is ordinary algebra.</p>
-			<ul>
-				<li>
-					<strong>Constant multiples:</strong>
-					<Katex math="(3d)^2 = 9d^2 = 0" />, so any multiple of an infinitesimal is infinitesimal.
-				</li>
-				<li>
-					<strong>Higher powers vanish:</strong>
-					<Katex math="d^3 = d \cdot d^2 = 0" />, and <Katex math="d^4 = 0" />, and so on.
-				</li>
-			</ul>
-		</div>
-
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Example: simplifying with d² = 0</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`(3 + d)^2 = 9 + 6d + d^2`} display /></div>
-				<div class="step-note">expand</div>
-			</div>
-			<div class="step step-result">
-				<div class="step-math"><Katex math={r`= 9 + 6d`} display /></div>
-				<div class="step-note"><Katex math="d^2 = 0" /> ✓</div>
-			</div>
-		</div>
-
-		<div class="neo-prose" use:reveal>
-			<p>
-				Expand normally, kill every <Katex math="d^2" /> and higher, done. On <Katex math="D" />,
-				the result has the form "number + coefficient × <Katex math="d" />."
-			</p>
-		</div>
-
-		<!-- ═══ SECTION: A first taste ═══ -->
-		<div class="neo-prose" use:reveal>
-			<h3>A first taste: the slope of <Katex math="x^2" /></h3>
-			<p>Take <Katex math={r`f(x) = x^2`} /> and nudge its input by an infinitesimal:</p>
-		</div>
-
-		<div class="derivation" use:reveal>
-			<div class="derivation-title">Finding the slope of x²</div>
-			<div class="step">
-				<div class="step-math">
-					<Katex math={r`f(x + d) = (x + d)^2 = x^2 + 2xd + d^2`} display />
-				</div>
-				<div class="step-note">expand</div>
-			</div>
-			<div class="step">
-				<div class="step-math"><Katex math={r`= x^2 + 2xd`} display /></div>
-				<div class="step-note"><Katex math="d^2 = 0" /></div>
-			</div>
-			<div class="step step-result">
-				<div class="step-math">
-					<Katex math={r`= f(x) + \underbrace{2x}_{\text{the slope}} \cdot d`} display />
-				</div>
-				<div class="step-note">read off coefficient of d</div>
-			</div>
-		</div>
-
-		<div class="neo-prose" use:reveal>
-			<p>
-				The slope of <Katex math="x^2" /> at any point <Katex math="x" /> is <Katex math="2x" />. At <Katex
-					math="x = 3"
-				/>, the slope is 6. At <Katex math="x = -1" />, it's &minus;2. We just computed the
-				derivative — and all we did was algebra in the infinitesimal model. No limit computation was
-				needed for this derivation.
-			</p>
-		</div>
-
-		<SDGAdvantage>
-			<p>
-				In standard calculus, this requires defining a limit: <Katex
-					math={r`\lim_{h \to 0} \frac{(x+h)^2 - x^2}{h}`}
-				/>. In Neocalculus, it's three lines of algebra. Same answer, simpler path.
-			</p>
-		</SDGAdvantage>
-
-		<!-- ═══ SECTION: The axiom ═══ -->
-		<Callout type="definition" title="The Kock-Lawvere Axiom">
-			<p>
-				For any smooth map <Katex math={r`f \colon D \to \mathcal{R}`} />, there is a
-				<strong>unique</strong> number <Katex math="s" /> such that
-			</p>
-			<Katex math={r`f(d) = f(0) + s \cdot d`} display />
-			<p>
-				Every smooth map on the infinitesimals is affine first-order. The unique slope <Katex
-					math="s"
-				/> is the derivative.
-			</p>
-		</Callout>
-
-		<div class="neo-prose" use:reveal>
-			<p>
-				The word <em>uniquely</em> is the key. It means there is exactly one slope that works — and
-				that uniqueness is what lets us extract the derivative by "reading off the coefficient of <Katex
+				This is <strong>microstraightness</strong>. For an ordinary finite change
+				<Katex math="\Delta x" />, the line usually gives an approximation:
+				<Katex math={r`f(a+\Delta x)\approx f(a)+m\Delta x`} />. For a first-order displacement <Katex
 					math="d"
-				/>."
+				/>, the equation <Katex math={r`f(a+d)=f(a)+md`} /> is exact. The curve has not become a line
+				everywhere; curve and line agree only at first order near the chosen point.
+			</p>
+
+			<h3>Finding the local coefficient</h3>
+			<p>
+				Now let us find <Katex math="m" /> for the squaring function. Start at the input 3 and change
+				it to <Katex math="3+d" />. Expand in the ordinary way, then use
+				<Katex math="d^2=0" />:
 			</p>
 		</div>
 
-		<!-- ═══ SECTION: Microcancellation ═══ -->
-		<Callout type="theorem" title="Microcancellation">
+		<div class="derivation" use:reveal>
+			<div class="derivation-title">Square an input near 3</div>
+			<div class="step">
+				<div class="step-math"><Katex math={r`(3+d)^2=9+6d+d^2`} display /></div>
+				<div class="step-note">expand normally</div>
+			</div>
+			<div class="step step-result">
+				<div class="step-math"><Katex math={r`(3+d)^2=9+6d`} display /></div>
+				<div class="step-note"><Katex math="d^2=0" /></div>
+			</div>
+		</div>
+
+		<div class="neo-prose" use:reveal>
 			<p>
-				If <Katex math="a \cdot d = b \cdot d" /> for all infinitesimal <Katex math="d" />, then <Katex
-					math="a = b"
-				/>.
+				The answer has two parts. The 9 is the original output. The coefficient 6 tells us the
+				first-order change: near 3, the squaring function changes by <Katex math="6d" /> when the input
+				changes by <Katex math="d" />. In the microstraightness equation, this says
+				<Katex math="m=6" /> at the input 3.
 			</p>
 			<p>
-				We "cancel" the <Katex math="d" /> — <strong>not by dividing</strong> (you cannot divide by an
-				infinitesimal!) — but by the uniqueness of the Kock-Lawvere decomposition.
+				Now let the starting input be <Katex math="x" /> instead of 3. For
+				<Katex math={r`f(x)=x^2`} />:
 			</p>
+		</div>
+
+		<div class="derivation" use:reveal>
+			<div class="derivation-title">Square an input near x</div>
+			<div class="step">
+				<div class="step-math">
+					<Katex math={r`f(x+d)=(x+d)^2=x^2+2xd+d^2`} display />
+				</div>
+				<div class="step-note">expand</div>
+			</div>
+			<div class="step">
+				<div class="step-math"><Katex math={r`f(x+d)=x^2+2xd`} display /></div>
+				<div class="step-note"><Katex math="d^2=0" /></div>
+			</div>
+			<div class="step step-result">
+				<div class="step-math"><Katex math={r`f(x+d)=f(x)+(2x)d`} display /></div>
+				<div class="step-note">separate the original value from the change</div>
+			</div>
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>
+				This has the form <Katex math={r`f(x+d)=f(x)+md`} /> with
+				<Katex math="m=2x" />. Because the starting input can vary, the local coefficient varies
+				with it. This coefficient has a name.
+			</p>
+		</div>
+
+		<Callout type="definition" title="The Derivative">
+			<p>
+				For a smooth function and a fixed input <Katex math="x" />, there is a unique number
+				<Katex math="f'(x)" /> such that, for every first-order displacement <Katex math="d" />,
+				<Katex math={r`f(x+d)=f(x)+f'(x)d`} />. This number is the
+				<strong>derivative</strong>, or slope, at <Katex math="x" />.
+			</p>
+			<Katex math={r`f(x+d)=f(x)+f'(x)d`} display />
 		</Callout>
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				This is the workhorse of every derivation in this book. Expand <Katex math="f(x+d)" />,
-				apply <Katex math="d^2 = 0" />, and match the coefficients of <Katex math="d" /> on both sides.
+				For <Katex math={r`f(x)=x^2`} />, we found <Katex math={r`f'(x)=2x`} />. At
+				<Katex math="x=3" />, the slope is 6. At
+				<Katex math="x=-1" />, it is −2. The sign tells the direction; the size tells how steeply
+				the output responds.
+			</p>
+			<p>
+				Notice what we did not do: we never divided by <Katex math="d" />. We expanded the function
+				and read the unique first-order coefficient.
 			</p>
 		</div>
 
-		<!-- ═══ SECTION: How can d² = 0 without d = 0? ═══ -->
-		<div class="neo-prose" use:reveal>
-			<h4>How can <Katex math="d^2 = 0" /> without <Katex math="d = 0" />?</h4>
+		<RevealBox
+			title="Under the hood: why is the coefficient unique?"
+			subtitle="Optional foundation window"
+			tone="math"
+		>
 			<p>
-				In ordinary algebra, <Katex math="d^2 = 0" /> forces <Katex math="d = 0" />. The proof goes:
-				"Suppose <Katex math={r`d \neq 0`} />. Divide both sides of <Katex math="d \cdot d = 0" /> by
-				<Katex math="d" />. Then <Katex math="d = 0" />. Contradiction." But this argument assumes
-				you can always decide whether <Katex math="d = 0" /> or <Katex math={r`d \neq 0`} /> — that is,
-				it uses the <strong>law of excluded middle</strong>.
-			</p>
-		</div>
-
-		<Callout type="warning" title="Constructive Logic">
-			<p>
-				Neocalculus operates in <strong>constructive logic</strong>, where we only assert what we
-				can directly verify. For infinitesimals, we <em>cannot</em> decide whether <Katex
-					math="d = 0"
-				/> — they are too small to measure. So the classical proof breaks down, and <Katex
-					math="d^2 = 0"
-				/> is compatible with <Katex math="d" /> being nonzero.
+				In synthetic differential geometry, <Katex math="\mathcal R" /> names the smooth number line,
+				and <Katex math={r`D=\{d\in\mathcal R:d^2=0\}`} /> is its first-order neighborhood of zero. The
+				Kock–Lawvere axiom says that every map
+				<Katex math={r`g:D\to\mathcal R`} /> has a unique form
+				<Katex math={r`g(d)=a+bd`} />.
 			</p>
 			<p>
-				This is a feature: it blocks many case-split definitions of nonsmooth examples (such as step
-				functions) in the mainline model. In return, the functions we study are smooth by
-				construction.
-			</p>
-		</Callout>
-
-		<ModelScopeBox
-			title="Assumptions in This Chapter"
-			assumptions={[
-				'We are working in a smooth setting where functions are differentiable by design.',
-				'Reasoning is constructive: we do not assume excluded middle for infinitesimals.',
-				'Coefficient extraction uses uniqueness from the Kock-Lawvere form.'
-			]}
-			appliesTo={[
-				'Microcancellation arguments in later derivative proofs.',
-				'Statements about infinitesimals with d^2 = 0 but d not decidably zero.'
-			]}
-			doesNotClaim={[
-				'That every classical real-analysis theorem is available unchanged.',
-				'That excluded-middle-based case splits remain valid in this framework.'
-			]}
-		/>
-
-		<RevealBox title="Why the classical proof fails" subtitle="Optional logic detail" tone="math">
-			<p>
-				The classical argument has two steps. <strong>Step 1:</strong> Assume <Katex
-					math={r`d \neq 0`}
-				/>, divide <Katex math="d \cdot d = 0" /> by <Katex math="d" />, get <Katex math="d = 0" />.
-				Contradiction. <strong>Step 2:</strong> Since <Katex math={r`d \neq 0`} /> is impossible, conclude
-				<Katex math="d = 0" />.
+				Apply this to <Katex math={r`g(d)=f(x+d)`} />. Its constant term is
+				<Katex math="f(x)" />, and its unique coefficient is <Katex math="f'(x)" />. This is the
+				axiom behind the exact equation <Katex math={r`f(x+d)=f(x)+f'(x)d`} />.
 			</p>
 			<p>
-				Step 2 uses the law of excluded middle: "not (<Katex math={r`d \neq 0`} />) therefore <Katex
-					math="d = 0"
-				/>." In constructive logic, this inference is not valid — a number might be neither provably
-				zero nor provably nonzero. Infinitesimals live in this twilight.
+				No division by <Katex math="d" /> is involved. If
+				<Katex math="ad=bd" /> for every <Katex math="d\in D" />, then the two expressions have the
+				same first-order coefficient, so <Katex math="a=b" />. This is sometimes called
+				<strong>microcancellation</strong>.
+			</p>
+			<p>
+				There is one logical subtlety. The model has a nontrivial infinitesimal neighborhood, but we
+				do not choose a particular <Katex math="d" /> and declare it distinguishably nonzero. The mainline
+				only needs the neighborhood <Katex math="D" /> and the unique coefficient rule.
 			</p>
 		</RevealBox>
 
-		{#snippet neoWorkflow()}
-			<p>
-				<strong>Derivative workflow:</strong> find the unique coefficient <Katex math="s" /> such that
-				<Katex math={r`f(x+d)=f(x)+s\,d`} />.
-			</p>
-			<p>
-				Computationally: expand, drop <Katex math="d^2" />, then read the <Katex math="d" />
-				coefficient.
-			</p>
-		{/snippet}
-
-		{#snippet classicalWorkflow()}
-			<p>
-				<strong>Derivative workflow:</strong> evaluate the limit <Katex
-					math={r`f'(x)=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}`}
-				/>.
-			</p>
-			<p>
-				Computationally: simplify the quotient first, then justify the limiting step analytically.
-			</p>
-		{/snippet}
-
-		<TranslationBox
-			title="Two Equivalent Calculus Workflows"
-			leftTitle="Neocalculus Form"
-			rightTitle="Standard Calculus Form"
-			left={neoWorkflow}
-			right={classicalWorkflow}
-		/>
-
-		<!-- ═══ HISTORY ═══ -->
-		<HistoryBox name="Gottfried Wilhelm Leibniz" years="1646–1716">
-			<p>
-				Leibniz co-invented calculus using infinitesimals, writing <Katex math="dx" />, <Katex
-					math="dy"
-				/>, and <Katex math={r`\textstyle\int`} />. His notation was brilliant, but his
-				infinitesimals lacked rigorous foundations. Bishop Berkeley mocked them as "ghosts of
-				departed quantities" in 1734. For 200 years, mathematicians used Leibniz's notation while
-				replacing his ideas with limits. Neocalculus vindicates Leibniz: his infinitesimals were
-				nilpotent (<Katex math="d^2 = 0" />) all along.
-			</p>
-		</HistoryBox>
-
-		<HistoryBox name="L. E. J. Brouwer" years="1881–1966">
-			<p>
-				Brouwer founded <strong>intuitionism</strong>, arguing that mathematical existence requires
-				construction, not just proof by contradiction. He rejected the law of excluded middle. His
-				ideas, once controversial, became the foundation of constructive mathematics — the logical
-				framework that makes Neocalculus possible.
-			</p>
-		</HistoryBox>
-
-		<!-- ═══ CHAPTER SUMMARY ═══ -->
 		<ChapterSummary>
 			<ul>
 				<li>
-					<strong>Smoothness:</strong> In Neocalculus, every function we study is smooth by design — no
-					jumps, no corners.
+					A function assigns exactly one output to each input; calculus studies how that output
+					changes.
+				</li>
+				<li>A graph is smooth at a point when it has one local line direction there.</li>
+				<li>
+					A first-order displacement <Katex math="d" /> satisfies <Katex math="d^2=0" />; it is not
+					an ordinary small real number.
 				</li>
 				<li>
-					<strong>Microstraightness:</strong> Zoom into any smooth curve and its first-order behavior
-					is affine.
+					The local line is usually an approximation for finite <Katex math="\Delta x" />, but the
+					first-order equation is exact for <Katex math="d" />.
 				</li>
 				<li>
-					<strong>Infinitesimals:</strong> Quantities <Katex math="d" /> where <Katex
-						math="d^2 = 0"
-					/> but <Katex math={r`d \neq 0`} />.
-				</li>
-				<li>
-					<strong>Kock-Lawvere axiom:</strong> Every smooth map on <Katex math="D" /> is uniquely of the
-					form <Katex math="f(0) + s \cdot d" />.
-				</li>
-				<li>
-					<strong>Microcancellation:</strong>
-					<Katex math="ad = bd" /> for all <Katex math="d" /> implies <Katex math="a = b" />.
-				</li>
-				<li>
-					<strong>Constructive logic:</strong> We don't assume the law of excluded middle, which is
-					why <Katex math="d^2 = 0" /> doesn't force <Katex math="d = 0" />.
+					The derivative is the unique coefficient in
+					<Katex math={r`f(x+d)=f(x)+f'(x)d`} />; for <Katex math="x^2" />, it is
+					<Katex math="2x" />.
 				</li>
 			</ul>
 		</ChapterSummary>
 
-		<!-- ═══ EXERCISES ═══ -->
 		<details class="exercises-group" use:reveal>
-			<summary class="exercises-group-title">Exercises (Core 1-10, Extension optional)</summary>
+			<summary class="exercises-group-title">Practice (six core, two explorations)</summary>
 
 			<Exercise number={1}>
 				<p>
-					<strong>Warm-up.</strong> Simplify <Katex math="(3 + d)^2" /> using <Katex
-						math="d^2 = 0"
-					/>.
+					<strong>Core.</strong> For <Katex math={r`f(x)=3x+1`} />, identify the input and the
+					output, then calculate the output for the input 4.
 				</p>
 				{#snippet solution()}
-					<Katex math={r`(3+d)^2 = 9 + 6d + d^2 = 9 + 6d`} display />
+					<p>The input is <Katex math="x" /> and the output is <Katex math="f(x)" />.</p>
+					<Katex math={r`f(4)=3(4)+1=13`} display />
 				{/snippet}
 			</Exercise>
 
 			<Exercise number={2}>
-				<p><strong>Warm-up.</strong> Simplify <Katex math="(1 + d)(1 - d)" />.</p>
+				<p>
+					<strong>Core.</strong> Classify each graph as smooth, cornered, or discontinuous:
+					<Katex math="x^2" />, <Katex math={r`|x|`} />, and a step function.
+				</p>
 				{#snippet solution()}
-					<Katex math={r`(1+d)(1-d) = 1 - d^2 = 1`} display />
-					<p>So <Katex math="1-d" /> is the multiplicative inverse of <Katex math="1+d" />.</p>
+					<p>
+						<Katex math="x^2" /> is smooth. <Katex math={r`|x|`} /> has a corner at 0. A step function
+						has a jump discontinuity.
+					</p>
 				{/snippet}
 			</Exercise>
 
 			<Exercise number={3}>
-				<p><strong>Warm-up.</strong> Simplify <Katex math="(5 + d)^3" />.</p>
+				<p>
+					<strong>Core.</strong> Simplify <Katex math="(5+d)^2" /> using <Katex math="d^2=0" />.
+				</p>
 				{#snippet solution()}
-					<Katex math={r`(5+d)^3 = 125 + 75d + 15d^2 + d^3 = 125 + 75d`} display />
+					<Katex math={r`(5+d)^2=25+10d+d^2=25+10d`} display />
 				{/snippet}
 			</Exercise>
 
 			<Exercise number={4}>
 				<p>
-					<strong>Core.</strong> Simplify <Katex math={r`\frac{1}{1+d}`} /> by multiplying top and bottom
-					by <Katex math="(1 - d)" />.
+					<strong>Core.</strong> Expand <Katex math="(x+d)^3" /> and read the coefficient of
+					<Katex math="d" />.
 				</p>
 				{#snippet solution()}
-					<Katex math={r`\frac{1}{1+d} = \frac{1-d}{(1+d)(1-d)} = \frac{1-d}{1} = 1-d`} display />
+					<Katex math={r`(x+d)^3=x^3+3x^2d+3xd^2+d^3=x^3+3x^2d`} display />
+					<p>The first-order coefficient is <Katex math="3x^2" />.</p>
 				{/snippet}
 			</Exercise>
 
 			<Exercise number={5}>
 				<p>
-					<strong>Core.</strong> True or false: <Katex math="d^2 = 0" /> implies <Katex
-						math="d^3 = 0"
-					/>.
+					<strong>Core.</strong> The derivative of <Katex math="x^2" /> is <Katex math="2x" />. Find
+					the slope at <Katex math="x=4" /> and explain what it means.
 				</p>
 				{#snippet solution()}
-					<p><strong>True.</strong> <Katex math="d^3 = d \cdot d^2 = d \cdot 0 = 0" />.</p>
-				{/snippet}
-			</Exercise>
-
-			<Exercise number={6}>
-				<p><strong>Core.</strong> Simplify <Katex math="(2+d)^4" />.</p>
-				{#snippet solution()}
-					<Katex math={r`(2+d)^4 = 16 + 4 \cdot 8 \cdot d + \cdots = 16 + 32d`} display />
-					<p>All terms with <Katex math="d^2" /> or higher vanish.</p>
-				{/snippet}
-			</Exercise>
-
-			<Exercise number={7}>
-				<p>
-					<strong>Core.</strong> Compute <Katex math="(x+d)^3" />, apply <Katex math="d^2 = 0" />,
-					and read off the coefficient of <Katex math="d" />. What is the slope of <Katex
-						math="x^3"
-					/>?
-				</p>
-				{#snippet solution()}
-					<Katex math={r`(x+d)^3 = x^3 + 3x^2 d + 3xd^2 + d^3 = x^3 + 3x^2 d`} display />
-					<p>The slope of <Katex math="x^3" /> at <Katex math="x" /> is <Katex math="3x^2" />.</p>
-				{/snippet}
-			</Exercise>
-
-			<Exercise number={8}>
-				<p>
-					<strong>Core.</strong> Explain in your own words why every smooth curve must be "infinitesimally
-					straight."
-				</p>
-				{#snippet solution()}
+					<Katex math={r`f'(4)=2(4)=8`} display />
 					<p>
-						The Kock-Lawvere axiom says every function on D is affine: <Katex
-							math="f(d) = f(0) + s \cdot d"
-						/>. A curve restricted to an infinitesimal interval is such a function, so it must be a
-						straight line. Curves are built from infinitesimal segments too short to bend.
-					</p>
-				{/snippet}
-			</Exercise>
-
-			<Exercise number={9}>
-				<p>
-					<strong>Challenge.</strong> Why can't you define a step function (<Katex
-						math="f(x) = 0"
-					/> for <Katex math="x < 0" />, <Katex math="f(x) = 1" /> for <Katex math={r`x \geq 0`} />)
-					in the Neocalculus world?
-				</p>
-				{#snippet solution()}
-					<p>
-						The definition requires deciding whether each number is negative or non-negative. For
-						infinitesimals near 0, this decision cannot be made — constructive logic does not
-						provide a procedure to determine their sign. The function is undefined on these numbers
-						and so does not exist on the full number line.
-					</p>
-				{/snippet}
-			</Exercise>
-
-			<Exercise number={10}>
-				<p>
-					<strong>Challenge.</strong> List three physical quantities that change smoothly. For each, explain
-					what "infinitesimally straight" means physically.
-				</p>
-				{#snippet solution()}
-					<p>
-						(1) <strong>Temperature along a rod:</strong> over an infinitesimal length, temperature
-						changes linearly: <Katex math="T(x+d) = T(x) + T'(x) \cdot d" />. (2)
-						<strong>Height of a ball:</strong>
-						over an infinitesimal time, height changes at constant velocity: <Katex
-							math="h(t+d) = h(t) + v(t) \cdot d"
-						/>. (3) <strong>Population:</strong> over an infinitesimal time, growth is proportional: <Katex
-							math="P(t+d) = P(t)(1 + r \cdot d)"
+						Near <Katex math="x=4" />, the output changes by <Katex math="8d" /> for an input change <Katex
+							math="d"
 						/>.
 					</p>
 				{/snippet}
 			</Exercise>
 
-			<Exercise number={11}>
+			<Exercise number={6}>
 				<p>
-					<strong>Exploration.</strong> Is <Katex math="3d^2" /> zero? What about <Katex
-						math={r`\sqrt{d^2}`}
-					/>? Can you take <Katex math={r`\sqrt{d}`} />?
+					<strong>Core.</strong> Explain the difference between the exact first-order statement
+					<Katex math={r`f(x+d)=f(x)+f'(x)d`} /> and the finite approximation
+					<Katex math={r`f(x+\Delta x)\approx f(x)+f'(x)\Delta x`} />.
 				</p>
 				{#snippet solution()}
 					<p>
-						<Katex math="3d^2 = 0" /> — any multiple of <Katex math="d^2" /> is zero. <Katex
-							math={r`\sqrt{d^2} = \sqrt{0} = 0`}
-						/>. As for <Katex math={r`\sqrt{d}`} />: this is not defined in standard SDG, because <Katex
-							math="d"
-						/> is not provably non-negative.
+						The first equation is exact for every first-order <Katex math="d" /> satisfying
+						<Katex math="d^2=0" />. An ordinary finite <Katex math="\Delta x" /> still has higher-order
+						powers, so the linear expression is generally an approximation.
+					</p>
+				{/snippet}
+			</Exercise>
+
+			<Exercise number={7}>
+				<p>
+					<strong>Explore.</strong> Expand <Katex math={r`(x+\Delta x)^2`} /> for an ordinary finite
+					<Katex math="\Delta x" />. Which term is absent from the first-order calculation, and what
+					does it represent geometrically?
+				</p>
+				{#snippet solution()}
+					<Katex math={r`(x+\Delta x)^2=x^2+2x\Delta x+(\Delta x)^2`} display />
+					<p>
+						The first-order calculation omits <Katex math={r`(\Delta x)^2`} />. For the parabola,
+						this is the finite gap between the curve and its local line.
+					</p>
+				{/snippet}
+			</Exercise>
+
+			<Exercise number={8}>
+				<p>
+					<strong>Explore.</strong> Why do we read coefficients instead of dividing an equation by
+					<Katex math="d" />?
+				</p>
+				{#snippet solution()}
+					<p>
+						A first-order displacement satisfying <Katex math="d^2=0" /> is not invertible, so division
+						by <Katex math="d" /> is unavailable. The unique-coefficient rule lets us compare the coefficients
+						directly.
 					</p>
 				{/snippet}
 			</Exercise>
 		</details>
 
-		<!-- ═══ LOOKING AHEAD ═══ -->
 		<LookingAhead>
 			<p>
-				In the next chapter, we'll use <Katex math="d^2 = 0" /> to find slopes for the core function families
-				— polynomials, trig, exponentials, logarithms — with the same coefficient-extraction workflow.
-				The key formula: <Katex math={r`f(x + d) = f(x) + f'(x) \cdot d`} />.
+				In Chapter 2, the equation <Katex math={r`f(x+d)=f(x)+f'(x)d`} /> becomes a calculation method.
+				We will use it to find derivatives of powers, reciprocals, roots, trigonometric functions, exponentials,
+				and logarithms.
 			</p>
 		</LookingAhead>
-
 	</div>
 </section>
 
 <style>
-	:global(.figure-1-2 figcaption) {
+	:global(.figure-1-3 figcaption) {
 		max-width: var(--w-content);
 		margin-inline: auto;
 	}

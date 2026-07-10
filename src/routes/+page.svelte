@@ -81,10 +81,10 @@
 				algebra.
 			</p>
 			<p class="hero-motivation">
-				Most courses start with limits. This one starts with an infinitesimal model where
-				<Katex math="d^2=0" /> and smoothness turns local change into first-order algebra. Core
-				calculus results are built by coefficient extraction, with assumptions stated only when they
-				matter.
+				Calculus asks how a changing input changes an output. Neocalculus studies that question
+				through a first-order infinitesimal lens: smooth curves become locally linear, and
+				derivatives appear as coefficients of <Katex math="d" />. The chapters build from this local
+				picture to accumulation, modeling, and geometry.
 			</p>
 		</div>
 		<div class="hero-toc">

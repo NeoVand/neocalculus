@@ -32,29 +32,29 @@
 	let pointSlider = $state(
 		Math.round(((curve.cx - curve.xRange[0]) / (curve.xRange[1] - curve.xRange[0])) * 1000)
 	);
-	let dSlider = $state(42);
+	let deltaSlider = $state(42);
 
 	let a = $derived(curve.xRange[0] + (pointSlider / 1000) * (curve.xRange[1] - curve.xRange[0]));
 	let rangeX = $derived(4 / zoom);
 	let xMin = $derived(a - rangeX);
 	let xMax = $derived(a + rangeX);
 
-	let dRaw = $derived((dSlider / 100) * rangeX * 0.9);
-	let xShifted = $derived(clamp(a + dRaw, xMin, xMax));
-	let d = $derived(xShifted - a);
+	let deltaRaw = $derived((deltaSlider / 100) * rangeX * 0.9);
+	let xShifted = $derived(clamp(a + deltaRaw, xMin, xMax));
+	let deltaX = $derived(xShifted - a);
 
 	let fA = $derived(curve.fn(a));
 	let fShifted = $derived(curve.fn(xShifted));
 	let slopeA = $derived(curve.dfn(a));
-	let predicted = $derived(fA + slopeA * d);
+	let predicted = $derived(fA + slopeA * deltaX);
 	let actualChange = $derived(fShifted - fA);
-	let linearChange = $derived(slopeA * d);
+	let linearChange = $derived(slopeA * deltaX);
 	let deviation = $derived(fShifted - predicted);
 
 	let leftValue = $derived(num(fShifted));
 	let rightValue = $derived(num(predicted));
 	let devAbsValue = $derived(num(Math.abs(deviation), 7));
-	let dValue = $derived(num(d));
+	let deltaValue = $derived(num(deltaX));
 	let changeValue = $derived(num(actualChange));
 	let linearValue = $derived(num(linearChange));
 
@@ -202,8 +202,8 @@
 		ctx.font = `${13 * dpr}px var(--font-serif)`;
 		ctx.textAlign = 'center';
 		ctx.fillText('a', xA, yDim + 20 * dpr);
-		ctx.fillText('a+d', x2, yDim + 20 * dpr);
-		ctx.fillText('d', (xA + x2) / 2, yDim - 8 * dpr);
+		ctx.fillText('a+Δx', x2, yDim + 20 * dpr);
+		ctx.fillText('Δx', (xA + x2) / 2, yDim - 8 * dpr);
 	}
 
 	onMount(() => {
@@ -228,25 +228,27 @@
 
 <div class="demo-container content-width slope-shell">
 	<div class="hero">
-		<div class="hero-eyebrow">Local Linearization Lab</div>
-		<div class="hero-title">One perturbation, one tangent model, one visible error</div>
+		<div class="hero-eyebrow">Finite Change and the Local Line</div>
+		<div class="hero-title">One input step, one linear prediction, one visible gap</div>
 	</div>
 
 	<div class="equation-block">
-		<div class="equation-main"><Katex math="f(a+d)=f(a)+f'(a)d" /></div>
-		<div class="equation-sub"><Katex math={"f(x)=" + curve.tex} /></div>
+		<div class="equation-main">
+			<Katex math={String.raw`f(a+\Delta x)\approx f(a)+f'(a)\Delta x`} />
+		</div>
+		<div class="equation-sub"><Katex math={'f(x)=' + curve.tex} /></div>
 	</div>
 
 	<div class="verify-row" aria-live="polite">
 		<div class="verify-cell">
 			<span class="verify-label">Exact Value</span>
 			<span class="verify-value">{leftValue}</span>
-			<span class="verify-caption">f(a+d)</span>
+			<span class="verify-caption">f(a+Δx)</span>
 		</div>
 		<div class="verify-cell">
 			<span class="verify-label">Linear Model</span>
 			<span class="verify-value">{rightValue}</span>
-			<span class="verify-caption">f(a)+f'(a)d</span>
+			<span class="verify-caption">f(a)+f'(a)Δx</span>
 		</div>
 		<div class="verify-cell verify-cell-accent">
 			<span class="verify-label">Deviation</span>
@@ -260,9 +262,9 @@
 	</div>
 
 	<div class="stats-row" aria-live="polite">
-		<div class="stat-cell"><span>d</span><strong>{dValue}</strong></div>
-		<div class="stat-cell"><span>f(a+d)-f(a)</span><strong>{changeValue}</strong></div>
-		<div class="stat-cell"><span>f'(a)d</span><strong>{linearValue}</strong></div>
+		<div class="stat-cell"><span>Δx</span><strong>{deltaValue}</strong></div>
+		<div class="stat-cell"><span>f(a+Δx)-f(a)</span><strong>{changeValue}</strong></div>
+		<div class="stat-cell"><span>f'(a)Δx</span><strong>{linearValue}</strong></div>
 	</div>
 
 	<div class="controls-panel">
@@ -295,17 +297,17 @@
 		</div>
 
 		<div class="toolbar">
-			<span class="toolbar-lbl">d</span>
+			<span class="toolbar-lbl">Δx</span>
 			<input
 				type="range"
 				min="-180"
 				max="180"
 				step="1"
-				bind:value={dSlider}
+				bind:value={deltaSlider}
 				oninput={requestDraw}
 				class="toolbar-slider"
 			/>
-			<span class="toolbar-val">{dValue}</span>
+			<span class="toolbar-val">{deltaValue}</span>
 		</div>
 	</div>
 </div>

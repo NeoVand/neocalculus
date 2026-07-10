@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import katex from 'katex';
+	import Katex from '$lib/components/Katex.svelte';
 
 	interface Scenario {
 		inputMath: string;
@@ -83,15 +83,17 @@
 		}
 
 		// Distribute N_PTS+1 points: place critical points first, fill rest evenly
-		const allX = new Set<number>();
-		for (const cx of criticals) allX.add(cx);
+		const allX: number[] = [...criticals];
 		// Fill remaining slots with evenly spaced points
-		const remaining = N_PTS + 1 - allX.size;
+		const remaining = N_PTS + 1 - allX.length;
 		for (let i = 0; i < remaining; i++) {
-			allX.add(xMin + (i / (remaining - 1)) * range);
+			allX.push(xMin + (i / (remaining - 1)) * range);
 		}
 		// Sort and take exactly N_PTS+1
-		const sorted = [...allX].sort((a, b) => a - b).slice(0, N_PTS + 1);
+		const sorted = allX
+			.sort((a, b) => a - b)
+			.filter((value, index, arr) => index === 0 || value !== arr[index - 1])
+			.slice(0, N_PTS + 1);
 		// Pad or trim to exactly N_PTS+1
 		while (sorted.length < N_PTS + 1) sorted.push(xMax);
 
@@ -261,8 +263,6 @@
 		return () => { if (timer) clearTimeout(timer); };
 	});
 
-	function tex(s: string): string { return katex.renderToString(s, { throwOnError: false, trust: true }); }
-
 	// ═══════════════════════════════════════════
 	// GEOMETRY
 	// ═══════════════════════════════════════════
@@ -317,12 +317,19 @@
 <div class="fm-wrap">
 	<div class="fm-stage" style="--rest-l: {restLeft}%; --rest-r: {restRight}%; --swallow: {swallowPct}%; --hidden-r: {hiddenRight}%;">
 		<div class="fm-val fm-val-in" class:appear={phase === 'appear'} class:swallow={phase === 'swallow'} class:gone={phase === 'digest' || phase === 'spit' || phase === 'linger'} class:fading={phase === 'fadeout' || phase === 'reset'}>
-			{@html tex(sc.inputMath)}
+			<Katex math={sc.inputMath} />
 		</div>
 
 		<!-- x / f(x) labels positioned inside SVG to align with body top -->
-		<div class="fm-x-label" style="--rest-l: {restLeft}%;">{@html tex('x')}</div>
-		<div class="fm-fx-label" style="--rest-r: {restRight}%;">{@html tex('f(x)')}</div>
+		<div class="fm-x-label" style="--rest-l: {restLeft}%;"><Katex math="x" /></div>
+		<div class="fm-fx-label" style="--rest-r: {restRight}%;"><Katex math="f(x)" /></div>
+		<div
+			class="fm-eq-label"
+			class:visible={phase === 'appear' || phase === 'swallow' || phase === 'digest' || phase === 'spit' || phase === 'linger'}
+			class:fading={phase === 'fadeout' || phase === 'reset'}
+		>
+			<Katex math={sc.fnMath} />
+		</div>
 
 		<svg class="fm-svg" viewBox="0 0 {VW} {VH}" xmlns="http://www.w3.org/2000/svg">
 			<defs>
@@ -346,17 +353,6 @@
 				<path d={machinePath} fill="url(#sweepG)" stroke="none"/>
 			{/if}
 
-			<foreignObject x={bL} y={bT} width={bR-bL} height="95">
-				<div
-					class="fm-label"
-					class:visible={phase === 'appear' || phase === 'swallow' || phase === 'digest' || phase === 'spit' || phase === 'linger'}
-					class:fading={phase === 'fadeout' || phase === 'reset'}
-					xmlns="http://www.w3.org/1999/xhtml"
-				>
-					{@html tex(sc.fnMath)}
-				</div>
-			</foreignObject>
-
 			<rect x={pL-8} y={pT_-8} width={pW+16} height={pH+16} rx="12" ry="12" fill="white" fill-opacity="0.5" stroke="none" opacity="0.7"/>
 
 			{#if axisXpx !== null}
@@ -375,7 +371,7 @@
 		</svg>
 
 		<div class="fm-val fm-val-out" class:emerge={phase === 'spit' || phase === 'linger'} class:fading={phase === 'fadeout' || phase === 'reset'}>
-			{@html tex(sc.outputMath)}
+			<Katex math={sc.outputMath} />
 		</div>
 	</div>
 </div>
@@ -414,18 +410,26 @@
 
 	.fm-path { transition: d 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
-	.fm-label {
-		width: 100%; height: 100%;
-		display: flex; align-items: center; justify-content: center;
+	.fm-eq-label {
+		position: absolute;
+		left: 50%;
+		top: 26.75%;
+		width: 43.75%;
+		transform: translate(-50%, -50%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
 		color: var(--color-d); pointer-events: none;
+		z-index: 3;
 		opacity: 0;
 		transition: opacity 0.45s ease;
 	}
 
-	.fm-label.visible { opacity: 1; }
-	.fm-label.fading { opacity: 0; transition: opacity 0.5s ease; }
+	.fm-eq-label.visible { opacity: 1; }
+	.fm-eq-label.fading { opacity: 0; transition: opacity 0.5s ease; }
 
-	.fm-label :global(.katex) { font-size: 1.35em; }
+	.fm-eq-label :global(.katex) { font-size: 1.35em; }
 
 	.fm-val {
 		position: absolute; top: 50%;
@@ -453,7 +457,7 @@
 
 	@media (max-width: 480px) {
 		.fm-stage { max-width: 340px; }
-		.fm-label :global(.katex) { font-size: 1.1em; }
+		.fm-eq-label :global(.katex) { font-size: 1.1em; }
 		.fm-val :global(.katex) { font-size: 0.78em; }
 	}
 

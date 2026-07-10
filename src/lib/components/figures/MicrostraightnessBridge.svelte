@@ -10,14 +10,14 @@
 		const fp = (x: number) => 0.36 + 0.44 * (x - 1.8);
 
 		const a = 1.35;
-		const d = 1.5;
+		const deltaX = 1.5;
 		const x1 = a;
-		const x2 = a + d;
+		const x2 = a + deltaX;
 
 		const y1 = f(x1);
 		const y2 = f(x2);
 		const slope = fp(a);
-		const yLinear = y1 + slope * d;
+		const yLinear = y1 + slope * deltaX;
 
 		const yAxis = 0.64;
 		const yLow = Math.min(y2, yLinear);
@@ -43,26 +43,47 @@
 
 		const t1 = a - 0.55;
 		const t2 = a + 1.95;
-		board.create('segment', [[t1, y1 + slope * (t1 - a)], [t2, y1 + slope * (t2 - a)]], {
-			strokeColor: '#7c3aed',
-			strokeWidth: 2,
-			dash: 2,
-			highlight: false
-		});
+		board.create(
+			'segment',
+			[
+				[t1, y1 + slope * (t1 - a)],
+				[t2, y1 + slope * (t2 - a)]
+			],
+			{
+				strokeColor: '#7c3aed',
+				strokeWidth: 2,
+				dash: 2,
+				highlight: false
+			}
+		);
 
 		// Vertical guides
-		board.create('segment', [[x1, yAxis], [x1, y1]], {
-			strokeColor: '#dfd9ea',
-			strokeWidth: 1,
-			dash: 2,
-			highlight: false
-		});
-		board.create('segment', [[x2, yAxis], [x2, yHigh + 0.02]], {
-			strokeColor: '#dfd9ea',
-			strokeWidth: 1,
-			dash: 2,
-			highlight: false
-		});
+		board.create(
+			'segment',
+			[
+				[x1, yAxis],
+				[x1, y1]
+			],
+			{
+				strokeColor: '#dfd9ea',
+				strokeWidth: 1,
+				dash: 2,
+				highlight: false
+			}
+		);
+		board.create(
+			'segment',
+			[
+				[x2, yAxis],
+				[x2, yHigh + 0.02]
+			],
+			{
+				strokeColor: '#dfd9ea',
+				strokeWidth: 1,
+				dash: 2,
+				highlight: false
+			}
+		);
 
 		// True values
 		board.create('point', [x1, y1], {
@@ -94,39 +115,81 @@
 			highlight: false
 		});
 
-		// Bracket for d
-		board.create('segment', [[x1, 0.47], [x2, 0.47]], {
-			strokeColor: '#7c3aed',
-			strokeWidth: 2.2,
-			highlight: false
-		});
-		board.create('segment', [[x1, 0.43], [x1, 0.51]], {
-			strokeColor: '#7c3aed',
-			strokeWidth: 1.6,
-			highlight: false
-		});
-		board.create('segment', [[x2, 0.43], [x2, 0.51]], {
-			strokeColor: '#7c3aed',
-			strokeWidth: 1.6,
-			highlight: false
-		});
+		// Bracket for the ordinary finite step
+		board.create(
+			'segment',
+			[
+				[x1, 0.47],
+				[x2, 0.47]
+			],
+			{
+				strokeColor: '#7c3aed',
+				strokeWidth: 2.2,
+				highlight: false
+			}
+		);
+		board.create(
+			'segment',
+			[
+				[x1, 0.43],
+				[x1, 0.51]
+			],
+			{
+				strokeColor: '#7c3aed',
+				strokeWidth: 1.6,
+				highlight: false
+			}
+		);
+		board.create(
+			'segment',
+			[
+				[x2, 0.43],
+				[x2, 0.51]
+			],
+			{
+				strokeColor: '#7c3aed',
+				strokeWidth: 1.6,
+				highlight: false
+			}
+		);
 
-		// Residual bracket
-		board.create('segment', [[xGap, yLow], [xGap, yHigh]], {
-			strokeColor: '#dc2626',
-			strokeWidth: 1.9,
-			highlight: false
-		});
-		board.create('segment', [[xGap - 0.03, yLow], [xGap + 0.03, yLow]], {
-			strokeColor: '#dc2626',
-			strokeWidth: 1.6,
-			highlight: false
-		});
-		board.create('segment', [[xGap - 0.03, yHigh], [xGap + 0.03, yHigh]], {
-			strokeColor: '#dc2626',
-			strokeWidth: 1.6,
-			highlight: false
-		});
+		// Finite gap between the curve and the local line
+		board.create(
+			'segment',
+			[
+				[xGap, yLow],
+				[xGap, yHigh]
+			],
+			{
+				strokeColor: '#dc2626',
+				strokeWidth: 1.9,
+				highlight: false
+			}
+		);
+		board.create(
+			'segment',
+			[
+				[xGap - 0.03, yLow],
+				[xGap + 0.03, yLow]
+			],
+			{
+				strokeColor: '#dc2626',
+				strokeWidth: 1.6,
+				highlight: false
+			}
+		);
+		board.create(
+			'segment',
+			[
+				[xGap - 0.03, yHigh],
+				[xGap + 0.03, yHigh]
+			],
+			{
+				strokeColor: '#dc2626',
+				strokeWidth: 1.6,
+				highlight: false
+			}
+		);
 
 		// Axis labels
 		board.create('text', [x1, 0.37, 'a'], {
@@ -136,21 +199,21 @@
 			fontStyle: 'italic',
 			highlight: false
 		});
-		board.create('text', [x2, 0.37, 'a+d'], {
+		board.create('text', [x2, 0.37, 'a+Δx'], {
 			fontSize: 16,
 			anchorX: 'middle',
 			color: '#1a1a2e',
 			fontStyle: 'italic',
 			highlight: false
 		});
-		board.create('text', [(x1 + x2) / 2, 0.57, 'd'], {
+		board.create('text', [(x1 + x2) / 2, 0.57, 'Δx'], {
 			fontSize: 15,
 			anchorX: 'middle',
 			color: '#7c3aed',
 			fontStyle: 'italic',
 			highlight: false
 		});
-		board.create('text', [xGap + 0.12, (yLow + yHigh) / 2 + 0.02, 'r(d)'], {
+		board.create('text', [xGap + 0.12, (yLow + yHigh) / 2 + 0.02, 'gap'], {
 			fontSize: 12.5,
 			anchorX: 'left',
 			color: '#dc2626',
@@ -162,10 +225,10 @@
 <div
 	class="micro-bridge"
 	role="img"
-	aria-label="Microstraightness figure: curve and tangent agree to first order over an infinitesimal step"
+	aria-label="Comparison of an ordinary finite step with the exact first-order linear form"
 >
 	<section class="geometry-block">
-		<h4>Geometry</h4>
+		<h4>Ordinary finite step</h4>
 		<JSXGraphBoard
 			setup={setupMicrostraightnessBridge}
 			boundingbox={[0.35, 2.85, 4.1, 0.25]}
@@ -174,29 +237,29 @@
 		/>
 		<div class="legend-row">
 			<span class="legend-chip curve"></span>
-			<span class="legend-text"><Katex math={r`f(a+d)`} /> true value</span>
+			<span class="legend-text"><Katex math={r`f(a+\Delta x)`} /> curve value</span>
 		</div>
 		<div class="legend-row">
 			<span class="legend-chip linear"></span>
-			<span class="legend-text"><Katex math={r`f(a)+f'(a)d`} /> tangent value</span>
+			<span class="legend-text"><Katex math={r`f(a)+m\Delta x`} /> local-line value</span>
 		</div>
 		<div class="legend-row">
 			<span class="legend-chip residual"></span>
-			<span class="legend-text"><Katex math={r`r(d)\sim d^2`} /> residual</span>
+			<span class="legend-text">finite gap</span>
 		</div>
 	</section>
 
 	<section class="algebra-block">
-		<h4>Algebraic Translation</h4>
+		<h4>First-order view</h4>
 		<div class="algebra-card">
 			<div class="chain">
-				<div class="line"><Katex math={r`f(a+d)=f(a)+f'(a)d+r(d)`} display /></div>
-				<div class="line"><Katex math={r`r(d)=d^2 g(d)`} display /></div>
-				<div class="rule"><Katex math={r`d^2=0\ \text{for}\ d\in D`} display /></div>
-				<div class="line result"><Katex math={r`\therefore\ f(a+d)=f(a)+f'(a)d`} display /></div>
+				<div class="rule"><Katex math={r`d^2=0`} display /></div>
+				<div class="line result"><Katex math={r`f(a+d)=f(a)+md`} display /></div>
 			</div>
 		</div>
-		<p class="summary">So on <Katex math="D" />, only first-order change survives.</p>
+		<p class="summary">
+			The coefficient <Katex math="m" /> is unique: it records the shared local direction.
+		</p>
 	</section>
 </div>
 
