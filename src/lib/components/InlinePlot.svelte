@@ -184,7 +184,8 @@
 
 <style>
 	.inline-plot {
-		max-width: 34rem;
+		width: 100%;
+		max-width: none;
 		margin-inline: auto;
 	}
 

@@ -1177,7 +1177,7 @@ h4 {
 	--tile-shadow: 0 12px 24px var(--color-shadow);
 }
 
-:root[data-theme='dark'] .slope-shell :where(.equation-block, .controls-panel, .verify-cell-accent) {
+:root[data-theme='dark'] .slope-shell :where(.equation-block, .verify-cell-accent) {
 	background: color-mix(in srgb, var(--color-surface) 91%, var(--color-d) 9%) !important;
 	border-color: var(--color-border) !important;
 }
