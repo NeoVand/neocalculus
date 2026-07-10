@@ -6,7 +6,7 @@
 	import SliderField from '$lib/components/demos/SliderField.svelte';
 	import ToggleField from '$lib/components/demos/ToggleField.svelte';
 
-	const center = { x: 280, y: 250 };
+	const center = { x: 280, y: 280 };
 	const scale = 68;
 	const domain = [-2.5, -1.67, -0.83, 0, 0.83, 1.67, 2.5];
 
@@ -65,26 +65,26 @@
 
 	<div class="visual-grid">
 		<div class="plot-shell">
-			<svg viewBox="0 0 560 500" role="img" aria-label="Circular vector field on a punctured plane with an adjustable oriented loop">
+			<svg viewBox="0 0 560 560" role="img" aria-label="Circular vector field on a punctured plane with an adjustable oriented loop">
 				<defs>
 					<radialGradient id="hole-glow" cx="50%" cy="50%" r="50%">
-						<stop offset="0" stop-color="#fb7185" stop-opacity="0.28" />
-						<stop offset="1" stop-color="#fb7185" stop-opacity="0" />
+						<stop offset="0" stop-color="var(--plot-error)" stop-opacity="0.28" />
+						<stop offset="1" stop-color="var(--plot-error)" stop-opacity="0" />
 					</radialGradient>
 					<marker id="topology-field-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-						<path d="M0,0 L6,3 L0,6 Z" fill="#2563eb" />
+						<path d="M0,0 L6,3 L0,6 Z" fill="var(--plot-curve)" />
 					</marker>
 					<marker id="topology-loop-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-						<path d="M0,0 L8,4 L0,8 Z" fill="#a855f7" />
+						<path d="M0,0 L8,4 L0,8 Z" fill="var(--plot-tangent)" />
 					</marker>
 				</defs>
 
 				{#each [-3, -2, -1, 0, 1, 2, 3] as value (value)}
-					<line class="grid-line" x1={px(value)} y1="28" x2={px(value)} y2="472" />
+					<line class="grid-line" x1={px(value)} y1="38" x2={px(value)} y2="522" />
 					<line class="grid-line" x1="38" y1={py(value)} x2="522" y2={py(value)} />
 				{/each}
 				<line class="axis" x1="38" y1={center.y} x2="522" y2={center.y} />
-				<line class="axis" x1={center.x} y1="28" x2={center.x} y2="472" />
+				<line class="axis" x1={center.x} y1="38" x2={center.x} y2="522" />
 
 				{#each fieldSamples as arrow (`${arrow.x}-${arrow.y}`)}
 					<line
@@ -102,6 +102,8 @@
 				<text class="hole-label" x={center.x} y={center.y + 34} text-anchor="middle">origin removed</text>
 
 				<path class="loop" d={loopPath} marker-mid="url(#topology-loop-arrow)" marker-end="url(#topology-loop-arrow)" />
+				<line class="radius-guide" x1={center.x} y1={center.y} x2={center.x + loopRadius} y2={center.y} />
+				<text class="radius-label" x={center.x + loopRadius / 2} y={center.y - 10} text-anchor="middle">r</text>
 				<circle class="sample-point" cx={center.x + loopRadius} cy={center.y} r="5" />
 				<line
 					class="tangent-sample"
@@ -115,10 +117,10 @@
 			</svg>
 		</div>
 
-		<EquationPanel title="Why the total stays constant">
-			<Katex math={String.raw`\left\lVert\mathbf F\right\rVert=\frac1r=${fieldMagnitude.toFixed(3)}`} display />
-			<Katex math={String.raw`\begin{aligned}\operatorname{length}(C_r)&=2\pi r\\&=${circumference.toFixed(3)}\end{aligned}`} display />
-			<Katex math={String.raw`\oint_{C_r}\omega=${positive ? '' : '-'}2\pi=${circulation.toFixed(3)}`} display />
+		<EquationPanel class="result-panel" title="Why the total stays constant">
+			<div class="compact-math">
+				<Katex math={String.raw`\begin{aligned}\lVert\mathbf F\rVert&=1/r=${fieldMagnitude.toFixed(3)}\\\operatorname{length}(C_r)&=2\pi r=${circumference.toFixed(3)}\\\oint_{C_r}\omega&=${positive ? '' : '-'}2\pi=${circulation.toFixed(3)}\end{aligned}`} display />
+			</div>
 			<p class="reading">
 				The field is tangent to the circle. Its magnitude falls like <Katex math={String.raw`1/r`} />, while the
 				circumference grows like <Katex math="r" />.
@@ -140,12 +142,24 @@
 	}
 
 	.visual-grid {
-		grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		align-items: stretch;
 		margin-top: 0.8rem;
 	}
 
+	.visual-grid :global(.result-panel) {
+		height: 100%;
+		box-sizing: border-box;
+		margin-top: 0;
+	}
+
+	.compact-math :global(.katex-display) {
+		margin: 0.35rem 0;
+		font-size: 0.86em;
+	}
+
 	.plot-shell {
+		aspect-ratio: 1;
 		padding: 0.4rem;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.75rem;
@@ -155,7 +169,7 @@
 	svg {
 		display: block;
 		width: 100%;
-		height: auto;
+		height: 100%;
 	}
 
 	.grid-line {
@@ -169,7 +183,7 @@
 	}
 
 	.field-arrow {
-		stroke: #2563eb;
+		stroke: var(--plot-curve);
 		stroke-width: 1.55;
 		stroke-linecap: round;
 	}
@@ -179,8 +193,8 @@
 	}
 
 	.hole {
-		fill: #fff;
-		stroke: #e11d48;
+		fill: var(--plot-background);
+		stroke: var(--plot-error);
 		stroke-width: 3;
 	}
 
@@ -191,31 +205,44 @@
 	}
 
 	.hole-label {
-		fill: #be123c;
+		fill: var(--plot-error);
 		font-weight: 650;
 	}
 
 	.loop {
 		fill: none;
-		stroke: var(--color-d);
+		stroke: var(--plot-tangent);
 		stroke-width: 3.4;
 		stroke-linecap: round;
 	}
 
 	.sample-point {
 		fill: var(--color-ink);
-		stroke: #fff;
+		stroke: var(--plot-outline);
 		stroke-width: 2;
 	}
 
 	.tangent-sample {
-		stroke: var(--color-d);
+		stroke: var(--plot-tangent);
 		stroke-width: 2.5;
 	}
 
 	.loop-label {
-		fill: var(--color-d);
+		fill: var(--plot-tangent);
 		font-weight: 650;
+	}
+
+	.radius-guide {
+		stroke: var(--plot-muted);
+		stroke-width: 1.4;
+		stroke-dasharray: 5 5;
+	}
+
+	.radius-label {
+		fill: var(--plot-muted);
+		font-family: var(--font-serif);
+		font-size: 18px;
+		font-style: italic;
 	}
 
 	.reading {
