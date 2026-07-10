@@ -334,39 +334,39 @@
 		<svg class="fm-svg" viewBox="0 0 {VW} {VH}" xmlns="http://www.w3.org/2000/svg">
 			<defs>
 				<linearGradient id="mGrad" x1="0" y1="0" x2="0" y2="1">
-					<stop offset="0%" stop-color="#f5f3ff"/>
-					<stop offset="35%" stop-color="#ede9fe"/>
-					<stop offset="100%" stop-color="#f5f3ff"/>
+					<stop offset="0%" stop-color="var(--color-surface-raised)"/>
+					<stop offset="35%" stop-color="color-mix(in srgb, var(--color-surface) 82%, var(--color-d) 18%)"/>
+					<stop offset="100%" stop-color="var(--color-surface-raised)"/>
 				</linearGradient>
 				<radialGradient id="sweepG" cx={gradX} cy={bMid} r="110" gradientUnits="userSpaceOnUse">
-					<stop offset="0%" stop-color="#e9d5ff" stop-opacity="0.8"/>
-					<stop offset="50%" stop-color="#ede9fe" stop-opacity="0.2"/>
-					<stop offset="100%" stop-color="#f5f3ff" stop-opacity="0"/>
+					<stop offset="0%" stop-color="var(--color-d)" stop-opacity="0.28"/>
+					<stop offset="50%" stop-color="var(--color-d)" stop-opacity="0.1"/>
+					<stop offset="100%" stop-color="var(--color-surface)" stop-opacity="0"/>
 				</radialGradient>
 				<clipPath id="plotClip">
 					<rect x={pL-6} y={pT_-6} width={pW+12} height={pH+12} rx="6"/>
 				</clipPath>
 			</defs>
 
-			<path d={machinePath} fill="url(#mGrad)" stroke="#a855f7" stroke-width="1.8" stroke-linejoin="round" class="fm-path"/>
+			<path d={machinePath} fill="url(#mGrad)" stroke="var(--color-d)" stroke-width="1.8" stroke-linejoin="round" class="fm-path"/>
 			{#if gradActive}
 				<path d={machinePath} fill="url(#sweepG)" stroke="none"/>
 			{/if}
 
-			<rect x={pL-8} y={pT_-8} width={pW+16} height={pH+16} rx="12" ry="12" fill="white" fill-opacity="0.5" stroke="none" opacity="0.7"/>
+			<rect x={pL-8} y={pT_-8} width={pW+16} height={pH+16} rx="12" ry="12" fill="var(--plot-background)" fill-opacity="0.72" stroke="none"/>
 
 			{#if axisXpx !== null}
-				<line x1={axisXpx} y1={pT_} x2={axisXpx} y2={pB_} stroke="#c4b5fd" stroke-width="0.7" opacity="0.45"/>
+				<line x1={axisXpx} y1={pT_} x2={axisXpx} y2={pB_} stroke="var(--plot-axis)" stroke-width="0.7"/>
 			{/if}
 			{#if axisYpx !== null}
-				<line x1={pL} y1={axisYpx} x2={pR} y2={axisYpx} stroke="#c4b5fd" stroke-width="0.7" opacity="0.45"/>
+				<line x1={pL} y1={axisYpx} x2={pR} y2={axisYpx} stroke="var(--plot-axis)" stroke-width="0.7"/>
 			{/if}
 
 			<g clip-path="url(#plotClip)" opacity="0.85">
-				<polyline points={plotPolyline} fill="none" stroke="#a855f7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-				<line x1={dotPx.cx} y1={dotPx.cy} x2={axisXpx ?? pL} y2={dotPx.cy} stroke="#a855f7" stroke-width="0.7" stroke-dasharray="3,2" opacity="0.5"/>
-				<line x1={dotPx.cx} y1={dotPx.cy} x2={dotPx.cx} y2={axisYpx ?? pB_} stroke="#a855f7" stroke-width="0.7" stroke-dasharray="3,2" opacity="0.5"/>
-				<circle cx={dotPx.cx} cy={dotPx.cy} r="4.5" fill="#a855f7" opacity="0.9"/>
+				<polyline points={plotPolyline} fill="none" stroke="var(--plot-curve)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+				<line x1={dotPx.cx} y1={dotPx.cy} x2={axisXpx ?? pL} y2={dotPx.cy} stroke="var(--plot-muted)" stroke-width="0.7" stroke-dasharray="3,2" opacity="0.55"/>
+				<line x1={dotPx.cx} y1={dotPx.cy} x2={dotPx.cx} y2={axisYpx ?? pB_} stroke="var(--plot-muted)" stroke-width="0.7" stroke-dasharray="3,2" opacity="0.55"/>
+				<circle cx={dotPx.cx} cy={dotPx.cy} r="4.5" fill="var(--plot-point)"/>
 			</g>
 		</svg>
 
@@ -435,8 +435,8 @@
 		position: absolute; top: 50%;
 		transform: translateY(-50%) translateX(-50%);
 		padding: 0.3rem 0.7rem; border-radius: 999px;
-		background: radial-gradient(circle at 40% 40%, #f5f3ff, #ede9fe);
-		border: 1.8px solid #a855f7;
+		background: radial-gradient(circle at 40% 40%, var(--color-surface-raised), color-mix(in srgb, var(--color-surface) 82%, var(--color-d) 18%));
+		border: 1.8px solid var(--color-d);
 		box-shadow: none;
 		white-space: nowrap; z-index: 1; opacity: 0;
 		min-width: 2.1em; min-height: 2.1em;
