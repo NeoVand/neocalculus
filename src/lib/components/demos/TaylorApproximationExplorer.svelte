@@ -342,10 +342,6 @@
 		font-family: var(--font-mono);
 		font-size: 11px;
 		font-weight: 650;
-		paint-order: stroke;
-		stroke: #fff;
-		stroke-width: 4px;
-		stroke-linejoin: round;
 	}
 
 	@media (max-width: 700px) {
