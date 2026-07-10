@@ -62,6 +62,10 @@
 	const trueValue = $derived(Math.exp(sampleX));
 	const approximateValue = $derived(taylor(sampleX, degree));
 	const actualError = $derived(Math.abs(trueValue - approximateValue));
+	const baselineError = $derived(Math.abs(trueValue - 1));
+	const errorPercent = $derived(
+		baselineError < 1e-12 ? 0 : Math.min(100, (actualError / baselineError) * 100)
+	);
 	const remainderBound = $derived(
 		Math.exp(Math.max(0, sampleX)) * Math.abs(sampleX) ** (degree + 1) / factorial(degree + 1)
 	);
@@ -80,6 +84,7 @@
 				decimals={0}
 				bind:value={degree}
 				hint="Each step adds one derivative at the center x = 0."
+				tone="violet"
 			/>
 			<SliderField
 				label="Evaluation point x"
@@ -89,6 +94,7 @@
 				decimals={1}
 				bind:value={sampleX}
 				hint="Move away from the center and watch the error change."
+				tone="blue"
 			/>
 		</DemoCard>
 
@@ -110,6 +116,15 @@
 		<span><i class="swatch function"></i><Katex math="e^x" /></span>
 		<span><i class="swatch polynomial"></i><Katex math={`T_${degree}(x)`} /></span>
 		<span><i class="swatch error"></i>error at the selected input</span>
+	</div>
+	<div class="error-meter" aria-live="polite">
+		<div class="meter-label">
+			<span>error remaining relative to the degree-0 approximation</span>
+			<strong>{errorPercent.toFixed(2)}%</strong>
+		</div>
+		<div class="meter-track" aria-hidden="true">
+			<i style={`width: ${errorPercent}%`}></i>
+		</div>
 	</div>
 
 	<div class="plot-shell">
@@ -150,6 +165,14 @@
 				/>
 				<circle class="function-point" cx={sx(sampleX)} cy={sy(trueValue)} r="5" />
 				<circle class="polynomial-point" cx={sx(sampleX)} cy={sy(approximateValue)} r="5" />
+				<text
+					class="error-label"
+					x={sampleX > 0.9 ? sx(sampleX) - 12 : sx(sampleX) + 12}
+					y={Math.max(margin.top + 15, (sy(trueValue) + sy(approximateValue)) / 2 - 9)}
+					text-anchor={sampleX > 0.9 ? 'end' : 'start'}
+				>
+					Δ = {actualError.toExponential(2)}
+				</text>
 			</g>
 		</svg>
 	</div>
@@ -206,7 +229,42 @@
 	}
 
 	.swatch.error {
-		border-color: var(--color-accent, #a35f2d);
+		border-color: #f97316;
+	}
+
+	.error-meter {
+		margin: -0.18rem 0 0.78rem;
+	}
+
+	.meter-label {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.75rem;
+		margin-bottom: 0.24rem;
+		font-size: 0.66rem;
+		color: var(--color-ink-faint);
+	}
+
+	.meter-label strong {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		color: #c2410c;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.meter-track {
+		height: 0.32rem;
+		overflow: hidden;
+		border-radius: 999px;
+		background: var(--color-border-light);
+	}
+
+	.meter-track i {
+		display: block;
+		height: 100%;
+		border-radius: inherit;
+		background: linear-gradient(90deg, #f97316, #fb7185);
+		transition: width 180ms ease-out;
 	}
 
 	.plot-shell {
@@ -263,7 +321,7 @@
 	}
 
 	.error-line {
-		stroke: var(--color-accent, #a35f2d);
+		stroke: #f97316;
 		stroke-width: 3;
 	}
 
@@ -277,6 +335,17 @@
 		fill: var(--color-d);
 		stroke: #fff;
 		stroke-width: 2;
+	}
+
+	.error-label {
+		fill: #c2410c;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 650;
+		paint-order: stroke;
+		stroke: #fff;
+		stroke-width: 4px;
+		stroke-linejoin: round;
 	}
 
 	@media (max-width: 700px) {
