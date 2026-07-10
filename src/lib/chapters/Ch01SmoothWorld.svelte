@@ -160,7 +160,7 @@
 		</div>
 	</div>
 
-	<div class="wide-width" use:reveal>
+	<div class="content-width" use:reveal>
 		<Figure
 			number="1.3"
 			class="figure-1-3"

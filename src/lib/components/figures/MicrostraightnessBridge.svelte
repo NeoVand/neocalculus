@@ -31,13 +31,13 @@
 				[0.52, yAxis],
 				[3.92, yAxis]
 			],
-			{ strokeColor: '#cdc7be', strokeWidth: 1.15, highlight: false }
+			{ strokeColor: 'var(--plot-axis)', strokeWidth: 1.15, highlight: false }
 		);
 
 		// Curve and tangent
 		board.create('functiongraph', [f, 0.58, 3.9], {
-			strokeColor: '#1a1a2e',
-			strokeWidth: 2.8,
+			strokeColor: 'var(--plot-curve)',
+			strokeWidth: 2.2,
 			highlight: false
 		});
 
@@ -50,8 +50,8 @@
 				[t2, y1 + slope * (t2 - a)]
 			],
 			{
-				strokeColor: '#7c3aed',
-				strokeWidth: 2,
+				strokeColor: 'var(--plot-tangent)',
+				strokeWidth: 1.8,
 				dash: 2,
 				highlight: false
 			}
@@ -65,7 +65,7 @@
 				[x1, y1]
 			],
 			{
-				strokeColor: '#dfd9ea',
+				strokeColor: 'var(--plot-grid)',
 				strokeWidth: 1,
 				dash: 2,
 				highlight: false
@@ -78,7 +78,7 @@
 				[x2, yHigh + 0.02]
 			],
 			{
-				strokeColor: '#dfd9ea',
+				strokeColor: 'var(--plot-grid)',
 				strokeWidth: 1,
 				dash: 2,
 				highlight: false
@@ -89,16 +89,16 @@
 		board.create('point', [x1, y1], {
 			name: '',
 			size: 3.3,
-			fillColor: '#1a1a2e',
-			strokeColor: '#1a1a2e',
+			fillColor: 'var(--plot-curve)',
+			strokeColor: 'var(--plot-curve)',
 			fixed: true,
 			highlight: false
 		});
 		board.create('point', [x2, y2], {
 			name: '',
 			size: 3.3,
-			fillColor: '#1a1a2e',
-			strokeColor: '#1a1a2e',
+			fillColor: 'var(--plot-curve)',
+			strokeColor: 'var(--plot-curve)',
 			fixed: true,
 			highlight: false
 		});
@@ -108,8 +108,8 @@
 			name: '',
 			size: 3.6,
 			face: 'o',
-			fillColor: 'white',
-			strokeColor: '#7c3aed',
+			fillColor: 'var(--plot-background)',
+			strokeColor: 'var(--plot-tangent)',
 			strokeWidth: 2,
 			fixed: true,
 			highlight: false
@@ -123,7 +123,7 @@
 				[x2, 0.47]
 			],
 			{
-				strokeColor: '#7c3aed',
+				strokeColor: 'var(--plot-tangent)',
 				strokeWidth: 2.2,
 				highlight: false
 			}
@@ -135,7 +135,7 @@
 				[x1, 0.51]
 			],
 			{
-				strokeColor: '#7c3aed',
+				strokeColor: 'var(--plot-tangent)',
 				strokeWidth: 1.6,
 				highlight: false
 			}
@@ -147,7 +147,7 @@
 				[x2, 0.51]
 			],
 			{
-				strokeColor: '#7c3aed',
+				strokeColor: 'var(--plot-tangent)',
 				strokeWidth: 1.6,
 				highlight: false
 			}
@@ -161,7 +161,7 @@
 				[xGap, yHigh]
 			],
 			{
-				strokeColor: '#dc2626',
+				strokeColor: 'var(--plot-error)',
 				strokeWidth: 1.9,
 				highlight: false
 			}
@@ -173,7 +173,7 @@
 				[xGap + 0.03, yLow]
 			],
 			{
-				strokeColor: '#dc2626',
+				strokeColor: 'var(--plot-error)',
 				strokeWidth: 1.6,
 				highlight: false
 			}
@@ -185,7 +185,7 @@
 				[xGap + 0.03, yHigh]
 			],
 			{
-				strokeColor: '#dc2626',
+				strokeColor: 'var(--plot-error)',
 				strokeWidth: 1.6,
 				highlight: false
 			}
@@ -195,28 +195,28 @@
 		board.create('text', [x1, 0.37, 'a'], {
 			fontSize: 16,
 			anchorX: 'middle',
-			color: '#1a1a2e',
+			color: 'var(--plot-ink)',
 			fontStyle: 'italic',
 			highlight: false
 		});
 		board.create('text', [x2, 0.37, 'a+Δx'], {
 			fontSize: 16,
 			anchorX: 'middle',
-			color: '#1a1a2e',
+			color: 'var(--plot-ink)',
 			fontStyle: 'italic',
 			highlight: false
 		});
 		board.create('text', [(x1 + x2) / 2, 0.57, 'Δx'], {
 			fontSize: 15,
 			anchorX: 'middle',
-			color: '#7c3aed',
+			color: 'var(--plot-tangent)',
 			fontStyle: 'italic',
 			highlight: false
 		});
 		board.create('text', [xGap + 0.12, (yLow + yHigh) / 2 + 0.02, 'gap'], {
 			fontSize: 12.5,
 			anchorX: 'left',
-			color: '#dc2626',
+			color: 'var(--plot-error)',
 			highlight: false
 		});
 	}
@@ -228,7 +228,7 @@
 	aria-label="Comparison of an ordinary finite step with the exact first-order linear form"
 >
 	<section class="geometry-block">
-		<h4>Ordinary finite step</h4>
+		<h4>Ordinary finite step: the curve and local line separate</h4>
 		<JSXGraphBoard
 			setup={setupMicrostraightnessBridge}
 			boundingbox={[0.35, 2.85, 4.1, 0.25]}
@@ -236,43 +236,27 @@
 			axes={false}
 			embedded
 		/>
-		<div class="legend-row">
-			<span class="legend-chip curve"></span>
-			<span class="legend-text"><Katex math={r`f(a+\Delta x)`} /> curve value</span>
-		</div>
-		<div class="legend-row">
-			<span class="legend-chip linear"></span>
-			<span class="legend-text"><Katex math={r`f(a)+m\Delta x`} /> local-line value</span>
-		</div>
-		<div class="legend-row">
-			<span class="legend-chip residual"></span>
-			<span class="legend-text">finite gap</span>
+		<div class="legend-bar" aria-label="Plot legend">
+			<div class="legend-row"><span class="legend-chip curve"></span><span class="legend-text"><Katex math={r`f(a+\Delta x)`} /> curve value</span></div>
+			<div class="legend-row"><span class="legend-chip linear"></span><span class="legend-text"><Katex math={r`f(a)+m\Delta x`} /> local-line value</span></div>
+			<div class="legend-row"><span class="legend-chip residual"></span><span class="legend-text">finite gap</span></div>
 		</div>
 	</section>
 
 	<section class="algebra-block">
-		<h4>First-order view</h4>
-		<div class="algebra-card">
-			<div class="chain">
-				<div class="rule"><Katex math={r`d^2=0`} display /></div>
-				<div class="line result"><Katex math={r`f(a+d)=f(a)+md`} display /></div>
-			</div>
+		<div class="algebra-heading">
+			<h4>First-order view</h4>
+			<div class="rule"><Katex math={r`d^2=0`} /></div>
 		</div>
-		<p class="summary">
-			The coefficient <Katex math="m" /> is unique: it records the shared local direction.
-		</p>
+		<div class="result"><Katex math={r`f(a+d)=f(a)+md`} display /></div>
+		<p class="summary">The second-order gap vanishes; the unique coefficient <Katex math="m" /> records the shared local direction.</p>
 	</section>
 </div>
 
 <style>
 	.micro-bridge {
 		display: grid;
-		grid-template-columns: minmax(0, 1.24fr) minmax(0, 1fr);
-		gap: 1.5rem;
-		padding: 1.5rem 1.6rem;
-		border: 1px solid var(--color-border-light);
-		border-radius: 1.02rem;
-		background: var(--color-surface);
+		gap: 1rem;
 	}
 
 	.geometry-block :global(.neo-figure) {
@@ -292,10 +276,6 @@
 		border: none !important;
 	}
 
-	.geometry-block {
-		padding-right: 0.95rem;
-	}
-
 	h4 {
 		margin: 0 0 0.72rem;
 		font-family: var(--font-sans);
@@ -306,51 +286,45 @@
 	}
 
 	.algebra-block {
-		padding-left: 0.45rem;
+		padding: 0.85rem 1rem 0.75rem;
+		border-left: 3px solid var(--color-d);
+		border-radius: 0 0.65rem 0.65rem 0;
+		background: linear-gradient(135deg, var(--color-d-glow), var(--color-d-soft));
 	}
 
-	.algebra-card {
-		padding: 0.95rem 1rem;
-		border: 1px solid var(--color-border-light);
-		border-radius: 0.72rem;
-		background: var(--color-surface);
+	.algebra-heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
 	}
 
-	.chain {
-		display: grid;
-		gap: 0.34rem;
-	}
-
-	.algebra-block :global(.katex) {
-		font-size: 0.8em;
-	}
-
-	.line :global(.katex-display) {
-		margin: 0.08rem 0 !important;
-		text-align: center;
+	.algebra-heading h4 {
+		margin: 0;
 	}
 
 	.rule {
-		margin: 0.24rem 0 0.2rem;
-		padding: 0.36rem 0.56rem;
-		border-radius: 0.5rem;
-		border: 1px solid color-mix(in srgb, var(--color-border) 66%, var(--color-d) 34%);
-		background: color-mix(in srgb, var(--color-surface) 90%, var(--color-d) 10%);
+		font-family: var(--font-serif);
+		color: var(--color-d);
 	}
 
 	.rule :global(.katex) {
 		color: var(--color-d);
 		font-weight: 600;
-		font-size: 0.92em;
+		font-size: 1em;
 	}
 
 	.result {
-		padding-top: 0.34rem;
-		border-top: 1px solid #ece5fa;
+		margin-top: 0.15rem;
+		text-align: center;
+	}
+
+	.result :global(.katex-display) {
+		margin: 0.15rem 0 !important;
 	}
 
 	.summary {
-		margin: 0.7rem 0 0;
+		margin: 0.2rem 0 0;
 		font-family: var(--font-sans);
 		font-size: 0.84rem;
 		color: var(--color-ink-light);
@@ -358,11 +332,17 @@
 		text-align: center;
 	}
 
+	.legend-bar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1rem;
+		margin-top: 0.65rem;
+	}
+
 	.legend-row {
 		display: flex;
 		align-items: center;
 		gap: 0.45rem;
-		margin-top: 0.48rem;
 	}
 
 	.legend-chip {
@@ -373,16 +353,16 @@
 	}
 
 	.legend-chip.curve {
-		background: #1a1a2e;
+		background: var(--plot-curve);
 	}
 
 	.legend-chip.linear {
 		background: transparent;
-		border: 2px solid #7c3aed;
+		border: 2px solid var(--plot-tangent);
 	}
 
 	.legend-chip.residual {
-		background: #dc2626;
+		background: var(--plot-error);
 	}
 
 	.legend-text {
@@ -396,20 +376,9 @@
 		font-size: 0.9em;
 	}
 
-	@media (max-width: 920px) {
-		.micro-bridge {
-			grid-template-columns: 1fr;
-		}
-
-		.geometry-block {
-			border-right: none;
-			padding-right: 0;
-			padding-bottom: 0.72rem;
-			border-bottom: 1px solid var(--color-border-light);
-		}
-
-		.algebra-block {
-			padding-left: 0;
+	@media (max-width: 540px) {
+		.algebra-heading {
+			align-items: flex-start;
 		}
 	}
 </style>
