@@ -28,6 +28,8 @@
 	const gradUnitX = $derived(gradMagnitude === 0 ? 0 : gradX / gradMagnitude);
 	const gradUnitY = $derived(gradMagnitude === 0 ? 0 : gradY / gradMagnitude);
 	const directionalDerivative = $derived(gradX * vx + gradY * vy);
+	const alignment = $derived(gradMagnitude === 0 ? 0 : directionalDerivative / gradMagnitude);
+	const alignmentPosition = $derived(Math.min(98, Math.max(2, ((alignment + 1) / 2) * 100)));
 	const selectedRadius = $derived(Math.hypot(x0, y0));
 	const behavior = $derived(
 		directionalDerivative > 0.02
@@ -126,6 +128,7 @@
 				step={0.1}
 				decimals={1}
 				bind:value={x0}
+				tone="violet"
 			/>
 			<SliderField
 				label="Point coordinate y₀"
@@ -134,6 +137,7 @@
 				step={0.1}
 				decimals={1}
 				bind:value={y0}
+				tone="teal"
 			/>
 			<SliderField
 				label="Direction angle θ"
@@ -143,6 +147,7 @@
 				decimals={0}
 				bind:value={angle}
 				hint="Rotate the blue unit vector while the point stays fixed."
+				tone="blue"
 			/>
 		</DemoCard>
 
@@ -170,6 +175,17 @@
 		<span><i class="swatch contour"></i>level curves of <Katex math={String.raw`f=x^2+y^2`} /></span>
 		<span><i class="swatch gradient"></i>gradient</span>
 		<span><i class="swatch direction"></i>chosen direction</span>
+	</div>
+	<div class="alignment-meter" aria-live="polite">
+		<div class="alignment-heading">
+			<span>alignment with the gradient</span>
+			<strong>cos φ = {alignment.toFixed(3)}</strong>
+		</div>
+		<div class="alignment-track" aria-hidden="true">
+			<i class="zero-mark"></i>
+			<i class="alignment-dot" style={`left: ${alignmentPosition}%`}></i>
+		</div>
+		<div class="alignment-labels"><span>opposite</span><span>perpendicular</span><span>aligned</span></div>
 	</div>
 
 	<div class="plots-grid">
@@ -351,6 +367,64 @@
 
 	.swatch.direction {
 		border-color: #2563eb;
+	}
+
+	.alignment-meter {
+		margin: -0.18rem 0 0.8rem;
+	}
+
+	.alignment-heading,
+	.alignment-labels {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.6rem;
+		font-size: 0.62rem;
+		color: var(--color-ink-faint);
+	}
+
+	.alignment-heading {
+		margin-bottom: 0.28rem;
+		font-size: 0.68rem;
+	}
+
+	.alignment-heading strong {
+		font-family: var(--font-mono);
+		font-size: 0.69rem;
+		color: #2563eb;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.alignment-track {
+		position: relative;
+		height: 0.34rem;
+		border-radius: 999px;
+		background: linear-gradient(90deg, #fda4af 0%, var(--color-border-light) 50%, #c4b5fd 100%);
+	}
+
+	.zero-mark {
+		position: absolute;
+		top: -0.14rem;
+		bottom: -0.14rem;
+		left: 50%;
+		width: 1px;
+		background: var(--color-ink-faint);
+	}
+
+	.alignment-dot {
+		position: absolute;
+		top: 50%;
+		width: 0.74rem;
+		height: 0.74rem;
+		border: 2px solid #fff;
+		border-radius: 50%;
+		background: #2563eb;
+		box-shadow: 0 1px 4px rgb(37 99 235 / 35%);
+		transform: translate(-50%, -50%);
+		transition: left 160ms ease-out;
+	}
+
+	.alignment-labels {
+		margin-top: 0.24rem;
 	}
 
 	.plots-grid {

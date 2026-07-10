@@ -24,6 +24,7 @@
 	const j22 = $derived(2 * u0);
 	const determinant = $derived(j11 * j22 - j12 * j21);
 	const orientation = $derived(determinant > 0.001 ? 'preserved' : determinant < -0.001 ? 'reversed' : 'collapsed');
+	const nonlinearGap = $derived(2 * radius * radius);
 
 	const squareCorners = $derived([
 		{ x: u0 - radius, y: v0 - radius },
@@ -96,8 +97,8 @@
 
 	<DemoCard title="Choose a base point and an ordinary patch size">
 		<div class="demo-controls-grid">
-			<SliderField label="Base coordinate u₀" min={-1.2} max={1.2} step={0.1} decimals={1} bind:value={u0} />
-			<SliderField label="Base coordinate v₀" min={-1.2} max={1.2} step={0.1} decimals={1} bind:value={v0} />
+			<SliderField label="Base coordinate u₀" min={-1.2} max={1.2} step={0.1} decimals={1} bind:value={u0} tone="blue" />
+			<SliderField label="Base coordinate v₀" min={-1.2} max={1.2} step={0.1} decimals={1} bind:value={v0} tone="amber" />
 			<SliderField
 				label="Patch half-width s"
 				min={0.12}
@@ -106,6 +107,7 @@
 				decimals={2}
 				bind:value={radius}
 				hint="Shrink s to see the nonlinear image approach its Jacobian prediction."
+				tone="violet"
 			/>
 		</div>
 	</DemoCard>
@@ -204,6 +206,11 @@
 			math={String.raw`\det J_F=${determinant.toFixed(3)},\qquad \text{orientation ${orientation}}`}
 			display
 		/>
+		<Katex
+			math={String.raw`\|\text{nonlinear remainder}\|_{\max}=2s^2=${nonlinearGap.toFixed(3)}`}
+			display
+		/>
+		<p class="gap-reading">For this quadratic map, this is the largest visible gap on the selected square patch.</p>
 	</EquationPanel>
 </div>
 
@@ -319,6 +326,13 @@
 		display: inline-block;
 		width: 1.15rem;
 		height: 0.45rem;
+	}
+
+	.gap-reading {
+		margin: 0.28rem 0 0;
+		font-size: 0.75rem;
+		line-height: 1.45;
+		color: var(--color-ink-faint);
 	}
 
 	.actual-key {
