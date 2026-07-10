@@ -63,6 +63,7 @@
 				decimals={2}
 				bind:value={k}
 				hint="Positive means growth; negative means decay."
+				tone="violet"
 			/>
 			<SliderField
 				label="Initial value y₀"
@@ -72,6 +73,7 @@
 				decimals={2}
 				bind:value={y0}
 				hint="This chooses one curve from the family."
+				tone="blue"
 			/>
 		</DemoCard>
 
@@ -86,6 +88,11 @@
 	</div>
 
 	<div class="plot-shell">
+		<div class="plot-key" aria-label="Plot key">
+			<span><i class="field-swatch"></i>local slope field</span>
+			<span><i class="solution-swatch"></i>selected solution</span>
+			<span><i class="start-swatch"></i>initial condition</span>
+		</div>
 		<svg
 			viewBox={`0 0 ${width} ${height}`}
 			role="img"
@@ -118,7 +125,13 @@
 				<path class="solution" d={solutionPath} />
 			</g>
 			<circle class="initial-point" cx={sx(0)} cy={sy(y0)} r="5" />
-			<text class="initial-label" x={sx(0) + 12} y={sy(y0) - 10}>starting value</text>
+			<text class="initial-label" x={sx(0) + 12} y={sy(y0) - 10}>y(0) = {y0.toFixed(2)}</text>
+			{#if endpoint <= yMax}
+				<circle class="endpoint" cx={sx(tMax)} cy={sy(endpoint)} r="4" />
+				<text class="endpoint-label" x={sx(tMax) - 10} y={sy(endpoint) - 11} text-anchor="end">
+					y(5) = {endpoint.toFixed(2)}
+				</text>
+			{/if}
 		</svg>
 	</div>
 </div>
@@ -146,7 +159,44 @@
 		padding: 0.5rem;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.75rem;
-		background: #fff;
+		background: linear-gradient(180deg, #fff 0%, rgba(37, 99, 235, 0.025) 100%);
+	}
+
+	.plot-key {
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 0.35rem 1rem;
+		padding: 0.18rem 0 0.42rem;
+		font-size: 0.66rem;
+		color: var(--color-ink-faint);
+	}
+
+	.plot-key span {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.32rem;
+	}
+
+	.plot-key i {
+		display: inline-block;
+		width: 1.2rem;
+		height: 0.16rem;
+		border-radius: 999px;
+	}
+
+	.plot-key .field-swatch {
+		background: color-mix(in srgb, var(--color-d) 45%, white);
+	}
+
+	.plot-key .solution-swatch {
+		background: var(--color-result);
+	}
+
+	.plot-key .start-swatch {
+		width: 0.48rem;
+		height: 0.48rem;
+		background: #f59e0b;
 	}
 
 	svg {
@@ -167,7 +217,8 @@
 
 	.tick,
 	.axis-label,
-	.initial-label {
+	.initial-label,
+	.endpoint-label {
 		fill: var(--color-ink-faint);
 		font-family: var(--font-sans);
 		font-size: 13px;
@@ -186,14 +237,14 @@
 
 	.solution {
 		fill: none;
-		stroke: var(--color-d);
+		stroke: var(--color-result);
 		stroke-width: 4;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 	}
 
 	.initial-point {
-		fill: var(--color-accent, #a35f2d);
+		fill: #f59e0b;
 		stroke: #fff;
 		stroke-width: 2;
 	}
@@ -201,6 +252,18 @@
 	.initial-label {
 		font-size: 12px;
 		font-weight: 600;
+	}
+
+	.endpoint {
+		fill: var(--color-result);
+		stroke: #fff;
+		stroke-width: 2;
+	}
+
+	.endpoint-label {
+		font-size: 12px;
+		font-weight: 650;
+		fill: var(--color-result);
 	}
 
 	@media (max-width: 700px) {
