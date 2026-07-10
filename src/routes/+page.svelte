@@ -53,7 +53,7 @@
 			id: 'ch8',
 			number: '8',
 			title: 'Series and Approximation',
-			subtitle: 'Taylor bridges and convergence'
+			subtitle: 'Taylor polynomials, error, and convergence'
 		},
 		{
 			id: 'ch9',
@@ -146,8 +146,8 @@
 		id="ch8"
 		chapterNumber="8"
 		title="Series and Approximation"
-		preview="Taylor expansions, convergence, and bridge points between nilpotent and classical series."
-		load={() => import('$lib/chapters/Ch07InfiniteSeries.svelte')}
+		preview="Build Taylor polynomials from derivatives, bound their error, and decide when an infinite series truly represents a function."
+		load={() => import('$lib/chapters/Ch08Series.svelte')}
 	/>
 	<LazyChapter
 		id="ch9"
