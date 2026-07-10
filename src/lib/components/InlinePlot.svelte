@@ -8,10 +8,12 @@
 		areaTo?: number;
 		secondFn?: (x: number) => number;
 		caption?: string;
+		number?: string;
 		width?: number;
 		height?: number;
 		class?: string;
 	}
+	const clipId = $props.id();
 
 	let {
 		fn,
@@ -22,6 +24,7 @@
 		areaTo,
 		secondFn,
 		caption,
+		number,
 		width = 400,
 		height = 180,
 		class: className = ''
@@ -80,7 +83,11 @@
 		const y0 = fn(x0);
 		const h = 1e-5;
 		const slope = (fn(x0 + h) - fn(x0 - h)) / (2 * h);
-		const dx = (domain[1] - domain[0]) * 0.25;
+		const dx = Math.min(
+			(domain[1] - domain[0]) * 0.22,
+			x0 - domain[0],
+			domain[1] - x0
+		);
 		return {
 			x1: tx(x0 - dx),
 			y1: ty(y0 - slope * dx),
@@ -138,43 +145,97 @@
 </script>
 
 <figure class="neo-figure inline-plot {className}">
-	<svg viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg">
-		<!-- grid — subtle, matching PerfectZoom style -->
-		{#each xTicks as xt}
-			<line x1={tx(xt)} y1={PT} x2={tx(xt)} y2={height - PB} stroke="#f0ece4" stroke-width="0.5" />
-			<text x={tx(xt)} y={height - PB + 13} text-anchor="middle" font-size="8.5" font-family="var(--font-sans)" fill="#bbb">{xt}</text>
+	<svg viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label={caption ?? 'Function plot'}>
+		<title>{caption ?? 'Function plot'}</title>
+		<defs>
+			<clipPath id={clipId}><rect x={PL} y={PT} width={pW} height={pH} /></clipPath>
+		</defs>
+
+		<!-- Sparse ticks without a full grid: the curve and tangent remain primary. -->
+		{#each xTicks as xt (xt)}
+			<line x1={tx(xt)} y1={height - PB - 2.5} x2={tx(xt)} y2={height - PB + 2.5} class="tick" />
+			<text x={tx(xt)} y={height - PB + 13} text-anchor="middle" class="tick-label">{xt}</text>
 		{/each}
-		{#each yTicks as yt}
-			<line x1={PL} y1={ty(yt)} x2={width - PR} y2={ty(yt)} stroke="#f0ece4" stroke-width="0.5" />
-			<text x={PL - 5} y={ty(yt) + 3} text-anchor="end" font-size="8.5" font-family="var(--font-sans)" fill="#bbb">{yt}</text>
+		{#each yTicks as yt (yt)}
+			<line x1={PL - 2.5} y1={ty(yt)} x2={PL + 2.5} y2={ty(yt)} class="tick" />
+			<text x={PL - 5} y={ty(yt) + 3} text-anchor="end" class="tick-label">{yt}</text>
 		{/each}
 
 		<!-- axes — matching PerfectZoom -->
 		{#if domain[0] <= 0 && domain[1] >= 0}
-			<line x1={tx(0)} y1={PT} x2={tx(0)} y2={height - PB} stroke="#d4d0c8" stroke-width="1" />
+			<line x1={tx(0)} y1={PT} x2={tx(0)} y2={height - PB} class="axis" />
 		{/if}
 		{#if computedRange[0] <= 0 && computedRange[1] >= 0}
-			<line x1={PL} y1={ty(0)} x2={width - PR} y2={ty(0)} stroke="#d4d0c8" stroke-width="1" />
+			<line x1={PL} y1={ty(0)} x2={width - PR} y2={ty(0)} class="axis" />
 		{/if}
 
-		<!-- area -->
-		{#if areaD}
-			<path d={areaD} fill="rgba(168,85,247,0.10)" stroke="none" />
-		{/if}
-
-		<!-- second function -->
-		{#if secondPath}
-			<path d={secondPath} fill="none" stroke="rgba(168,85,247,0.5)" stroke-width="1.8" stroke-dasharray="5,4" />
-		{/if}
-
-		<!-- curve — thick, matching PerfectZoom -->
-		<path d={curvePath} fill="none" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-
-		<!-- tangent — purple, dashed, matching PerfectZoom -->
-		{#if tangent}
-			<line x1={tangent.x1} y1={tangent.y1} x2={tangent.x2} y2={tangent.y2} stroke="rgba(168,85,247,0.5)" stroke-width="2" stroke-dasharray="8,5" stroke-linecap="round" />
-			<circle cx={tangent.px} cy={tangent.py} r="4.5" fill="#a855f7" />
-		{/if}
+		<g clip-path={`url(#${clipId})`}>
+			{#if areaD}<path d={areaD} class="area" />{/if}
+			{#if secondPath}<path d={secondPath} class="second-curve" />{/if}
+			<path d={curvePath} class="function-curve" />
+			{#if tangent}
+				<line x1={tangent.x1} y1={tangent.y1} x2={tangent.x2} y2={tangent.y2} class="tangent-line" />
+				<circle cx={tangent.px} cy={tangent.py} r="4" class="tangent-point" />
+			{/if}
+		</g>
 	</svg>
-	{#if caption}<figcaption>{caption}</figcaption>{/if}
+	{#if caption}<figcaption>{#if number}<span class="figure-number">Figure {number}.</span>{/if}{caption}</figcaption>{/if}
 </figure>
+
+<style>
+	.inline-plot {
+		max-width: 34rem;
+		margin-inline: auto;
+	}
+
+	.inline-plot svg {
+		display: block;
+		width: 100%;
+	}
+
+	.axis,
+	.tick {
+		stroke: var(--plot-axis);
+		stroke-width: 1;
+	}
+
+	.tick-label {
+		font-family: var(--font-sans);
+		font-size: 8.5px;
+		fill: var(--plot-muted);
+	}
+
+	.area {
+		fill: color-mix(in srgb, var(--plot-tangent) 12%, transparent);
+		stroke: none;
+	}
+
+	.second-curve {
+		fill: none;
+		stroke: var(--plot-tangent);
+		stroke-width: 1.5;
+		stroke-dasharray: 5 4;
+		opacity: 0.7;
+	}
+
+	.function-curve {
+		fill: none;
+		stroke: var(--plot-curve);
+		stroke-width: 2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.tangent-line {
+		stroke: var(--plot-tangent);
+		stroke-width: 1.6;
+		stroke-dasharray: 7 5;
+		stroke-linecap: round;
+	}
+
+	.tangent-point {
+		fill: var(--plot-point);
+		stroke: var(--plot-background);
+		stroke-width: 1.4;
+	}
+</style>

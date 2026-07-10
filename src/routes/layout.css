@@ -1209,7 +1209,7 @@ h4 {
 }
 
 :root[data-theme='dark'] svg :where(.curve, .surface-curve, .function-curve) {
-	stroke: var(--plot-ink) !important;
+	stroke: var(--plot-curve) !important;
 }
 
 :root[data-theme='dark'] svg [fill='white' i],

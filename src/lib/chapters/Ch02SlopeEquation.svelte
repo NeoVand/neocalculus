@@ -224,6 +224,7 @@
 			fn={(x) => 1 / x}
 			domain={[0.3, 5]}
 			tangentAt={1}
+			number="2.1a"
 			caption="The reciprocal function and its local line at x = 1, where the slope is −1."
 		/>
 
@@ -265,6 +266,7 @@
 			fn={(x) => Math.sqrt(Math.max(x, 0))}
 			domain={[0, 5]}
 			tangentAt={1}
+			number="2.1b"
 			caption="The square-root function and its local line at x = 1, where the slope is 1/2."
 		/>
 
