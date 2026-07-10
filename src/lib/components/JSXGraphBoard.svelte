@@ -18,6 +18,10 @@
 		class?: string;
 		/** Render without a nested figure wrapper when placed inside another Figure component. */
 		embedded?: boolean;
+		/** Enable direct interaction with draggable construction points. */
+		interactive?: boolean;
+		/** Preserve equal x and y unit scales. Disable for conventional function plots. */
+		keepAspectRatio?: boolean;
 	}
 
 	let {
@@ -28,7 +32,9 @@
 		caption,
 		number: figNumber,
 		class: className = '',
-		embedded = false
+		embedded = false,
+		interactive = false,
+		keepAspectRatio = true
 	}: Props = $props();
 
 	let board: any = null;
@@ -46,13 +52,13 @@
 
 				board = jxg.JSXGraph.initBoard(boardId, {
 					boundingbox,
-					keepAspectRatio: true,
+					keepAspectRatio,
 					axis: axes,
 					showCopyright: false,
 					showNavigation: false,
 					pan: { enabled: false },
 					zoom: { enabled: false },
-					registerEvents: false,
+					registerEvents: interactive,
 					renderer: 'svg',
 					grid: {
 						visible: false

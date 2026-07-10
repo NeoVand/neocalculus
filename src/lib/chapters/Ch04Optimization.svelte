@@ -8,6 +8,7 @@
 	import ChapterSummary from '$lib/components/ChapterSummary.svelte';
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import FencingOptimizer from '$lib/components/demos/FencingOptimizer.svelte';
+	import NewtonExplorer from '$lib/components/demos/NewtonExplorer.svelte';
 	import { reveal } from '$lib/utils/scroll';
 
 	const r = String.raw;
@@ -15,7 +16,7 @@
 	function setupBehaviorGraph(JXG: any, board: any) {
 		const f = (x: number) => x * x * x - 3 * x + 2;
 
-		board.create('functiongraph', [f, -2.35, 2.35], {
+		const graph = board.create('functiongraph', [f, -2.35, 2.35], {
 			strokeColor: '#1a1a2e',
 			strokeWidth: 2.5,
 			highlight: false
@@ -59,16 +60,52 @@
 			fixed: true,
 			highlight: false
 		});
+
+		const probe = board.create('glider', [-1.75, f(-1.75), graph], {
+			size: 5,
+			fillColor: '#a855f7',
+			strokeColor: '#ffffff',
+			strokeWidth: 2,
+			name: '',
+			fixed: false,
+			highlightFillColor: '#7c3aed',
+			highlightStrokeColor: '#ffffff',
+			snapSizeX: 0.05
+		});
+		board.create('tangent', [probe], {
+			strokeColor: '#a855f7',
+			strokeWidth: 1.8,
+			strokeOpacity: 0.68,
+			dash: 2,
+			fixed: true,
+			highlight: false
+		});
+		board.create(
+			'text',
+			[
+				-2.38,
+				4.72,
+				() => {
+					const x = probe.X();
+					const slope = 3 * x * x - 3;
+					const bend = 6 * x;
+					return `drag the purple point · x=${x.toFixed(2)} · f′=${slope.toFixed(2)} · f″=${bend.toFixed(2)}`;
+				}
+			],
+			{
+				fontSize: 11,
+				color: '#6d5c84',
+				fixed: true,
+				highlight: false
+			}
+		);
 	}
 
 	function setupNewtonGraph(JXG: any, board: any) {
 		const f = (x: number) => x * x - 2;
 		const fp = (x: number) => 2 * x;
-		const x0 = 2;
-		const x1 = x0 - f(x0) / fp(x0);
-		const x2 = x1 - f(x1) / fp(x1);
 
-		board.create('functiongraph', [f, 0.8, 2.25], {
+		const graph = board.create('functiongraph', [f, 0.8, 2.25], {
 			strokeColor: '#1a1a2e',
 			strokeWidth: 2.5,
 			highlight: false
@@ -83,21 +120,64 @@
 			highlight: false
 		});
 
-		board.create('segment', [[x0, f(x0)], [x1, 0]], {
+		const x0 = board.create('glider', [2, f(2), graph], {
+			size: 5,
+			fillColor: '#a855f7',
+			strokeColor: '#ffffff',
+			strokeWidth: 2,
+			name: '',
+			fixed: false,
+			highlightFillColor: '#7c3aed',
+			highlightStrokeColor: '#ffffff',
+			snapSizeX: 0.01
+		});
+		const next = () => {
+			const x = x0.X();
+			return x - f(x) / fp(x);
+		};
+		const nextAgain = () => {
+			const x = next();
+			return x - f(x) / fp(x);
+		};
+		const x1 = board.create('point', [next, 0], {
+			size: 4,
+			fillColor: '#2563eb',
+			strokeColor: '#ffffff',
+			strokeWidth: 2,
+			name: '',
+			fixed: true,
+			highlight: false
+		});
+		const curveAtX1 = board.create('point', [next, () => f(next())], {
+			visible: false,
+			name: '',
+			fixed: true
+		});
+		const x2 = board.create('point', [nextAgain, 0], {
+			size: 4,
+			fillColor: '#059669',
+			strokeColor: '#ffffff',
+			strokeWidth: 2,
+			name: '',
+			fixed: true,
+			highlight: false
+		});
+
+		board.create('segment', [x0, x1], {
 			strokeColor: '#a855f7',
 			strokeWidth: 2,
 			dash: 2,
 			fixed: true,
 			highlight: false
 		});
-		board.create('segment', [[x1, 0], [x1, f(x1)]], {
+		board.create('segment', [x1, curveAtX1], {
 			strokeColor: '#6366f1',
 			strokeWidth: 1,
 			dash: 3,
 			fixed: true,
 			highlight: false
 		});
-		board.create('segment', [[x1, f(x1)], [x2, 0]], {
+		board.create('segment', [curveAtX1, x2], {
 			strokeColor: '#6366f1',
 			strokeWidth: 2,
 			dash: 2,
@@ -105,29 +185,21 @@
 			highlight: false
 		});
 
-		const markers = [
-			{ x: x0, y: f(x0), color: '#a855f7', label: 'x₀ = 2', labelY: 2.25 },
-			{ x: x1, y: 0, color: '#6366f1', label: 'x₁ = 1.5', labelY: -0.24 },
-			{ x: x2, y: 0, color: '#059669', label: 'x₂ ≈ 1.4167', labelY: 0.22 }
-		];
-
-		for (const marker of markers) {
-			board.create('point', [marker.x, marker.y], {
-				size: 3.5,
-				fillColor: marker.color,
-				strokeColor: marker.color,
-				name: '',
+		board.create(
+			'text',
+			[
+				0.82,
+				2.34,
+				() =>
+					`drag x₀=${x0.X().toFixed(3)}  →  x₁=${next().toFixed(4)}  →  x₂=${nextAgain().toFixed(4)}`
+			],
+			{
+				fontSize: 11,
+				color: '#6d5c84',
 				fixed: true,
 				highlight: false
-			});
-			board.create('text', [marker.x, marker.labelY, marker.label], {
-				fontSize: 10,
-				color: marker.color,
-				anchorX: 'middle',
-				highlight: false,
-				fontWeight: 'bold'
-			});
-		}
+			}
+		);
 
 		const root = Math.sqrt(2);
 		board.create('point', [root, 0], {
@@ -354,9 +426,11 @@
 			<JSXGraphBoard
 				setup={setupBehaviorGraph}
 				boundingbox={[-2.55, 5, 2.55, -1]}
-				aspectRatio={5.1 / 6}
+				aspectRatio={1.2}
+				keepAspectRatio={false}
+				interactive
 				number="4.2"
-				caption="The derivative changes sign at x = −1 and x = 1, producing a local maximum and minimum. Concavity changes separately at x = 0."
+				caption="Drag the purple point along the curve. The live values of f′ and f″ separate direction from bending; the fixed markers identify the extrema and inflection point."
 			/>
 		</div>
 
@@ -492,13 +566,12 @@
 		</div>
 
 		<div use:reveal>
-			<JSXGraphBoard
-				setup={setupNewtonGraph}
-				boundingbox={[0.75, 2.55, 2.3, -0.45]}
-				aspectRatio={1.55 / 3}
+			<Figure
 				number="4.3"
-				caption="For f(x) = x² − 2, the tangent at each ordinary numerical guess supplies the next guess. The construction is approximate, not an exact finite step."
-			/>
+				caption="Move the starting guess. Each tangent meets the axis at the next guess, making two Newton updates visible as a changing construction."
+			>
+				<NewtonExplorer />
+			</Figure>
 		</div>
 
 		<Callout type="warning" title="Newton’s Method Needs Conditions">

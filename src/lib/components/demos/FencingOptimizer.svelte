@@ -6,7 +6,7 @@
 	let rectangleHeight = $derived(height * 3.2);
 	let rectangleX = $derived(165 - rectangleWidth / 2);
 	let rectangleY = $derived(135 - rectangleHeight / 2);
-	let plotX = $derived(350 + (width / 50) * 260);
+	let plotX = $derived(20 + (width / 50) * 260);
 	let plotY = $derived(240 - (area / 625) * 190);
 	let feedback = $derived(
 		Math.abs(width - 25) < 0.25
@@ -19,7 +19,7 @@
 	const areaPath = Array.from({ length: 101 }, (_, index) => {
 		const x = index / 2;
 		const a = x * (50 - x);
-		return `${350 + (x / 50) * 260},${240 - (a / 625) * 190}`;
+		return `${20 + (x / 50) * 260},${240 - (a / 625) * 190}`;
 	}).join(' ');
 </script>
 
@@ -35,20 +35,17 @@
 		</div>
 	</div>
 
-	<svg
-		class="optimizer-graphic"
-		viewBox="0 0 640 280"
-		role="img"
-		aria-labelledby="fence-title fence-description"
-	>
-		<title id="fence-title">A rectangle and its area graph</title>
-		<desc id="fence-description">
-			The rectangle has side lengths {width.toFixed(1)} metres and {height.toFixed(1)} metres.
-			Its area is {area.toFixed(1)} square metres. A point marks this value on the graph of area
-			against width.
-		</desc>
-
-		<g class="rectangle-panel">
+	<div class="optimizer-panels">
+		<svg
+			class="optimizer-graphic"
+			viewBox="0 0 320 280"
+			role="img"
+			aria-labelledby="fence-shape-title fence-shape-description"
+		>
+			<title id="fence-shape-title">The rectangle built from the fencing</title>
+			<desc id="fence-shape-description">
+				The rectangle has side lengths {width.toFixed(1)} metres and {height.toFixed(1)} metres.
+			</desc>
 			<text x="165" y="24" text-anchor="middle" class="panel-title">Your rectangle</text>
 			<rect
 				x={rectangleX}
@@ -69,26 +66,45 @@
 			>
 				{height.toFixed(1)} m
 			</text>
-		</g>
+		</svg>
 
-		<g class="graph-panel">
-			<text x="480" y="24" text-anchor="middle" class="panel-title">Area as x changes</text>
-			<line x1="350" y1="240" x2="616" y2="240" class="axis" />
-			<line x1="350" y1="244" x2="350" y2="42" class="axis" />
+		<svg
+			class="optimizer-graphic"
+			viewBox="0 0 320 280"
+			role="img"
+			aria-labelledby="fence-graph-title fence-graph-description"
+		>
+			<title id="fence-graph-title">Area as the side length changes</title>
+			<desc id="fence-graph-description">
+				The area is {area.toFixed(1)} square metres. A point marks this value on the graph of
+				area against width.
+			</desc>
+			<text x="150" y="24" text-anchor="middle" class="panel-title">Area as x changes</text>
+			<line x1="20" y1="240" x2="286" y2="240" class="axis" />
+			<line x1="20" y1="244" x2="20" y2="42" class="axis" />
 			<polyline points={areaPath} class="area-curve" />
 			<line x1={plotX} y1={plotY} x2={plotX} y2="240" class="guide" />
 			<circle cx={plotX} cy={plotY} r="6" class="area-point" />
-			<text x="350" y="258" text-anchor="middle" class="tick">0</text>
-			<text x="480" y="258" text-anchor="middle" class="tick">25</text>
-			<text x="610" y="258" text-anchor="middle" class="tick">50</text>
-			<text x="480" y="276" text-anchor="middle" class="axis-label">side x (m)</text>
-			<text x="342" y="54" text-anchor="end" class="tick">625</text>
-		</g>
-	</svg>
+			<text x="20" y="258" text-anchor="middle" class="tick">0</text>
+			<text x="150" y="258" text-anchor="middle" class="tick">25</text>
+			<text x="280" y="258" text-anchor="middle" class="tick">50</text>
+			<text x="150" y="276" text-anchor="middle" class="axis-label">side x (m)</text>
+			<text x="26" y="54" text-anchor="start" class="tick">625</text>
+		</svg>
+	</div>
 
 	<label class="slider-row">
 		<span>Choose the side <i>x</i></span>
-		<input type="range" min="0" max="50" step="0.5" bind:value={width} />
+		<input
+			type="range"
+			min="0"
+			max="50"
+			step="0.5"
+			bind:value={width}
+			class="demo-slider tone-violet"
+			style={`--slider-progress: ${width * 2}%`}
+			aria-label="Rectangle side x"
+		/>
 		<output>{width.toFixed(1)} m</output>
 	</label>
 	<p class:found={Math.abs(width - 25) < 0.25} class="feedback">{feedback}</p>
@@ -144,11 +160,20 @@
 		font-variant-numeric: tabular-nums;
 	}
 
+	.optimizer-panels {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.65rem;
+		margin: 0.65rem 0;
+	}
+
 	.optimizer-graphic {
 		display: block;
 		width: 100%;
 		height: auto;
-		margin: 0.65rem 0;
+		border: 1px solid var(--color-border-light);
+		border-radius: 0.72rem;
+		background: rgba(255, 255, 255, 0.68);
 	}
 
 	.panel-title,
@@ -218,7 +243,6 @@
 
 	.slider-row input {
 		width: 100%;
-		accent-color: var(--color-d);
 	}
 
 	.slider-row output {
@@ -248,8 +272,10 @@
 			align-items: flex-end;
 		}
 
-		.optimizer-graphic {
-			margin: 0.4rem 0;
+		.optimizer-panels {
+			grid-template-columns: 1fr;
+			gap: 0.5rem;
+			margin: 0.45rem 0;
 		}
 
 		.slider-row {
