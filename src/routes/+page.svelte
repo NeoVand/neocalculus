@@ -35,7 +35,7 @@
 			id: 'ch5',
 			number: '5',
 			title: 'Accumulation and the Fundamental Theorem',
-			subtitle: 'Area accumulation and antiderivatives'
+			subtitle: 'Rates, signed accumulation, and antiderivatives'
 		},
 		{
 			id: 'ch6',
@@ -125,7 +125,7 @@
 		id="ch5"
 		chapterNumber="5"
 		title="Accumulation and the Fundamental Theorem"
-		preview="Accumulation, antiderivatives, and the FTC through infinitesimal strips and cancellation."
+		preview="Rates become totals through signed accumulation, moving endpoints, and antiderivatives."
 		load={() => import('$lib/chapters/Ch05WorldOfAreas.svelte')}
 	/>
 	<LazyChapter

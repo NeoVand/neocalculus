@@ -18,7 +18,7 @@
 	const fp = (x: number) => 0.16 * x + 0.55;
 
 	let x0 = $state(3.1);
-	let d = $state(0.28);
+	let h = $state(0.28);
 
 	const plotW = W - margin.l - margin.r;
 	const plotH = H - margin.t - margin.b;
@@ -26,7 +26,7 @@
 	const sy = (v: number) => margin.t + plotH - ((v - ymin) / (ymax - ymin)) * plotH;
 
 	const stripHeight = $derived(f(x0));
-	const x1 = $derived(Math.min(x0 + d, xmax));
+	const x1 = $derived(Math.min(x0 + h, xmax));
 	const stripWidthPx = $derived(Math.max(1, sx(x1) - sx(x0)));
 	const triangleHeight = $derived(Math.max(0, f(x1) - f(x0)));
 
@@ -53,7 +53,7 @@
 </script>
 
 <div class="demo-container content-width">
-	<DemoHeader title="Explore: infinitesimal strip and FTC" />
+	<DemoHeader title="Explore: a thin ordinary strip" />
 
 	<DemoCard title="Inputs">
 		<div class="demo-controls-grid">
@@ -68,14 +68,14 @@
 				bind:value={x0}
 			/>
 			<SliderField
-				id="strip-d"
-				label="Infinitesimal width d"
-				hint="Thickness of the added strip"
+				id="strip-h"
+				label="Ordinary width h"
+				hint="Shrink this finite width and watch the correction fade"
 				min={0.1}
 				max={0.55}
 				step={0.01}
 				decimals={2}
-				bind:value={d}
+				bind:value={h}
 			/>
 		</div>
 	</DemoCard>
@@ -119,10 +119,10 @@
 			/>
 
 			<line x1={sx(x0)} y1={sy(0) + 12} x2={sx(x1)} y2={sy(0) + 12} stroke="#a855f7" stroke-width="2" />
-			<text x={(sx(x0) + sx(x1)) / 2} y={sy(0) + 28} text-anchor="middle" fill="#a855f7" font-size="11" font-family="var(--font-sans)">d</text>
+			<text x={(sx(x0) + sx(x1)) / 2} y={sy(0) + 28} text-anchor="middle" fill="#a855f7" font-size="11" font-family="var(--font-sans)">h</text>
 
 			<text x={sx(x0) + 8} y={sy(stripHeight) - 8} fill="#059669" font-size="11" font-family="var(--font-sans)">
-				rectangle: f(x0)·d
+				rectangle: f(x0)·h
 			</text>
 			<text
 				x={Math.min(sx(x1) + 8, sx(xmax) - 140)}
@@ -131,22 +131,22 @@
 				font-size="11"
 				font-family="var(--font-sans)"
 			>
-				triangle: ~ f'(x0)d²
+				curvature correction: order h²
 			</text>
 		</svg>
 
 		<LegendList
 			items={[
 				{ label: 'blue: accumulated area A(x0)', color: '#3b82f6' },
-				{ label: 'green strip: first-order gain f(x0)d', color: '#059669' },
-				{ label: 'red triangle: second-order term ~ d²', color: '#ef4444' }
+				{ label: 'green rectangle: leading gain f(x0)h', color: '#059669' },
+				{ label: 'red region: correction of order h²', color: '#ef4444' }
 			]}
 		/>
 	</DemoCard>
 
-	<EquationPanel title="First-order conclusion">
-		<Katex math={String.raw`A(x_0+d)-A(x_0)=f(x_0)\,d+\frac12 f'(x_0)d^2`} display />
-		<Katex math={String.raw`d^2=0 \;\Rightarrow\; A'(x_0)=f(x_0)`} display />
+	<EquationPanel title="From the finite picture to the first-order equation">
+		<Katex math={String.raw`A(x_0+h)-A(x_0)\approx f(x_0)\,h\quad\text{for small ordinary }h`} display />
+		<Katex math={String.raw`A(x_0+d)-A(x_0)=f(x_0)\,d\quad(d^2=0)`} display />
 	</EquationPanel>
 </div>
 
