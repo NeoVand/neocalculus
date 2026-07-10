@@ -301,6 +301,9 @@ h4 {
    DEMO CONTAINERS
    ═══════════════════════════════════════════ */
 .demo-container {
+	width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
 	background: white;
 	border: 1px solid var(--color-border);
 	border-radius: 1rem;

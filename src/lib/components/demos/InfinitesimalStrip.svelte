@@ -12,10 +12,11 @@
 	const xmin = 0;
 	const xmax = 6;
 	const ymin = 0;
-	const ymax = 5.2;
+	const ymax = 7.2;
 
 	const f = (x: number) => 0.08 * x * x + 0.55 * x + 0.7;
 	const fp = (x: number) => 0.16 * x + 0.55;
+	const antiderivative = (x: number) => (0.08 / 3) * x * x * x + 0.275 * x * x + 0.7 * x;
 
 	let x0 = $state(3.1);
 	let h = $state(0.28);
@@ -29,6 +30,10 @@
 	const x1 = $derived(Math.min(x0 + h, xmax));
 	const stripWidthPx = $derived(Math.max(1, sx(x1) - sx(x0)));
 	const triangleHeight = $derived(Math.max(0, f(x1) - f(x0)));
+	const exactGain = $derived(antiderivative(x1) - antiderivative(x0));
+	const linearGain = $derived(f(x0) * (x1 - x0));
+	const correction = $derived(exactGain - linearGain);
+	const correctionShare = $derived(exactGain === 0 ? 0 : (correction / exactGain) * 100);
 
 	const curvePath = $derived.by(() => {
 		let p = '';
@@ -59,13 +64,14 @@
 		<div class="demo-controls-grid">
 			<SliderField
 				id="strip-x0"
-				label="Start point x0"
+				label="Start point x₀"
 				hint="Where the area function is currently evaluated"
 				min={0.6}
 				max={5.2}
 				step={0.01}
 				decimals={2}
 				bind:value={x0}
+				tone="blue"
 			/>
 			<SliderField
 				id="strip-h"
@@ -76,6 +82,7 @@
 				step={0.01}
 				decimals={2}
 				bind:value={h}
+				tone="teal"
 			/>
 		</div>
 	</DemoCard>
@@ -118,22 +125,25 @@
 				stroke-width="1"
 			/>
 
-			<line x1={sx(x0)} y1={sy(0) + 12} x2={sx(x1)} y2={sy(0) + 12} stroke="#a855f7" stroke-width="2" />
-			<text x={(sx(x0) + sx(x1)) / 2} y={sy(0) + 28} text-anchor="middle" fill="#a855f7" font-size="11" font-family="var(--font-sans)">h</text>
-
-			<text x={sx(x0) + 8} y={sy(stripHeight) - 8} fill="#059669" font-size="11" font-family="var(--font-sans)">
-				rectangle: f(x0)·h
-			</text>
-			<text
-				x={Math.min(sx(x1) + 8, sx(xmax) - 140)}
-				y={sy(stripHeight + triangleHeight / 2)}
-				fill="#ef4444"
-				font-size="11"
-				font-family="var(--font-sans)"
-			>
-				curvature correction: order h²
-			</text>
+			<line x1={sx(x0)} y1={sy(0) + 12} x2={sx(x1)} y2={sy(0) + 12} stroke="#059669" stroke-width="2" />
+			<text x={(sx(x0) + sx(x1)) / 2} y={sy(0) + 28} text-anchor="middle" fill="#059669" font-size="11" font-family="var(--font-sans)">h</text>
 		</svg>
+
+		<div class="measure-row" aria-live="polite">
+			<div>
+				<span>exact finite gain</span>
+				<strong>{exactGain.toFixed(5)}</strong>
+			</div>
+			<div>
+				<span>rectangle f(x₀)h</span>
+				<strong>{linearGain.toFixed(5)}</strong>
+			</div>
+			<div class="correction">
+				<span>curvature remainder</span>
+				<strong>{correction.toFixed(5)}</strong>
+				<small>{correctionShare.toFixed(2)}% of the gain</small>
+			</div>
+		</div>
 
 		<LegendList
 			items={[
@@ -157,5 +167,66 @@
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.75rem;
 		background: white;
+	}
+
+	.measure-row {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.5rem;
+		margin-top: 0.65rem;
+	}
+
+	.measure-row > div {
+		display: grid;
+		gap: 0.08rem;
+		padding: 0.55rem 0.6rem;
+		border-top: 2px solid var(--color-result);
+		background: rgba(37, 99, 235, 0.035);
+	}
+
+	.measure-row > div:nth-child(2) {
+		border-top-color: var(--color-success);
+		background: rgba(5, 150, 105, 0.035);
+	}
+
+	.measure-row > div.correction {
+		border-top-color: var(--color-vanish);
+		background: rgba(239, 68, 68, 0.035);
+	}
+
+	.measure-row span,
+	.measure-row small {
+		font-family: var(--font-sans);
+		font-size: 0.61rem;
+		color: var(--color-ink-faint);
+	}
+
+	.measure-row span {
+		font-weight: 650;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+
+	.measure-row strong {
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		color: var(--color-ink);
+		font-variant-numeric: tabular-nums;
+	}
+
+	@media (max-width: 520px) {
+		.measure-row {
+			grid-template-columns: 1fr;
+			gap: 0.35rem;
+		}
+
+		.measure-row > div {
+			grid-template-columns: 1fr auto;
+			align-items: baseline;
+		}
+
+		.measure-row small {
+			grid-column: 1 / -1;
+		}
 	}
 </style>
