@@ -26,6 +26,9 @@
 
 		const targetId = decodeURIComponent(hash.slice(1));
 		if (!targetId) return;
+		// Only the chapter named by the hash may correct its own placeholder position.
+		// Without this guard, every later lazy chapter load re-scrolls to an older selected chapter.
+		if (targetId !== id) return;
 
 		const target = document.getElementById(targetId);
 		if (target) {
