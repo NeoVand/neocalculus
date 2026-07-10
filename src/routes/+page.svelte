@@ -41,7 +41,7 @@
 			id: 'ch6',
 			number: '6',
 			title: 'Integration Geometry and Techniques',
-			subtitle: 'Methods and geometric applications'
+			subtitle: 'Substitution, parts, slices, and physical totals'
 		},
 		{
 			id: 'ch8',
@@ -132,7 +132,7 @@
 		id="ch6"
 		chapterNumber="6"
 		title="Integration Geometry and Techniques"
-		preview="Arc length, area and volume methods, and integration techniques in geometric form."
+		preview="Choose an antiderivative technique, then build areas, volumes, work, and averages from local contributions."
 		load={() => import('$lib/chapters/Ch06ApplicationsIntegration.svelte')}
 	/>
 	<LazyChapter
