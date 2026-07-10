@@ -12,8 +12,15 @@
 	import { reveal } from '$lib/utils/scroll';
 
 	const r = String.raw;
+	let behaviorX = $state(-1.75);
+	let behaviorBoard: any = null;
+
+	function updateBehaviorBoard() {
+		requestAnimationFrame(() => behaviorBoard?.update());
+	}
 
 	function setupBehaviorGraph(JXG: any, board: any) {
+		behaviorBoard = board;
 		const f = (x: number) => x * x * x - 3 * x + 2;
 
 		const graph = board.create('functiongraph', [f, -2.35, 2.35], {
@@ -61,18 +68,24 @@
 			highlight: false
 		});
 
-		const probe = board.create('glider', [-1.75, f(-1.75), graph], {
+		const probe = board.create('point', [() => behaviorX, () => f(behaviorX)], {
 			size: 5,
 			fillColor: '#a855f7',
 			strokeColor: '#ffffff',
 			strokeWidth: 2,
 			name: '',
-			fixed: false,
-			highlightFillColor: '#7c3aed',
-			highlightStrokeColor: '#ffffff',
-			snapSizeX: 0.05
+			fixed: true,
+			highlight: false
 		});
-		board.create('tangent', [probe], {
+		const tangentGuide = board.create(
+			'point',
+			[
+				() => behaviorX + 1,
+				() => f(behaviorX) + (3 * behaviorX * behaviorX - 3)
+			],
+			{ visible: false, fixed: true, name: '' }
+		);
+		board.create('line', [probe, tangentGuide], {
 			strokeColor: '#a855f7',
 			strokeWidth: 1.8,
 			strokeOpacity: 0.68,
@@ -86,7 +99,7 @@
 				-2.38,
 				4.72,
 				() => {
-					const x = probe.X();
+					const x = behaviorX;
 					const slope = 3 * x * x - 3;
 					const bend = 6 * x;
 					return `x=${x.toFixed(2)} · f′=${slope.toFixed(2)} · f″=${bend.toFixed(2)}`;
@@ -423,7 +436,21 @@
 		</div>
 
 		<div use:reveal>
-			<p class="plot-instruction">Drag the purple point along the curve; the live values above the plot report the first and second derivatives.</p>
+			<label class="behavior-control" for="behavior-x">
+				<span>Move the point along the curve</span>
+				<input
+					id="behavior-x"
+					type="range"
+					min="-2.2"
+					max="2.2"
+					step="0.05"
+					bind:value={behaviorX}
+					oninput={updateBehaviorBoard}
+					class="demo-slider tone-violet"
+					style={`--slider-progress: ${((behaviorX + 2.2) / 4.4) * 100}%`}
+				/>
+				<output>x = {behaviorX.toFixed(2)}</output>
+			</label>
 			<JSXGraphBoard
 				setup={setupBehaviorGraph}
 				boundingbox={[-2.55, 5, 2.55, -1]}
@@ -735,11 +762,31 @@
 </section>
 
 <style>
-	.plot-instruction {
+	.behavior-control {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) 4.8rem;
+		align-items: center;
+		gap: 0.75rem;
 		margin: var(--space-md) 0 0.45rem;
 		font-family: var(--font-sans);
 		font-size: 0.8rem;
-		line-height: 1.5;
 		color: var(--color-ink-light);
+	}
+
+	.behavior-control output {
+		font-family: var(--font-mono);
+		font-variant-numeric: tabular-nums;
+		text-align: right;
+		color: var(--color-d);
+	}
+
+	@media (max-width: 540px) {
+		.behavior-control {
+			grid-template-columns: 1fr 4.5rem;
+		}
+
+		.behavior-control span {
+			grid-column: 1 / -1;
+		}
 	}
 </style>
