@@ -495,7 +495,7 @@
 		border-radius: 0.9rem;
 		overflow: hidden;
 		background: var(--color-surface);
-		box-shadow: 0 12px 30px rgba(32, 27, 46, 0.06);
+		box-shadow: 0 12px 30px var(--color-shadow);
 	}
 
 	.library-heading {
@@ -587,7 +587,7 @@
 	}
 
 	tbody tr:hover {
-		background: color-mix(in srgb, var(--color-d-soft) 38%, white);
+		background: color-mix(in srgb, var(--color-surface) 92%, var(--color-d) 8%);
 	}
 
 	tbody th {
@@ -607,7 +607,7 @@
 	tbody td:last-child {
 		position: relative;
 		padding-left: 2.6rem;
-		background: color-mix(in srgb, var(--color-d-soft) 18%, white);
+		background: color-mix(in srgb, var(--color-surface) 94%, var(--color-d) 6%);
 	}
 
 	tbody td:last-child::before {
