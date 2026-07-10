@@ -27,7 +27,10 @@
 					latex: String.raw`=fg+(f'g+fg')d+\textcolor{#ef4444}{f'g'd^2}`,
 					note: 'expand and collect first-order terms'
 				},
-				{ latex: String.raw`=fg+(f'g+fg')d`, note: 'the second-order term vanishes' }
+				{
+					latex: String.raw`=fg+\textcolor{#a855f7}{(f'g+fg')}d`,
+					note: 'the second-order term vanishes; the purple coefficient survives'
+				}
 			]
 		},
 		chain: {
@@ -41,8 +44,8 @@
 					note: 'feed inner output into the outer function'
 				},
 				{
-					latex: String.raw`=f(g(x))+f'(g(x))\,g'(x)\,d`,
-					note: 'apply the outer slope equation'
+					latex: String.raw`=f(g(x))+\textcolor{#a855f7}{f'(g(x))\,g'(x)}\,d`,
+					note: 'the purple coefficient is the derivative of the composition'
 				}
 			]
 		},
@@ -64,8 +67,8 @@
 					note: 'expand and collect terms'
 				},
 				{
-					latex: String.raw`=\frac{f}{g}+\frac{f'g-fg'}{g^2}d`,
-					note: 'second-order terms vanish; read the coefficient'
+					latex: String.raw`=\frac{f}{g}+\textcolor{#a855f7}{\frac{f'g-fg'}{g^2}}d`,
+					note: 'second-order terms vanish; the purple coefficient survives'
 				}
 			]
 		}
@@ -81,6 +84,7 @@
 		<div class="rule-tabs" role="tablist" aria-label="Rule proofs">
 			{#each Object.entries(rules) as [key, rule] (key)}
 				<button
+					type="button"
 					role="tab"
 					aria-selected={selected === key}
 					class:active={selected === key}
@@ -89,6 +93,11 @@
 					{rule.label}
 				</button>
 			{/each}
+		</div>
+
+		<div class="color-key" aria-label="Color key">
+			<span><i class="vanish"></i>red: second order, vanishes</span>
+			<span><i class="survive"></i>purple: first-order coefficient, survives</span>
 		</div>
 
 		<div class="rule-title">{rules[selected].title}</div>
@@ -142,6 +151,36 @@
 		text-transform: uppercase;
 		color: var(--color-ink-light);
 		margin-bottom: 0.6rem;
+	}
+
+	.color-key {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem 1rem;
+		margin: -0.18rem 0 0.8rem;
+		font-family: var(--font-sans);
+		font-size: 0.68rem;
+		color: var(--color-ink-faint);
+	}
+
+	.color-key span {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.32rem;
+	}
+
+	.color-key i {
+		width: 0.56rem;
+		height: 0.56rem;
+		border-radius: 50%;
+	}
+
+	.color-key .vanish {
+		background: var(--color-vanish);
+	}
+
+	.color-key .survive {
+		background: var(--color-d);
 	}
 
 	.rule-step {
