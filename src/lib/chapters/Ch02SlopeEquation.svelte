@@ -289,7 +289,7 @@
 		</div>
 	</div>
 
-	<div use:reveal>
+	<div class="content-width" use:reveal>
 		<figure class="neo-figure">
 			<InfinitesimalTrig />
 			<figcaption>

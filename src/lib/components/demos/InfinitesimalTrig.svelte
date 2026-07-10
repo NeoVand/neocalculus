@@ -175,10 +175,10 @@
 		ctx.fillStyle = theme.violet;
 		ctx.textAlign = 'center';
 		const midAngle = theta / 2;
-		const labelR = 1 + vRange * 0.05;
+		const labelR = 1 + vRange * 0.12;
 		const arcLabelX = Math.min(W - 38 * dpr, Math.max(38 * dpr, toX(Math.cos(midAngle) * labelR)));
-		const arcLabelY = Math.max(24 * dpr, toY(Math.sin(midAngle) * labelR) - 6 * dpr);
-		ctx.fillText('arc = θ', arcLabelX, arcLabelY);
+		const arcLabelY = Math.max(26 * dpr, toY(Math.sin(midAngle) * labelR) - 10 * dpr);
+		ctx.fillText('arc length = θ', arcLabelX, arcLabelY);
 
 		// Difference percentage
 		const diff = Math.abs(theta - sinTheta);
@@ -320,7 +320,7 @@
 	});
 </script>
 
-<div class="demo-container content-width">
+<div class="demo-container">
 	<div class="demo-label">
 		<svg
 			width="14"
@@ -340,7 +340,7 @@
 		Explore: finite angles approaching first order
 	</div>
 
-	<div class="slider-row" style="margin-bottom: 1rem;">
+	<div class="slider-row">
 		<label class="slider-label" for="infinitesimal-trig-angle">
 			<span>Angle <strong style="color: var(--color-d)">θ</strong></span>
 			<span class="slider-value"
@@ -367,16 +367,14 @@
 
 	<div class="ratio-strip" aria-live="polite">
 		<div>
-			<span class="ratio-name">first-order ratio</span>
 			<span class="ratio-math">sin θ / θ</span>
-			<strong>{sineRatio.toFixed(5)}</strong>
-			<small>tends to 1</small>
+			<span class="ratio-limit">→ 1</span>
+			<strong>{sineRatio.toFixed(4)}</strong>
 		</div>
 		<div>
-			<span class="ratio-name">discarded ratio</span>
 			<span class="ratio-math">(1 − cos θ) / θ</span>
-			<strong>{cosineRatio.toFixed(5)}</strong>
-			<small>tends to 0</small>
+			<span class="ratio-limit">→ 0</span>
+			<strong>{cosineRatio.toFixed(4)}</strong>
 		</div>
 	</div>
 
@@ -435,7 +433,6 @@
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.8rem;
 		overflow: hidden;
-		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
 	}
 
 	canvas {
@@ -454,6 +451,7 @@
 	}
 
 	.slider-row {
+		margin-bottom: 0.75rem;
 		padding-bottom: 0.75rem;
 		border-bottom: 1px solid var(--color-border-light);
 	}
@@ -482,49 +480,37 @@
 	.ratio-strip {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 0.7rem;
-		margin: -0.2rem 0 1rem;
-		padding: 0.68rem 0;
+		gap: 1rem;
+		margin: -0.1rem 0 0.85rem;
+		padding: 0.5rem 0 0.65rem;
 		border-bottom: 1px solid var(--color-border-light);
 	}
 
 	.ratio-strip > div {
-		display: grid;
-		grid-template-columns: 1fr auto;
+		display: flex;
 		align-items: baseline;
-		gap: 0.08rem 0.5rem;
+		justify-content: center;
+		gap: 0.45rem;
 		min-width: 0;
-	}
-
-	.ratio-name,
-	.ratio-strip small {
-		font-family: var(--font-sans);
-		font-size: 0.62rem;
-		color: var(--color-ink-faint);
-	}
-
-	.ratio-name {
-		text-transform: uppercase;
-		letter-spacing: 0.09em;
 	}
 
 	.ratio-math {
 		font-family: var(--font-serif);
-		font-size: 0.88rem;
+		font-size: 0.92rem;
 		color: var(--color-ink-light);
 	}
 
+	.ratio-limit {
+		font-family: var(--font-serif);
+		font-size: 0.9rem;
+		color: var(--color-ink-faint);
+	}
+
 	.ratio-strip strong {
-		grid-row: 1 / 3;
-		grid-column: 2;
 		font-family: var(--font-mono);
 		font-size: 0.88rem;
 		color: var(--color-d);
 		font-variant-numeric: tabular-nums;
-	}
-
-	.ratio-strip small {
-		grid-column: 1;
 	}
 
 	.slider-labels {
