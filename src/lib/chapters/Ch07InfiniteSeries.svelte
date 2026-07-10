@@ -61,7 +61,7 @@
 	] as const;
 </script>
 
-<section class="chapter" id="ch7">
+<section class="chapter" id="ch8">
 	<div class="content-width">
 		<div use:reveal>
 			<span class="chapter-number">Chapter 8</span>

@@ -44,13 +44,13 @@
 			subtitle: 'Substitution, parts, slices, and physical totals'
 		},
 		{
-			id: 'ch8',
+			id: 'ch7',
 			number: '7',
 			title: 'Differential Equations and Physics Modeling',
-			subtitle: 'Dynamics from local laws'
+			subtitle: 'Local laws, initial conditions, and evolving systems'
 		},
 		{
-			id: 'ch7',
+			id: 'ch8',
 			number: '8',
 			title: 'Series and Approximation',
 			subtitle: 'Taylor bridges and convergence'
@@ -136,14 +136,14 @@
 		load={() => import('$lib/chapters/Ch06ApplicationsIntegration.svelte')}
 	/>
 	<LazyChapter
-		id="ch8"
+		id="ch7"
 		chapterNumber="7"
 		title="Differential Equations and Physics Modeling"
-		preview="Local laws, separable equations, and physical modeling through differential equations."
-		load={() => import('$lib/chapters/Ch08Physics.svelte')}
+		preview="A local rate law and initial condition determine growth, cooling, and motion."
+		load={() => import('$lib/chapters/Ch07Physics.svelte')}
 	/>
 	<LazyChapter
-		id="ch7"
+		id="ch8"
 		chapterNumber="8"
 		title="Series and Approximation"
 		preview="Taylor expansions, convergence, and bridge points between nilpotent and classical series."
