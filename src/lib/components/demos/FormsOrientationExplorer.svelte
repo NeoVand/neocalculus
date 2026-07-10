@@ -5,8 +5,9 @@
 	import EquationPanel from '$lib/components/demos/EquationPanel.svelte';
 	import SliderField from '$lib/components/demos/SliderField.svelte';
 
-	const origin = { x: 320, y: 220 };
-	const scale = 78;
+	const origin = { x: 320, y: 200 };
+	// A fixed camera scale fits the largest possible vector sum in every direction.
+	const scale = 34;
 
 	let angleV = $state(15);
 	let angleW = $state(105);
@@ -54,14 +55,14 @@
 			<svg viewBox="0 0 640 400" role="img" aria-label="Two ordered vectors spanning a signed parallelogram">
 				<defs>
 					<linearGradient id="oriented-area-fill" x1="0" y1="0" x2="1" y2="1">
-						<stop offset="0" stop-color="#60a5fa" stop-opacity="0.22" />
-						<stop offset="1" stop-color="#a855f7" stop-opacity="0.28" />
+						<stop offset="0" stop-color="var(--plot-blue)" stop-opacity="0.22" />
+						<stop offset="1" stop-color="var(--plot-violet)" stop-opacity="0.28" />
 					</linearGradient>
 					<marker id="vector-v-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-						<path d="M0,0 L8,4 L0,8 Z" fill="#2563eb" />
+						<path d="M0,0 L8,4 L0,8 Z" fill="var(--plot-blue)" />
 					</marker>
 					<marker id="vector-w-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-						<path d="M0,0 L8,4 L0,8 Z" fill="#d97706" />
+						<path d="M0,0 L8,4 L0,8 Z" fill="var(--plot-amber)" />
 					</marker>
 				</defs>
 
@@ -170,8 +171,8 @@
 	}
 
 	.area-shape.negative {
-		fill: rgb(244 63 94 / 14%);
-		stroke: #e11d48;
+		fill: color-mix(in srgb, var(--plot-error) 14%, transparent);
+		stroke: var(--plot-error);
 	}
 
 	.area-shape.degenerate {
@@ -185,11 +186,11 @@
 	}
 
 	.v-copy {
-		stroke: #2563eb;
+		stroke: var(--plot-blue);
 	}
 
 	.w-copy {
-		stroke: #d97706;
+		stroke: var(--plot-amber);
 	}
 
 	.vector-v,
@@ -199,16 +200,16 @@
 	}
 
 	.vector-v {
-		stroke: #2563eb;
+		stroke: var(--plot-blue);
 	}
 
 	.vector-w {
-		stroke: #d97706;
+		stroke: var(--plot-amber);
 	}
 
 	.origin-point {
 		fill: var(--color-ink);
-		stroke: #fff;
+		stroke: var(--plot-background);
 		stroke-width: 2;
 	}
 
@@ -235,18 +236,18 @@
 	}
 
 	.v-swatch {
-		border-color: #2563eb;
+		border-color: var(--plot-blue);
 	}
 
 	.w-swatch {
-		border-color: #d97706;
+		border-color: var(--plot-amber);
 	}
 
 	.orientation-reading {
 		margin: 0.45rem auto 0;
 		padding: 0.5rem 0.7rem;
 		border-radius: 999px;
-		background: rgb(168 85 247 / 10%);
+		background: var(--color-d-glow);
 		font-size: 0.78rem;
 		font-weight: 700;
 		text-align: center;
