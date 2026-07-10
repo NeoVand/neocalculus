@@ -67,21 +67,41 @@
 	let rhsSinSum = $derived(Math.sin(alpha) * Math.cos(beta) + Math.cos(alpha) * Math.sin(beta));
 </script>
 
-<div class="lemma" role="img" aria-label="Interactive high-school geometric proof of angle addition formulas">
+<div class="lemma" aria-label="Interactive geometric proof of the angle-addition formulas">
 	<div class="controls">
 		<div class="control">
 			<label for="alpha-slider">Angle <Katex math={r`\alpha`} /></label>
-			<input id="alpha-slider" type="range" min="10" max="170" step="1" bind:value={alphaDeg} />
+			<input
+				id="alpha-slider"
+				type="range"
+				min="10"
+				max="170"
+				step="1"
+				bind:value={alphaDeg}
+				class="demo-slider tone-violet"
+				style={`--slider-progress: ${((alphaDeg - 10) / 160) * 100}%`}
+			/>
 			<span>{alphaDeg}&deg;</span>
 		</div>
 		<div class="control">
 			<label for="beta-slider">Angle <Katex math={r`\beta`} /></label>
-			<input id="beta-slider" type="range" min="10" max="170" step="1" bind:value={betaDeg} />
+			<input
+				id="beta-slider"
+				type="range"
+				min="10"
+				max="170"
+				step="1"
+				bind:value={betaDeg}
+				class="demo-slider tone-blue"
+				style={`--slider-progress: ${((betaDeg - 10) / 160) * 100}%`}
+			/>
 			<span>{betaDeg}&deg;</span>
 		</div>
 	</div>
 
 	<svg class="diagram" viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} xmlns="http://www.w3.org/2000/svg">
+		<title>Two radii and their chord on the unit circle</title>
+		<desc>Move alpha and beta to see how the chord depends only on the angle between the radii.</desc>
 		<rect x="0" y="0" width={VIEW.w} height={VIEW.h} rx="10" fill="#fdfbf7" />
 		<line x1="42" y1={O.y} x2={VIEW.w - 42} y2={O.y} class="axis" />
 		<line x1={O.x} y1="28" x2={O.x} y2={VIEW.h - 26} class="axis" />
@@ -119,8 +139,14 @@
 			<Katex math={r`Q=(\cos\beta,\sin\beta)`} /> on the unit circle.
 			Now compute the same length <Katex math={r`PQ`} /> in two different ways.
 		</p>
-		<div class="line"><Katex math={r`\text{(Law of cosines in }\triangle OPQ\text{)}\quad PQ^2=2-2\cos(\alpha-\beta)`} display /></div>
-		<div class="line"><Katex math={r`\text{(Distance formula)}\quad PQ^2=(\cos\alpha-\cos\beta)^2+(\sin\alpha-\sin\beta)^2`} display /></div>
+		<div class="line">
+			<span class="line-label">Law of cosines in triangle OPQ</span>
+			<Katex math={r`PQ^2=2-2\cos(\alpha-\beta)`} display />
+		</div>
+		<div class="line">
+			<span class="line-label">Distance formula</span>
+			<Katex math={r`PQ^2=(\cos\alpha-\cos\beta)^2+(\sin\alpha-\sin\beta)^2`} display />
+		</div>
 		<div class="line"><Katex math={r`\Rightarrow\ PQ^2=2-2(\cos\alpha\cos\beta+\sin\alpha\sin\beta)`} display /></div>
 		<div class="line result"><Katex math={r`\cos(\alpha-\beta)=\cos\alpha\cos\beta+\sin\alpha\sin\beta`} display /></div>
 		<p>
@@ -148,6 +174,7 @@
 <style>
 	.lemma {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 0.82rem;
 		max-width: 900px;
 		margin: 0 auto;
@@ -161,7 +188,7 @@
 
 	.control {
 		display: grid;
-		grid-template-columns: auto 1fr auto;
+		grid-template-columns: auto minmax(0, 1fr) auto;
 		align-items: center;
 		gap: 0.52rem;
 		padding: 0.5rem 0.64rem;
@@ -180,7 +207,6 @@
 
 	.control input {
 		width: 100%;
-		accent-color: var(--color-d);
 	}
 
 	.control span {
@@ -362,6 +388,17 @@
 		text-align: left;
 	}
 
+	.line-label {
+		display: block;
+		margin-top: 0.3rem;
+		font-family: var(--font-sans);
+		font-size: 0.65rem;
+		font-weight: 650;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-ink-faint);
+	}
+
 	.result {
 		margin-top: 0.22rem;
 		padding-top: 0.32rem;
@@ -403,6 +440,14 @@
 		.angle-alpha,
 		.angle-beta {
 			font-size: 17px;
+		}
+
+		.proof {
+			padding-inline: 0.68rem;
+		}
+
+		.proof :global(.katex) {
+			font-size: 0.82em;
 		}
 	}
 </style>

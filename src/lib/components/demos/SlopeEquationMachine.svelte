@@ -257,8 +257,17 @@
 		</div>
 	</div>
 
+	<div class="plot-key" aria-label="Plot key">
+		<span><i class="key-line curve"></i>curve <Katex math="f(x)" /></span>
+		<span><i class="key-line tangent"></i>local line</span>
+		<span><i class="key-line gap"></i>deviation</span>
+	</div>
+
 	<div class="canvas-wrapper">
-		<canvas id={canvasId}></canvas>
+		<canvas
+			id={canvasId}
+			aria-label="The curve, its local line at a, and the deviation at a plus delta x"
+		></canvas>
 	</div>
 
 	<div class="stats-row" aria-live="polite">
@@ -277,7 +286,9 @@
 				step="0.5"
 				bind:value={zoomSlider}
 				oninput={requestDraw}
-				class="toolbar-slider"
+				class="toolbar-slider demo-slider tone-violet"
+				style={`--slider-progress: ${zoomSlider}%`}
+				aria-label="Zoom level"
 			/>
 			<span class="toolbar-val">{zoom.toFixed(zoom < 10 ? 1 : 0)}x</span>
 		</div>
@@ -291,7 +302,9 @@
 				step="1"
 				bind:value={pointSlider}
 				oninput={requestDraw}
-				class="toolbar-slider"
+				class="toolbar-slider demo-slider tone-blue"
+				style={`--slider-progress: ${pointSlider / 10}%`}
+				aria-label="Base point a"
 			/>
 			<span class="toolbar-val">{a.toFixed(3)}</span>
 		</div>
@@ -305,7 +318,9 @@
 				step="1"
 				bind:value={deltaSlider}
 				oninput={requestDraw}
-				class="toolbar-slider"
+				class="toolbar-slider demo-slider tone-amber"
+				style={`--slider-progress: ${(deltaSlider + 180) / 3.6}%`}
+				aria-label="Finite input step delta x"
 			/>
 			<span class="toolbar-val">{deltaValue}</span>
 		</div>
@@ -426,6 +441,46 @@
 		color: #7f7397;
 	}
 
+	.plot-key {
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 0.45rem 1rem;
+		margin: 0.08rem 0 0.42rem;
+		font-family: var(--font-sans);
+		font-size: 0.7rem;
+		color: var(--color-ink-faint);
+	}
+
+	.plot-key span {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.36rem;
+	}
+
+	.plot-key :global(.katex) {
+		font-size: 0.96em;
+	}
+
+	.key-line {
+		display: inline-block;
+		width: 1.3rem;
+		height: 0.18rem;
+		border-radius: 999px;
+	}
+
+	.key-line.curve {
+		background: #7c3aed;
+	}
+
+	.key-line.tangent {
+		background: #f97316;
+	}
+
+	.key-line.gap {
+		background: #2563eb;
+	}
+
 	.canvas-wrapper {
 		width: 100%;
 		aspect-ratio: 16 / 9;
@@ -471,32 +526,7 @@
 	}
 
 	.toolbar-slider {
-		flex: 1;
-		cursor: pointer;
-		height: 5px;
-		appearance: none;
-		background: linear-gradient(90deg, #7c3aed, #a78bfa);
-		border-radius: 999px;
-		outline: none;
-	}
-
-	.toolbar-slider::-webkit-slider-thumb {
-		appearance: none;
-		width: 16px;
-		height: 16px;
-		border-radius: 50%;
-		background: #7c3aed;
-		border: 2px solid #f8f4ff;
-		box-shadow: 0 2px 6px rgba(124, 58, 237, 0.38);
-	}
-
-	.toolbar-slider::-moz-range-thumb {
-		width: 16px;
-		height: 16px;
-		border-radius: 50%;
-		background: #7c3aed;
-		border: 2px solid #f8f4ff;
-		box-shadow: 0 2px 6px rgba(124, 58, 237, 0.38);
+		min-width: 0;
 	}
 
 	.toolbar-val {
@@ -512,12 +542,28 @@
 	@media (max-width: 760px) {
 		.verify-row,
 		.stats-row {
-			grid-template-columns: 1fr;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 0.35rem;
+		}
+
+		.verify-cell,
+		.stat-cell {
+			padding: 0.56rem 0.28rem;
 		}
 
 		.verify-value,
 		.stat-cell strong {
-			font-size: 0.88rem;
+			font-size: clamp(0.69rem, 3vw, 0.82rem);
+		}
+
+		.verify-label,
+		.stat-cell span {
+			font-size: 0.52rem;
+			letter-spacing: 0.07em;
+		}
+
+		.verify-caption {
+			font-size: 0.62rem;
 		}
 
 		.toolbar-val {

@@ -268,8 +268,15 @@
 	{#if currentDerivation.verifyFn}
 		<div class="algebra-controls">
 			<div class="verify-box">
-				<span class="verify-label">Verify numerically at x =</span>
-				<input type="number" bind:value={verifyPoint} class="verify-input" step="0.5" min="0.1" />
+				<label class="verify-label" for="derivative-verify-point">Verify numerically at x =</label>
+				<input
+					id="derivative-verify-point"
+					type="number"
+					bind:value={verifyPoint}
+					class="verify-input"
+					step="0.5"
+					min="0.1"
+				/>
 				<span class="verify-result">
 					→ f'({verifyPoint}) = <strong>{verifiedDerivative?.toFixed(4)}</strong>
 				</span>

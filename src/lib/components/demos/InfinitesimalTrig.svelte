@@ -8,6 +8,8 @@
 	let angleSlider = $state(70);
 	// Map slider: 100 → 1.2 rad (big), 0 → 0.005 rad (tiny). Logarithmic.
 	let angle = $derived(D_MIN * Math.pow(D_MAX / D_MIN, angleSlider / 100));
+	let sineRatio = $derived(Math.sin(angle) / angle);
+	let cosineRatio = $derived((1 - Math.cos(angle)) / angle);
 
 	const PURPLE = '#a855f7';
 	const RED = '#ef4444';
@@ -349,7 +351,9 @@
 			step="0.5"
 			bind:value={angleSlider}
 			oninput={redraw}
-			class="slider"
+			class="slider demo-slider tone-violet"
+			style={`--slider-progress: ${angleSlider}%`}
+			aria-label="Finite angle theta"
 		/>
 		<div class="slider-labels">
 			<span>← near zero</span>
@@ -357,11 +361,29 @@
 		</div>
 	</div>
 
+	<div class="ratio-strip" aria-live="polite">
+		<div>
+			<span class="ratio-name">first-order ratio</span>
+			<span class="ratio-math">sin θ / θ</span>
+			<strong>{sineRatio.toFixed(5)}</strong>
+			<small>tends to 1</small>
+		</div>
+		<div>
+			<span class="ratio-name">discarded ratio</span>
+			<span class="ratio-math">(1 − cos θ) / θ</span>
+			<strong>{cosineRatio.toFixed(5)}</strong>
+			<small>tends to 0</small>
+		</div>
+	</div>
+
 	<div class="panels">
 		<div class="panel">
 			<div class="panel-title">sin(θ) versus arc length θ</div>
 			<div {@attach observeResize} class="canvas-wrap">
-				<canvas {@attach attachCanvasSin}></canvas>
+				<canvas
+					{@attach attachCanvasSin}
+					aria-label="Unit-circle arc theta compared with the vertical coordinate sine theta"
+				></canvas>
 			</div>
 			<p class="panel-subtitle">
 				The <strong style="color:#ef4444">red line</strong> (sin θ) and the
@@ -371,7 +393,10 @@
 		<div class="panel">
 			<div class="panel-title">cos(θ) versus 1</div>
 			<div {@attach observeResize} class="canvas-wrap">
-				<canvas {@attach attachCanvasCos}></canvas>
+				<canvas
+					{@attach attachCanvasCos}
+					aria-label="Unit-circle horizontal coordinate cosine theta compared with one"
+				></canvas>
 			</div>
 			<p class="panel-subtitle">
 				The <strong style="color:#3b82f6">blue gap</strong> (1 − cos θ) shrinks faster than θ. The first-order
@@ -388,6 +413,10 @@
 		gap: 1rem;
 	}
 
+	.panel {
+		min-width: 0;
+	}
+
 	.panel-title {
 		font-family: var(--font-sans);
 		font-size: 0.82rem;
@@ -400,8 +429,9 @@
 	.canvas-wrap {
 		aspect-ratio: 1;
 		border: 1px solid var(--color-border-light);
-		border-radius: 0.5rem;
+		border-radius: 0.8rem;
 		overflow: hidden;
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
 	}
 
 	canvas {
@@ -443,7 +473,54 @@
 
 	.slider {
 		width: 100%;
-		accent-color: var(--color-d);
+	}
+
+	.ratio-strip {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.7rem;
+		margin: -0.2rem 0 1rem;
+		padding: 0.68rem 0;
+		border-bottom: 1px solid var(--color-border-light);
+	}
+
+	.ratio-strip > div {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		align-items: baseline;
+		gap: 0.08rem 0.5rem;
+		min-width: 0;
+	}
+
+	.ratio-name,
+	.ratio-strip small {
+		font-family: var(--font-sans);
+		font-size: 0.62rem;
+		color: var(--color-ink-faint);
+	}
+
+	.ratio-name {
+		text-transform: uppercase;
+		letter-spacing: 0.09em;
+	}
+
+	.ratio-math {
+		font-family: var(--font-serif);
+		font-size: 0.88rem;
+		color: var(--color-ink-light);
+	}
+
+	.ratio-strip strong {
+		grid-row: 1 / 3;
+		grid-column: 2;
+		font-family: var(--font-mono);
+		font-size: 0.88rem;
+		color: var(--color-d);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.ratio-strip small {
+		grid-column: 1;
 	}
 
 	.slider-labels {
@@ -458,6 +535,11 @@
 	@media (max-width: 540px) {
 		.panels {
 			grid-template-columns: 1fr;
+		}
+
+		.ratio-strip {
+			grid-template-columns: 1fr;
+			gap: 0.45rem;
 		}
 	}
 </style>
