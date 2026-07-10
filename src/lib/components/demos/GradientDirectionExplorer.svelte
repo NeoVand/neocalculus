@@ -18,6 +18,11 @@
 	let x0 = $state(1.1);
 	let y0 = $state(0.8);
 	let angle = $state(30);
+	let viewYaw = $state(-42);
+	let viewPitch = $state(28);
+	let rotating = $state(false);
+	let lastPointerX = 0;
+	let lastPointerY = 0;
 
 	const radians = $derived((angle * Math.PI) / 180);
 	const vx = $derived(Math.cos(radians));
@@ -29,7 +34,14 @@
 	const gradUnitY = $derived(gradMagnitude === 0 ? 0 : gradY / gradMagnitude);
 	const directionalDerivative = $derived(gradX * vx + gradY * vy);
 	const alignment = $derived(gradMagnitude === 0 ? 0 : directionalDerivative / gradMagnitude);
-	const alignmentPosition = $derived(Math.min(98, Math.max(2, ((alignment + 1) / 2) * 100)));
+	const alignmentAngle = $derived((Math.acos(Math.min(1, Math.max(-1, alignment))) * 180) / Math.PI);
+	const signedAlignmentAngle = $derived(
+		(gradUnitX * vy - gradUnitY * vx < 0 ? -1 : 1) * alignmentAngle
+	);
+	const alignmentRay = $derived({
+		x: 42 + 30 * Math.cos((signedAlignmentAngle * Math.PI) / 180),
+		y: 42 - 30 * Math.sin((signedAlignmentAngle * Math.PI) / 180)
+	});
 	const selectedRadius = $derived(Math.hypot(x0, y0));
 	const behavior = $derived(
 		directionalDerivative > 0.02
@@ -45,14 +57,21 @@
 	const scaleY = plotHeight / (domainMax - domainMin);
 
 	const surfaceDomain = 1.8;
-	const surfaceGrid = [-1.8, -1.35, -0.9, -0.45, 0, 0.45, 0.9, 1.35, 1.8];
+	const surfaceGrid = [-1.8, -1.2, -0.6, 0, 0.6, 1.2, 1.8];
 	const sliceHalf = 0.72;
 	const patchHalf = 0.5;
 	const surface = (x: number, y: number) => x * x + y * y;
-	const project3 = (x: number, y: number, z: number) => ({
-		x: 260 + (x - y) * 64,
-		y: 330 + (x + y) * 26 - z * 30
-	});
+	const project3 = (x: number, y: number, z: number) => {
+		const yaw = (viewYaw * Math.PI) / 180;
+		const pitch = (viewPitch * Math.PI) / 180;
+		const horizontal = x * Math.cos(yaw) - y * Math.sin(yaw);
+		const depth = x * Math.sin(yaw) + y * Math.cos(yaw);
+		return {
+			x: 260 + horizontal * 82,
+			y: 326 + depth * Math.sin(pitch) * 68 - z * Math.cos(pitch) * 33,
+			depth
+		};
+	};
 	const pointString = (points: { x: number; y: number }[]) =>
 		points.map((point) => `${point.x},${point.y}`).join(' ');
 	const pathString = (points: { x: number; y: number }[]) =>
@@ -114,13 +133,41 @@
 			)
 		)
 	);
+
+	function beginRotation(event: PointerEvent) {
+		rotating = true;
+		lastPointerX = event.clientX;
+		lastPointerY = event.clientY;
+		(event.currentTarget as HTMLButtonElement).setPointerCapture(event.pointerId);
+	}
+
+	function rotateView(event: PointerEvent) {
+		if (!rotating) return;
+		viewYaw += (event.clientX - lastPointerX) * 0.45;
+		viewPitch = Math.min(52, Math.max(14, viewPitch - (event.clientY - lastPointerY) * 0.3));
+		lastPointerX = event.clientX;
+		lastPointerY = event.clientY;
+	}
+
+	function endRotation() {
+		rotating = false;
+	}
+
+	function rotateWithKeyboard(event: KeyboardEvent) {
+		if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+		event.preventDefault();
+		if (event.key === 'ArrowLeft') viewYaw -= 5;
+		if (event.key === 'ArrowRight') viewYaw += 5;
+		if (event.key === 'ArrowUp') viewPitch = Math.min(52, viewPitch + 3);
+		if (event.key === 'ArrowDown') viewPitch = Math.max(14, viewPitch - 3);
+	}
 </script>
 
 <div class="gradient-explorer">
 	<DemoHeader title="Explore direction and gradient" />
 
 	<div class="demo-layout">
-		<DemoCard title="Choose a point and direction">
+		<DemoCard class="matched-panel" title="Choose a point and direction">
 			<SliderField
 				label="Point coordinate x₀"
 				min={-1.1}
@@ -151,17 +198,9 @@
 			/>
 		</DemoCard>
 
-		<EquationPanel title="Current directional rate">
+		<EquationPanel class="matched-panel compact-equations" title="Current directional rate">
 			<Katex
-				math={String.raw`\begin{aligned}\nabla f(x_0,y_0)&=(2x_0,2y_0)\\&=(${gradX.toFixed(2)},${gradY.toFixed(2)})\end{aligned}`}
-				display
-			/>
-			<Katex
-				math={String.raw`\begin{aligned}\mathbf v&=(\cos\theta,\sin\theta)\\&=(${vx.toFixed(2)},${vy.toFixed(2)})\end{aligned}`}
-				display
-			/>
-			<Katex
-				math={String.raw`D_{\mathbf v}f=\nabla f\cdot\mathbf v=${directionalDerivative.toFixed(3)}`}
+				math={String.raw`\begin{aligned}\nabla f&=(${gradX.toFixed(2)},${gradY.toFixed(2)})\\\mathbf v&=(${vx.toFixed(2)},${vy.toFixed(2)})\\D_{\mathbf v}f&=\nabla f\cdot\mathbf v=${directionalDerivative.toFixed(3)}\end{aligned}`}
 				display
 			/>
 			<p class="reading">
@@ -176,16 +215,17 @@
 		<span><i class="swatch gradient"></i>gradient</span>
 		<span><i class="swatch direction"></i>chosen direction</span>
 	</div>
-	<div class="alignment-meter" aria-live="polite">
-		<div class="alignment-heading">
-			<span>alignment with the gradient</span>
-			<strong>cos φ = {alignment.toFixed(3)}</strong>
+	<div class="alignment-readout" aria-live="polite">
+		<svg class="angle-glyph" viewBox="0 0 84 58" aria-hidden="true">
+			<path class="angle-arc" d={`M 61 42 A 19 19 0 0 ${Math.abs(signedAlignmentAngle) > 180 ? 1 : 0} ${42 + 19 * Math.cos((signedAlignmentAngle * Math.PI) / 180)} ${42 - 19 * Math.sin((signedAlignmentAngle * Math.PI) / 180)}`} />
+			<line class="gradient-ray" x1="42" y1="42" x2="74" y2="42" />
+			<line class="direction-ray" x1="42" y1="42" x2={alignmentRay.x} y2={alignmentRay.y} />
+			<circle cx="42" cy="42" r="2.5" />
+		</svg>
+		<div>
+			<span>Angle from the gradient</span>
+			<strong>φ = {alignmentAngle.toFixed(1)}° · cos φ = {alignment.toFixed(3)}</strong>
 		</div>
-		<div class="alignment-track" aria-hidden="true">
-			<i class="zero-mark"></i>
-			<i class="alignment-dot" style={`left: ${alignmentPosition}%`}></i>
-		</div>
-		<div class="alignment-labels"><span>opposite</span><span>perpendicular</span><span>aligned</span></div>
 	</div>
 
 	<div class="plots-grid">
@@ -204,7 +244,7 @@
 					<path d="M0,0 L8,4 L0,8 Z" fill="var(--color-d)" />
 				</marker>
 				<marker id="direction-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-					<path d="M0,0 L8,4 L0,8 Z" fill="#2563eb" />
+					<path d="M0,0 L8,4 L0,8 Z" fill="var(--plot-curve)" />
 				</marker>
 			</defs>
 
@@ -261,13 +301,24 @@
 			</svg>
 		</section>
 
-		<section class="plot-panel" aria-labelledby="surface-title">
-			<div class="plot-title" id="surface-title">Surface · directional cross-section</div>
+		<section class="plot-panel surface-panel" aria-labelledby="surface-title">
+			<div class="plot-title" id="surface-title">Surface · drag to rotate</div>
+			<button
+				type="button"
+				class:rotating
+				class="surface-viewport"
+				aria-label="Rotate the three-dimensional paraboloid. Drag, or use the arrow keys."
+				onpointerdown={beginRotation}
+				onpointermove={rotateView}
+				onpointerup={endRotation}
+				onpointercancel={endRotation}
+				onkeydown={rotateWithKeyboard}
+			>
 			<svg
 				class="surface-plot"
-				viewBox="0 0 520 440"
+				viewBox="30 48 460 350"
 				role="img"
-				aria-label="Three-dimensional paraboloid with a tangent plane and vertical directional slice"
+				aria-label="A rotatable three-dimensional paraboloid with a tangent plane and vertical directional slice"
 			>
 				<polygon class="slice-plane" points={slicePlane} />
 
@@ -307,6 +358,7 @@
 				<text class="surface-label" x={project3(0, 2, 0).x - 12} y={project3(0, 2, 0).y + 4}>y</text>
 				<text class="surface-label" x={project3(0, 0, 5.8).x + 7} y={project3(0, 0, 5.8).y}>z</text>
 			</svg>
+			</button>
 			<div class="surface-key">
 				<span><i class="patch-key"></i>tangent plane</span>
 				<span><i class="slice-key"></i>vertical slice</span>
@@ -326,6 +378,17 @@
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		gap: 1rem;
 		margin-bottom: 0.8rem;
+	}
+
+	.demo-layout :global(.matched-panel) {
+		height: 100%;
+		box-sizing: border-box;
+		margin-top: 0;
+	}
+
+	.demo-layout :global(.compact-equations .katex-display) {
+		margin: 0.3rem 0;
+		font-size: 0.93em;
 	}
 
 	.reading {
@@ -358,7 +421,7 @@
 	}
 
 	.swatch.contour {
-		border-color: #9ca3af;
+		border-color: var(--plot-muted);
 	}
 
 	.swatch.gradient {
@@ -366,65 +429,59 @@
 	}
 
 	.swatch.direction {
-		border-color: #2563eb;
+		border-color: var(--plot-curve);
 	}
 
-	.alignment-meter {
-		margin: -0.18rem 0 0.8rem;
-	}
-
-	.alignment-heading,
-	.alignment-labels {
+	.alignment-readout {
 		display: flex;
-		justify-content: space-between;
-		gap: 0.6rem;
-		font-size: 0.62rem;
-		color: var(--color-ink-faint);
+		align-items: center;
+		gap: 0.65rem;
+		margin: -0.2rem 0 0.8rem;
+		color: var(--color-ink-light);
 	}
 
-	.alignment-heading {
-		margin-bottom: 0.28rem;
-		font-size: 0.68rem;
+	.alignment-readout > div {
+		display: grid;
+		gap: 0.08rem;
+		font-size: 0.72rem;
 	}
 
-	.alignment-heading strong {
+	.alignment-readout strong {
 		font-family: var(--font-mono);
-		font-size: 0.69rem;
-		color: var(--plot-blue);
+		font-size: 0.75rem;
+		color: var(--color-ink);
 		font-variant-numeric: tabular-nums;
 	}
 
-	.alignment-track {
-		position: relative;
-		height: 0.34rem;
-		border-radius: 999px;
-		background: linear-gradient(90deg, #fda4af 0%, var(--color-border-light) 50%, #c4b5fd 100%);
+	.angle-glyph {
+		width: 3.5rem;
+		height: 2.45rem;
+		flex: 0 0 auto;
+		overflow: visible;
 	}
 
-	.zero-mark {
-		position: absolute;
-		top: -0.14rem;
-		bottom: -0.14rem;
-		left: 50%;
-		width: 1px;
-		background: var(--color-ink-faint);
+	.angle-glyph circle {
+		fill: var(--color-ink);
 	}
 
-	.alignment-dot {
-		position: absolute;
-		top: 50%;
-		width: 0.74rem;
-		height: 0.74rem;
-		border: 2px solid #fff;
-		border-radius: 50%;
-		background: #2563eb;
-		box-shadow: 0 1px 4px rgb(37 99 235 / 35%);
-		transform: translate(-50%, -50%);
-		transition: left 160ms ease-out;
+	.angle-arc {
+		fill: none;
+		stroke: var(--plot-axis);
+		stroke-width: 1.5;
 	}
 
-	.alignment-labels {
-		margin-top: 0.24rem;
+	.gradient-ray,
+	.direction-ray {
+		stroke-width: 3;
+		stroke-linecap: round;
+	}
+
+	.gradient-ray {
+		stroke: var(--plot-tangent);
+	}
+
+	.direction-ray {
+		stroke: var(--plot-curve);
 	}
 
 	.plots-grid {
@@ -438,6 +495,26 @@
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.75rem;
 		background: var(--color-surface);
+	}
+
+	.surface-viewport {
+		display: block;
+		width: 100%;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		cursor: grab;
+		touch-action: none;
+	}
+
+	.surface-viewport.rotating {
+		cursor: grabbing;
+	}
+
+	.surface-viewport:focus-visible {
+		outline: 2px solid var(--color-d);
+		outline-offset: 2px;
 	}
 
 	.plot-title {
@@ -480,13 +557,13 @@
 
 	.contour-line {
 		fill: none;
-		stroke: #d1d5db;
+		stroke: var(--plot-grid);
 		stroke-width: 1.4;
 	}
 
 	.selected-contour {
 		fill: none;
-		stroke: #93c5fd;
+		stroke: var(--plot-curve);
 		stroke-width: 3;
 	}
 
@@ -501,12 +578,12 @@
 	}
 
 	.direction-vector {
-		stroke: #2563eb;
+		stroke: var(--plot-curve);
 	}
 
 	.point {
 		fill: var(--color-ink);
-		stroke: #fff;
+		stroke: var(--plot-outline);
 		stroke-width: 2;
 	}
 
@@ -516,11 +593,11 @@
 	}
 
 	.surface-grid-line.x-line {
-		stroke: #c4b5fd;
+		stroke: color-mix(in srgb, var(--plot-tangent) 52%, var(--plot-grid));
 	}
 
 	.surface-grid-line.y-line {
-		stroke: #bfdbfe;
+		stroke: color-mix(in srgb, var(--plot-curve) 52%, var(--plot-grid));
 	}
 
 	.surface-axis {
@@ -529,20 +606,20 @@
 	}
 
 	.slice-plane {
-		fill: rgb(37 99 235 / 9%);
-		stroke: rgb(37 99 235 / 42%);
+		fill: color-mix(in srgb, var(--plot-curve) 9%, transparent);
+		stroke: color-mix(in srgb, var(--plot-curve) 48%, transparent);
 		stroke-width: 1.2;
 	}
 
 	.tangent-plane {
-		fill: rgb(168 85 247 / 18%);
-		stroke: rgb(168 85 247 / 78%);
+		fill: color-mix(in srgb, var(--plot-tangent) 18%, transparent);
+		stroke: color-mix(in srgb, var(--plot-tangent) 78%, transparent);
 		stroke-width: 1.5;
 	}
 
 	.slice-curve {
 		fill: none;
-		stroke: #2563eb;
+		stroke: var(--plot-curve);
 		stroke-width: 3.3;
 		stroke-linecap: round;
 	}
@@ -557,7 +634,7 @@
 
 	.surface-point {
 		fill: var(--color-ink);
-		stroke: #fff;
+		stroke: var(--plot-outline);
 		stroke-width: 2;
 	}
 
@@ -591,17 +668,17 @@
 	}
 
 	.patch-key {
-		background: rgb(168 85 247 / 22%);
+		background: color-mix(in srgb, var(--plot-tangent) 22%, transparent);
 		border: 1px solid var(--color-d);
 	}
 
 	.slice-key {
-		background: rgb(37 99 235 / 10%);
-		border: 1px solid #2563eb;
+		background: color-mix(in srgb, var(--plot-curve) 10%, transparent);
+		border: 1px solid var(--plot-curve);
 	}
 
 	.curve-key {
-		border-top: 3px solid #2563eb;
+		border-top: 3px solid var(--plot-curve);
 	}
 
 	@media (max-width: 700px) {
