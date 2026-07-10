@@ -53,6 +53,7 @@
 				decimals={2}
 				bind:value={radius}
 				hint="The loop may move, but it must continue to enclose the missing origin."
+				tone="violet"
 			/>
 			<ToggleField
 				label="Counterclockwise orientation"

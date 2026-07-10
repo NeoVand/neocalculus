@@ -42,10 +42,10 @@
 
 	<DemoCard title="Choose two ordered vectors">
 		<div class="control-grid">
-			<SliderField label="Direction α of v" min={-180} max={180} step={5} decimals={0} bind:value={angleV} />
-			<SliderField label="Direction β of w" min={-180} max={180} step={5} decimals={0} bind:value={angleW} />
-			<SliderField label="Length of v" min={0.4} max={2.5} step={0.1} decimals={1} bind:value={lengthV} />
-			<SliderField label="Length of w" min={0.4} max={2.5} step={0.1} decimals={1} bind:value={lengthW} />
+			<SliderField label="Direction α of v" min={-180} max={180} step={5} decimals={0} bind:value={angleV} tone="blue" />
+			<SliderField label="Direction β of w" min={-180} max={180} step={5} decimals={0} bind:value={angleW} tone="amber" />
+			<SliderField label="Length of v" min={0.4} max={2.5} step={0.1} decimals={1} bind:value={lengthV} tone="blue" />
+			<SliderField label="Length of w" min={0.4} max={2.5} step={0.1} decimals={1} bind:value={lengthW} tone="amber" />
 		</div>
 	</DemoCard>
 

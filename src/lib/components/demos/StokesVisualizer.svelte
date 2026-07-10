@@ -38,6 +38,7 @@
 				decimals={0}
 				bind:value={n}
 				hint="The outer boundary stays fixed while the interior decomposition changes."
+				tone="violet"
 			/>
 			<ToggleField
 				label="Show every interior pair"
