@@ -54,7 +54,7 @@
 	<DemoHeader title="Explore the local law" />
 
 	<div class="demo-layout">
-		<DemoCard title="Choose the law and the starting value">
+		<DemoCard class="matched-panel" title="Choose the law and the starting value">
 			<SliderField
 				label="Rate constant k"
 				min={-0.6}
@@ -77,7 +77,7 @@
 			/>
 		</DemoCard>
 
-		<EquationPanel title="What the settings mean">
+		<EquationPanel class="matched-panel" title="What the settings mean">
 			<Katex math={r`y'(t)=k\,y(t),\qquad y(0)=y_0`} display />
 			<Katex math={r`y(t)=y_0e^{kt}`} display />
 			<p class="reading">
@@ -144,6 +144,12 @@
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		gap: 1rem;
 		margin-bottom: 1rem;
+	}
+
+	.demo-layout :global(.matched-panel) {
+		height: 100%;
+		box-sizing: border-box;
+		margin-top: 0;
 	}
 
 	.reading {
