@@ -59,12 +59,13 @@
 				x = {width.toFixed(1)} m
 			</text>
 			<text
-				x={Math.min(320, rectangleX + rectangleWidth + 10)}
+				x={rectangleX - 10}
 				y={rectangleY + rectangleHeight / 2}
 				class="dimension"
-				dominant-baseline="middle"
+				text-anchor="middle"
+				transform={`rotate(-90 ${rectangleX - 10} ${rectangleY + rectangleHeight / 2})`}
 			>
-				{height.toFixed(1)} m
+				50 − x = {height.toFixed(1)} m
 			</text>
 		</svg>
 
@@ -80,6 +81,7 @@
 				area against width.
 			</desc>
 			<text x="150" y="24" text-anchor="middle" class="panel-title">Area as x changes</text>
+			<text x="150" y="40" text-anchor="middle" class="function-label">A(x) = x(50 − x) = 50x − x²</text>
 			<line x1="20" y1="240" x2="286" y2="240" class="axis" />
 			<line x1="20" y1="244" x2="20" y2="42" class="axis" />
 			<polyline points={areaPath} class="area-curve" />
@@ -114,7 +116,7 @@
 	.optimizer {
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.8rem;
-		background: linear-gradient(145deg, #ffffff, #faf8ff);
+		background: linear-gradient(145deg, var(--color-surface), var(--color-surface-subtle));
 		padding: 1.1rem;
 		font-family: var(--font-sans);
 	}
@@ -173,13 +175,14 @@
 		height: auto;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.72rem;
-		background: rgba(255, 255, 255, 0.68);
+		background: var(--plot-background);
 	}
 
 	.panel-title,
 	.dimension,
 	.tick,
-	.axis-label {
+	.axis-label,
+	.function-label {
 		font-family: var(--font-sans);
 		fill: var(--color-ink-light);
 	}
@@ -187,6 +190,12 @@
 	.panel-title {
 		font-size: 12px;
 		font-weight: 700;
+	}
+
+	.function-label {
+		font-family: var(--font-serif);
+		font-size: 10px;
+		fill: var(--plot-muted);
 	}
 
 	.dimension,
@@ -201,20 +210,20 @@
 	}
 
 	.fenced-area {
-		fill: rgba(168, 85, 247, 0.12);
+		fill: color-mix(in srgb, var(--plot-tangent) 14%, transparent);
 		stroke: var(--color-d);
-		stroke-width: 3;
+		stroke-width: 2.2;
 	}
 
 	.axis {
-		stroke: #b9b4c0;
+		stroke: var(--plot-axis);
 		stroke-width: 1.2;
 	}
 
 	.area-curve {
 		fill: none;
-		stroke: var(--color-ink);
-		stroke-width: 2.5;
+		stroke: var(--plot-curve);
+		stroke-width: 2.1;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 	}
@@ -226,8 +235,8 @@
 	}
 
 	.area-point {
-		fill: var(--color-d);
-		stroke: white;
+		fill: var(--plot-point);
+		stroke: var(--plot-background);
 		stroke-width: 2;
 	}
 
