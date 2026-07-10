@@ -48,7 +48,7 @@
 
 		<div class="key-equation" use:reveal>
 			<Katex
-				math={r`T_n(x)=f(a)+f'(a)(x-a)+\frac{f''(a)}{2!}(x-a)^2+\cdots+\frac{f^{(n)}(a)}{n!}(x-a)^n`}
+				math={r`\begin{aligned}T_n(x)={}&f(a)+f'(a)(x-a)+\frac{f''(a)}{2!}(x-a)^2\\&+\cdots+\frac{f^{(n)}(a)}{n!}(x-a)^n.\end{aligned}`}
 				display
 			/>
 		</div>

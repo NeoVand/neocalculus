@@ -961,6 +961,30 @@ h4 {
 	.demo-controls-grid {
 		grid-template-columns: 1fr;
 	}
+
+	.neo-table {
+		table-layout: fixed;
+		font-size: 0.88rem;
+	}
+
+	.neo-table .function-column {
+		width: 25%;
+	}
+
+	.neo-table .derivative-column {
+		width: 31%;
+	}
+
+	.neo-table th,
+	.neo-table td {
+		padding-right: 0.35rem;
+		padding-left: 0.35rem;
+	}
+
+	.neo-table th {
+		font-size: 0.68rem;
+		letter-spacing: 0.02em;
+	}
 }
 
 /* ═══════════════════════════════════════════

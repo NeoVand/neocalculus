@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { pushState } from '$app/navigation';
 
 	export type TocChapter = {
 		id: string;
@@ -46,7 +47,7 @@
 
 		const hash = `#${encodeURIComponent(id)}`;
 		if (window.location.hash !== hash) {
-			history.pushState(null, '', hash);
+			pushState(hash, {});
 		}
 
 		target.scrollIntoView({ behavior: 'smooth', block: 'start' });

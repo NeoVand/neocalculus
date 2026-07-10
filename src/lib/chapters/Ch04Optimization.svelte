@@ -398,7 +398,7 @@
 			<div class="step">
 				<div class="step-math">
 					<Katex
-						math={r`f'>0\text{ on }(-\infty,-1),\quad f'<0\text{ on }(-1,1),\quad f'>0\text{ on }(1,\infty)`}
+						math={r`\begin{aligned}f'&>0&&\text{ on }(-\infty,-1),\\f'&<0&&\text{ on }(-1,1),\\f'&>0&&\text{ on }(1,\infty).\end{aligned}`}
 						display
 					/>
 				</div>
@@ -452,7 +452,10 @@
 		</div>
 
 		<div class="key-equation" use:reveal>
-			<Katex math={r`A(x)=x(50-x)=50x-x^2,\qquad 0\le x\le50`} display />
+			<Katex
+				math={r`\begin{aligned}A(x)&=x(50-x)=50x-x^2,\\&\hspace{1.25em}0\le x\le50.\end{aligned}`}
+				display
+			/>
 		</div>
 
 		<div class="neo-prose" use:reveal>

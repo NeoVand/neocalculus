@@ -163,7 +163,10 @@
 			<div class="derivation-title">The first-order part of a power</div>
 			<div class="step">
 				<div class="step-math">
-					<Katex math={r`(x+d)^n=x^n+nx^{n-1}d+\binom{n}{2}x^{n-2}d^2+\cdots`} display />
+					<Katex
+						math={r`\begin{aligned}(x+d)^n={}&x^n+nx^{n-1}d\\&+\binom{n}{2}x^{n-2}d^2+\cdots\end{aligned}`}
+						display
+					/>
 				</div>
 				<div class="step-note">binomial expansion</div>
 			</div>
@@ -437,6 +440,7 @@
 
 		<Callout type="key-idea" title="Derivative Library">
 			<table class="neo-table">
+				<colgroup><col class="function-column" /><col class="derivative-column" /><col /></colgroup>
 				<thead>
 					<tr><th>Function</th><th>Derivative</th><th>Condition</th></tr>
 				</thead>

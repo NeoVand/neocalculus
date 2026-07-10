@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { replaceState } from '$app/navigation';
 	import { WORMHOLE_STACK_EVENT, peekWormholeEntry, popWormholeEntry } from '$lib/utils/wormhole';
 
 	let topEntry = $state<ReturnType<typeof peekWormholeEntry>>(null);
@@ -18,7 +19,7 @@
 
 		window.scrollTo({ top: entry.y, behavior: 'smooth' });
 		const baseUrl = `${window.location.pathname}${window.location.search}`;
-		history.replaceState(history.state, '', entry.hash ? `${baseUrl}${entry.hash}` : baseUrl);
+		replaceState(entry.hash ? `${baseUrl}${entry.hash}` : baseUrl, {});
 		refreshStackState();
 	}
 

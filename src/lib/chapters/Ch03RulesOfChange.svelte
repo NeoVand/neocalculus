@@ -36,7 +36,7 @@
 		</div>
 
 		<div class="key-equation" use:reveal>
-			<Katex math={r`f(x+d)=f+f'd,\qquad g(x+d)=g+g'd`} display />
+			<Katex math={r`\begin{aligned}f(x+d)&=f+f'd,\\g(x+d)&=g+g'd.\end{aligned}`} display />
 		</div>
 
 		<div class="neo-prose" use:reveal>
@@ -188,7 +188,7 @@
 
 		<div class="key-equation" use:reveal>
 			<Katex
-				math={r`(\tan x)'=\frac{(\cos x)(\cos x)-(\sin x)(-\sin x)}{\cos^2x}=\sec^2x`}
+				math={r`\begin{aligned}(\tan x)'&=\frac{(\cos x)(\cos x)-(\sin x)(-\sin x)}{\cos^2x}\\&=\sec^2x.\end{aligned}`}
 				display
 			/>
 		</div>
