@@ -13,7 +13,7 @@
 	</desc>
 
 	<g>
-		<rect x="6" y="6" width="210" height="198" rx="10" fill="white" stroke="#e5e1d8" />
+		<rect x="6" y="6" width="210" height="198" rx="10" class="panel" />
 		<text x="111" y="25" text-anchor="middle" class="panel-title">SMOOTH</text>
 		<line x1="22" y1="152" x2="200" y2="152" class="axis" />
 		<line x1="111" y1="32" x2="111" y2="192" class="axis" />
@@ -22,33 +22,33 @@
 			class="graph"
 		/>
 		<line x1="123" y1="162" x2="179" y2="92" class="tangent" />
-		<circle cx="151" cy="127" r="3" fill="#a855f7" />
+		<circle cx="151" cy="127" r="3" class="focus-point" />
 		<text x="111" y="190" text-anchor="middle" class="formula">f(x) = x²</text>
 	</g>
 
 	<g>
-		<rect x="240" y="6" width="210" height="198" rx="10" fill="white" stroke="#e5e1d8" />
+		<rect x="240" y="6" width="210" height="198" rx="10" class="panel" />
 		<text x="345" y="25" text-anchor="middle" class="panel-title">CORNER</text>
 		<line x1="256" y1="152" x2="434" y2="152" class="axis" />
 		<line x1="345" y1="32" x2="345" y2="192" class="axis" />
 		<line x1="265" y1="72" x2="345" y2="152" class="graph" />
 		<line x1="345" y1="152" x2="425" y2="72" class="graph" />
-		<circle cx="345" cy="152" r="3.5" fill="#a855f7" />
+		<circle cx="345" cy="152" r="3.5" class="focus-point" />
 		<line x1="308" y1="180" x2="345" y2="152" class="tangent faint" />
 		<line x1="345" y1="152" x2="382" y2="180" class="tangent faint" />
 		<text x="345" y="190" text-anchor="middle" class="formula">f(x) = |x|</text>
 	</g>
 
 	<g>
-		<rect x="474" y="6" width="210" height="198" rx="10" fill="white" stroke="#e5e1d8" />
+		<rect x="474" y="6" width="210" height="198" rx="10" class="panel" />
 		<text x="579" y="25" text-anchor="middle" class="panel-title">JUMP</text>
 		<line x1="490" y1="132" x2="668" y2="132" class="axis" />
 		<line x1="579" y1="32" x2="579" y2="192" class="axis" />
 		<line x1="496" y1="132" x2="579" y2="132" class="graph" />
 		<line x1="579" y1="72" x2="662" y2="72" class="graph" />
 		<line x1="579" y1="132" x2="579" y2="72" class="tangent faint" />
-		<circle cx="579" cy="132" r="3.5" fill="white" stroke="#1a1a2e" stroke-width="1.5" />
-		<circle cx="579" cy="72" r="3.5" fill="#1a1a2e" />
+		<circle cx="579" cy="132" r="3.5" class="open-point" />
+		<circle cx="579" cy="72" r="3.5" class="closed-point" />
 		<text x="579" y="190" text-anchor="middle" class="formula">step function</text>
 	</g>
 </svg>
@@ -59,24 +59,29 @@
 		font-size: 10px;
 		font-weight: 700;
 		letter-spacing: 0.04em;
-		fill: #a855f7;
+		fill: var(--color-d);
+	}
+
+	.panel {
+		fill: var(--plot-background);
+		stroke: var(--color-border-light);
 	}
 
 	.axis {
-		stroke: #d4d0c8;
+		stroke: var(--plot-axis);
 		stroke-width: 0.6;
 	}
 
 	.graph {
 		fill: none;
-		stroke: #1a1a2e;
+		stroke: var(--plot-curve);
 		stroke-width: 2;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 	}
 
 	.tangent {
-		stroke: #a855f7;
+		stroke: var(--plot-tangent);
 		stroke-width: 1.5;
 		stroke-dasharray: 5 3;
 	}
@@ -85,9 +90,23 @@
 		opacity: 0.7;
 	}
 
+	.focus-point {
+		fill: var(--plot-point);
+	}
+
+	.open-point {
+		fill: var(--plot-background);
+		stroke: var(--plot-curve);
+		stroke-width: 1.5;
+	}
+
+	.closed-point {
+		fill: var(--plot-curve);
+	}
+
 	.formula {
 		font-family: var(--font-mono);
 		font-size: 10px;
-		fill: #1a1a2e;
+		fill: var(--plot-ink);
 	}
 </style>
