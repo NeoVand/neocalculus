@@ -4,8 +4,9 @@
 	let startingGuess = $state(2);
 	let boardNode: any = null;
 
-	const f = (x: number) => x * x - 2;
-	const fp = (x: number) => 2 * x;
+	// Scaling by 1/2 keeps every Newton update unchanged while keeping the full construction visible.
+	const f = (x: number) => 0.5 * (x * x - 2);
+	const fp = (x: number) => x;
 	const update = (x: number) => x - f(x) / fp(x);
 
 	let firstGuess = $derived(update(startingGuess));
@@ -19,12 +20,12 @@
 	function setupNewtonGraph(JXG: any, board: any) {
 		boardNode = board;
 		board.create('functiongraph', [f, 0.8, 2.25], {
-			strokeColor: '#1a1a2e',
-			strokeWidth: 2.5,
+			strokeColor: 'var(--plot-curve)',
+			strokeWidth: 2.1,
 			highlight: false
 		});
 		board.create('line', [[0, 0], [1, 0]], {
-			strokeColor: '#b9b4c0',
+			strokeColor: 'var(--plot-axis)',
 			strokeWidth: 1,
 			straightFirst: true,
 			straightLast: true,
@@ -35,8 +36,8 @@
 
 		const x0 = board.create('point', [() => startingGuess, () => f(startingGuess)], {
 			size: 5,
-			fillColor: '#a855f7',
-			strokeColor: '#ffffff',
+			fillColor: 'var(--plot-tangent)',
+			strokeColor: 'var(--plot-background)',
 			strokeWidth: 2,
 			name: '',
 			fixed: true,
@@ -44,8 +45,8 @@
 		});
 		const x1 = board.create('point', [() => update(startingGuess), 0], {
 			size: 4,
-			fillColor: '#2563eb',
-			strokeColor: '#ffffff',
+			fillColor: 'var(--plot-curve)',
+			strokeColor: 'var(--plot-background)',
 			strokeWidth: 2,
 			name: '',
 			fixed: true,
@@ -58,8 +59,8 @@
 		);
 		const x2 = board.create('point', [() => update(update(startingGuess)), 0], {
 			size: 4,
-			fillColor: '#059669',
-			strokeColor: '#ffffff',
+			fillColor: 'var(--plot-solution)',
+			strokeColor: 'var(--plot-background)',
 			strokeWidth: 2,
 			name: '',
 			fixed: true,
@@ -67,21 +68,21 @@
 		});
 
 		board.create('segment', [x0, x1], {
-			strokeColor: '#a855f7',
+			strokeColor: 'var(--plot-tangent)',
 			strokeWidth: 2,
 			dash: 2,
 			fixed: true,
 			highlight: false
 		});
 		board.create('segment', [x1, curveAtX1], {
-			strokeColor: '#2563eb',
+			strokeColor: 'var(--plot-curve)',
 			strokeWidth: 1,
 			dash: 3,
 			fixed: true,
 			highlight: false
 		});
 		board.create('segment', [curveAtX1, x2], {
-			strokeColor: '#2563eb',
+			strokeColor: 'var(--plot-curve)',
 			strokeWidth: 2,
 			dash: 2,
 			fixed: true,
@@ -91,15 +92,15 @@
 		const root = Math.sqrt(2);
 		board.create('point', [root, 0], {
 			size: 2,
-			fillColor: '#ef4444',
-			strokeColor: '#ef4444',
+			fillColor: 'var(--plot-error)',
+			strokeColor: 'var(--plot-error)',
 			name: '',
 			fixed: true,
 			highlight: false
 		});
 		board.create('text', [root, -0.24, '√2'], {
 			fontSize: 10,
-			color: '#ef4444',
+			color: 'var(--plot-error)',
 			anchorX: 'middle',
 			highlight: false
 		});
@@ -107,9 +108,10 @@
 </script>
 
 <div class="newton-explorer">
+	<p class="model-note">Shown curve: g(x) = ½(x² − 2). The vertical scaling keeps the picture compact and leaves every Newton intercept unchanged.</p>
 	<JSXGraphBoard
 		setup={setupNewtonGraph}
-		boundingbox={[0.75, 2.55, 2.3, -0.45]}
+		boundingbox={[0.75, 1.8, 2.3, -0.8]}
 		aspectRatio={1.35}
 		keepAspectRatio={false}
 		embedded
@@ -146,6 +148,14 @@
 		gap: 0.75rem;
 		width: 100%;
 		min-width: 0;
+	}
+
+	.model-note {
+		margin: 0;
+		font-family: var(--font-sans);
+		font-size: 0.76rem;
+		line-height: 1.45;
+		color: var(--color-ink-light);
 	}
 
 	.slider-row {
