@@ -11,7 +11,7 @@
 
 	const derivations: Record<
 		string,
-		{ label: string; steps: Step[]; verifyFn?: (d: Dual) => Dual }
+		{ label: string; condition?: string; steps: Step[]; verifyFn?: (d: Dual) => Dual }
 	> = {
 		'x²': {
 			label: 'x²',
@@ -58,12 +58,13 @@
 		},
 		'1/x': {
 			label: '1/x',
+			condition: 'x ≠ 0',
 			verifyFn: (d) => Dual.of(1).div(d),
 			steps: [
 				{ latex: 'f(x+d) = \\frac{1}{x+d}', note: 'substitute' },
 				{
 					latex: '= \\frac{1}{x+d} \\cdot \\frac{x-d}{x-d}',
-					note: 'multiply by conjugate'
+					note: 'multiply by (x−d)/(x−d)'
 				},
 				{
 					latex: '= \\frac{x - d}{x^2 - \\textcolor{#ef4444}{d^2}} = \\frac{x - d}{x^2}',
@@ -83,6 +84,7 @@
 		},
 		'√x': {
 			label: '√x',
+			condition: 'x > 0',
 			verifyFn: (d) => d.sqrt(),
 			steps: [
 				{
@@ -163,6 +165,7 @@
 		},
 		'ln(x)': {
 			label: 'ln(x)',
+			condition: 'x > 0',
 			verifyFn: (d) => d.log(),
 			steps: [
 				{
@@ -211,7 +214,7 @@
 	});
 </script>
 
-<div class="demo-container content-width">
+<div class="demo-container">
 	<div class="demo-label">
 		<svg
 			width="14"
@@ -240,7 +243,8 @@
 				class:active={selectedFn === key}
 				onclick={() => selectFn(key)}
 			>
-				{d.label}
+				<span>{d.label}</span>
+				{#if d.condition}<small>{d.condition}</small>{/if}
 			</button>
 		{/each}
 	</div>
@@ -298,6 +302,22 @@
 		transition: all 0.15s ease;
 	}
 
+	.fn-tab span,
+	.fn-tab small {
+		display: block;
+	}
+
+	.fn-tab small {
+		margin-top: 0.05rem;
+		font-family: var(--font-sans);
+		font-size: 0.62rem;
+		color: var(--color-ink-faint);
+	}
+
+	.fn-tab.active small {
+		color: color-mix(in srgb, white 78%, transparent);
+	}
+
 	.fn-tab:hover {
 		border-color: var(--color-d);
 		color: var(--color-d);
@@ -328,12 +348,12 @@
 	}
 
 	.algebra-step.is-vanish {
-		background: rgba(239, 68, 68, 0.04);
+		background: color-mix(in srgb, var(--color-surface) 94%, var(--plot-error) 6%);
 	}
 
 	.algebra-step.is-result {
-		background: rgba(168, 85, 247, 0.06);
-		border: 1px solid rgba(168, 85, 247, 0.15);
+		background: color-mix(in srgb, var(--color-surface) 94%, var(--color-d) 6%);
+		border: 1px solid color-mix(in srgb, var(--color-border) 72%, var(--color-d) 28%);
 		margin-top: 0.75rem;
 		padding: 0.8rem 1rem;
 	}
@@ -346,6 +366,10 @@
 	.step-equation :global(.katex-display) {
 		margin: 0 !important;
 		text-align: left;
+	}
+
+	.step-equation :global(.katex) {
+		font-size: clamp(0.72em, 2.4vw, 1em);
 	}
 
 	.step-annotation {

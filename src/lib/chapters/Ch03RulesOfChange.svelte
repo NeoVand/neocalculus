@@ -264,7 +264,7 @@
 		</div>
 	</div>
 
-	<div use:reveal>
+	<div class="content-width" use:reveal>
 		<RuleProver />
 	</div>
 

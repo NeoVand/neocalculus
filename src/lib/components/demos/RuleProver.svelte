@@ -8,6 +8,7 @@
 	type RuleSpec = {
 		label: string;
 		title: string;
+		condition?: string;
 		ruleMath: string;
 		steps: { latex: string; note: string }[];
 	};
@@ -52,6 +53,7 @@
 		quotient: {
 			label: 'Quotient rule',
 			title: 'Divide two changing quantities',
+			condition: 'g(x) ≠ 0',
 			ruleMath: String.raw`\left(\frac{f}{g}\right)'=\frac{f'g-fg'}{g^2}`,
 			steps: [
 				{
@@ -77,7 +79,7 @@
 	let selected = $state<RuleKey>('product');
 </script>
 
-<div class="demo-container content-width">
+<div class="demo-container">
 	<DemoHeader title="Explore: algebraic rule proofs" />
 
 	<DemoCard>
@@ -100,7 +102,10 @@
 			<span><i class="survive"></i>purple: first-order coefficient, survives</span>
 		</div>
 
-		<div class="rule-title">{rules[selected].title}</div>
+		<div class="rule-title">
+			<span>{rules[selected].title}</span>
+			{#if rules[selected].condition}<small>{rules[selected].condition}</small>{/if}
+		</div>
 
 		<div class="rule-steps">
 			{#each rules[selected].steps as step (step.latex)}
@@ -144,6 +149,10 @@
 	}
 
 	.rule-title {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
 		font-family: var(--font-sans);
 		font-size: 0.78rem;
 		font-weight: 700;
@@ -151,6 +160,15 @@
 		text-transform: uppercase;
 		color: var(--color-ink-light);
 		margin-bottom: 0.6rem;
+	}
+
+	.rule-title small {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		font-weight: 500;
+		letter-spacing: 0;
+		text-transform: none;
+		color: var(--color-d);
 	}
 
 	.color-key {

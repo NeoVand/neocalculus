@@ -502,7 +502,7 @@
 		</div>
 	</div>
 
-	<div use:reveal>
+	<div class="content-width" use:reveal>
 		<AlgebraMachine />
 	</div>
 
