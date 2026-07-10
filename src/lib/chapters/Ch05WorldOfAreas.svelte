@@ -269,37 +269,64 @@
 		<div class="neo-prose" use:reveal>
 			<h3>Build a small antiderivative library</h3>
 			<p>
-				Every derivative rule from Chapters 2 and 3 can be read backward. The variable in the
-				integral does not change the rule; it only identifies the input being accumulated.
+				Every derivative rule from Chapters 2 and 3 can be read backward. In each row below, the
+				expression on the right differentiates to the integrand beside it. The variable in the integral
+				only identifies the input being accumulated.
 			</p>
 		</div>
 
-		<div class="formula-table" use:reveal>
-			<div class="formula-row formula-header">
-				<div>Integrand</div>
-				<div>One antiderivative</div>
+		<section class="antiderivative-library" aria-labelledby="antiderivative-library-title" use:reveal>
+			<div class="library-heading">
+				<div>
+					<span class="library-kicker">Reference card</span>
+					<h4 id="antiderivative-library-title">Five rules worth knowing</h4>
+				</div>
+				<p><Katex math={r`F'=f`} /> means the right column differentiates back to the middle column.</p>
 			</div>
-			<div class="formula-row">
-				<div><Katex math="x^n" />, <Katex math={r`n\neq-1`} /></div>
-				<div><Katex math={r`\dfrac{x^{n+1}}{n+1}`} /></div>
+
+			<table>
+				<caption>Common integrands paired with one antiderivative</caption>
+				<thead>
+					<tr>
+						<th scope="col">Pattern</th>
+						<th scope="col">Integrand <Katex math="f(x)" /></th>
+						<th scope="col">One antiderivative <Katex math="F(x)" /></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<th scope="row">Power</th>
+						<td data-label="Integrand"><Katex math="x^n" /><small><Katex math={r`n\neq-1`} /></small></td>
+						<td data-label="One antiderivative"><Katex math={r`\dfrac{x^{n+1}}{n+1}`} /></td>
+					</tr>
+					<tr>
+						<th scope="row">Reciprocal</th>
+						<td data-label="Integrand"><Katex math={r`1/x`} /><small><Katex math={r`x\neq0`} /></small></td>
+						<td data-label="One antiderivative"><Katex math={r`\ln|x|`} /></td>
+					</tr>
+					<tr>
+						<th scope="row">Exponential</th>
+						<td data-label="Integrand"><Katex math="e^x" /></td>
+						<td data-label="One antiderivative"><Katex math="e^x" /></td>
+					</tr>
+					<tr>
+						<th scope="row">Cosine</th>
+						<td data-label="Integrand"><Katex math={r`\cos x`} /></td>
+						<td data-label="One antiderivative"><Katex math={r`\sin x`} /></td>
+					</tr>
+					<tr>
+						<th scope="row">Sine</th>
+						<td data-label="Integrand"><Katex math={r`\sin x`} /></td>
+						<td data-label="One antiderivative"><Katex math={r`-\cos x`} /></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="library-check">
+				<span aria-hidden="true">✓</span>
+				<p><strong>Check any row:</strong> differentiate the expression in the last column. You should recover the integrand exactly.</p>
 			</div>
-			<div class="formula-row">
-				<div><Katex math={r`1/x`} /></div>
-				<div><Katex math={r`\ln|x|`} /></div>
-			</div>
-			<div class="formula-row">
-				<div><Katex math="e^x" /></div>
-				<div><Katex math="e^x" /></div>
-			</div>
-			<div class="formula-row">
-				<div><Katex math={r`\cos x`} /></div>
-				<div><Katex math={r`\sin x`} /></div>
-			</div>
-			<div class="formula-row">
-				<div><Katex math={r`\sin x`} /></div>
-				<div><Katex math={r`-\cos x`} /></div>
-			</div>
-		</div>
+		</section>
 
 		<div class="neo-prose" use:reveal>
 			<p>
@@ -460,3 +487,265 @@
 		</LookingAhead>
 	</div>
 </section>
+
+<style>
+	.antiderivative-library {
+		margin: var(--space-lg) 0;
+		border: 1px solid color-mix(in srgb, var(--color-d) 24%, var(--color-border-light));
+		border-radius: 0.9rem;
+		overflow: hidden;
+		background: #fff;
+		box-shadow: 0 12px 30px rgba(32, 27, 46, 0.06);
+	}
+
+	.library-heading {
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		gap: 1.5rem;
+		padding: 1.25rem 1.4rem;
+		background: linear-gradient(135deg, var(--color-d-glow), var(--color-d-soft));
+		border-bottom: 1px solid color-mix(in srgb, var(--color-d) 18%, var(--color-border-light));
+	}
+
+	.library-kicker {
+		display: block;
+		margin-bottom: 0.25rem;
+		font-family: var(--font-sans);
+		font-size: 0.72rem;
+		font-weight: 750;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-d);
+	}
+
+	.library-heading h4 {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: clamp(1.15rem, 2.1vw, 1.45rem);
+		color: var(--color-ink);
+	}
+
+	.library-heading p {
+		max-width: 22rem;
+		margin: 0;
+		font-family: var(--font-sans);
+		font-size: 0.82rem;
+		line-height: 1.45;
+		color: var(--color-ink-light);
+		text-align: right;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		table-layout: fixed;
+	}
+
+	caption {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	thead {
+		background: color-mix(in srgb, var(--color-paper) 84%, var(--color-d-soft));
+	}
+
+	th,
+	td {
+		padding: 1rem 1.25rem;
+		text-align: left;
+		vertical-align: middle;
+	}
+
+	thead th {
+		font-family: var(--font-sans);
+		font-size: 0.76rem;
+		font-weight: 700;
+		letter-spacing: 0.045em;
+		color: var(--color-ink-light);
+	}
+
+	thead th:first-child {
+		width: 22%;
+	}
+
+	thead th:nth-child(2) {
+		width: 30%;
+	}
+
+	tbody tr {
+		border-top: 1px solid var(--color-border-light);
+		transition: background-color 140ms ease;
+	}
+
+	tbody tr:hover {
+		background: color-mix(in srgb, var(--color-d-soft) 38%, white);
+	}
+
+	tbody th {
+		font-family: var(--font-sans);
+		font-size: 0.82rem;
+		font-weight: 700;
+		letter-spacing: 0.035em;
+		text-transform: uppercase;
+		color: var(--color-d);
+	}
+
+	tbody td {
+		font-size: 1.12rem;
+		color: var(--color-ink);
+	}
+
+	tbody td:last-child {
+		position: relative;
+		padding-left: 2.6rem;
+		background: color-mix(in srgb, var(--color-d-soft) 18%, white);
+	}
+
+	tbody td:last-child::before {
+		content: '→';
+		position: absolute;
+		left: 1rem;
+		top: 50%;
+		transform: translateY(-50%);
+		font-family: var(--font-sans);
+		font-size: 1rem;
+		color: var(--color-d);
+	}
+
+	td small {
+		display: block;
+		margin-top: 0.18rem;
+		font-size: 0.7rem;
+		color: var(--color-ink-faint);
+	}
+
+	.library-check {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.85rem 1.25rem;
+		border-top: 1px solid var(--color-border-light);
+		background: #fafaf9;
+		font-family: var(--font-sans);
+		color: var(--color-ink-light);
+	}
+
+	.library-check > span {
+		display: grid;
+		flex: 0 0 auto;
+		width: 1.65rem;
+		height: 1.65rem;
+		place-items: center;
+		border-radius: 999px;
+		background: var(--color-d-soft);
+		color: var(--color-d);
+		font-size: 0.85rem;
+		font-weight: 800;
+	}
+
+	.library-check p {
+		margin: 0;
+		font-size: 0.82rem;
+		line-height: 1.45;
+	}
+
+	@media (max-width: 640px) {
+		.library-heading {
+			align-items: start;
+			flex-direction: column;
+			gap: 0.55rem;
+		}
+
+		.library-heading p {
+			max-width: none;
+			text-align: left;
+		}
+
+		thead {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+		}
+
+		table,
+		tbody {
+			display: block;
+		}
+
+		tbody {
+			padding: 0.35rem 0.8rem;
+		}
+
+		tbody tr {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+			gap: 0.75rem;
+			padding: 0.9rem 0;
+		}
+
+		tbody th {
+			grid-column: 1 / -1;
+			padding: 0 0.35rem;
+		}
+
+		tbody td {
+			display: block;
+			padding: 0 0.35rem;
+			font-size: 1rem;
+		}
+
+		tbody td::before {
+			content: attr(data-label);
+			display: block;
+			position: static;
+			margin-bottom: 0.35rem;
+			transform: none;
+			font-family: var(--font-sans);
+			font-size: 0.65rem;
+			font-weight: 700;
+			letter-spacing: 0.045em;
+			text-transform: uppercase;
+			color: var(--color-ink-faint);
+		}
+
+		tbody td:last-child {
+			padding: 0 0.35rem;
+			background: transparent;
+		}
+
+		tbody td:last-child::before {
+			content: attr(data-label);
+			position: static;
+			display: block;
+			margin-bottom: 0.35rem;
+			transform: none;
+			font-family: var(--font-sans);
+			font-size: 0.65rem;
+			font-weight: 700;
+			letter-spacing: 0.045em;
+			text-transform: uppercase;
+			color: var(--color-ink-faint);
+		}
+	}
+
+	@media (max-width: 410px) {
+		tbody tr {
+			grid-template-columns: 1fr;
+		}
+
+		.library-check {
+			align-items: start;
+		}
+	}
+</style>
