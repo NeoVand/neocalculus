@@ -5,8 +5,8 @@
 	import EquationPanel from '$lib/components/demos/EquationPanel.svelte';
 	import SliderField from '$lib/components/demos/SliderField.svelte';
 
-	const width = 760;
-	const height = 520;
+	const width = 500;
+	const height = 500;
 	const margin = { top: 24, bottom: 52 };
 	const plotSize = height - margin.top - margin.bottom;
 	const plotLeft = (width - plotSize) / 2;
@@ -41,6 +41,77 @@
 	const sy = (y: number) => margin.top + plotHeight - ((y - domainMin) / (domainMax - domainMin)) * plotHeight;
 	const scaleX = plotWidth / (domainMax - domainMin);
 	const scaleY = plotHeight / (domainMax - domainMin);
+
+	const surfaceDomain = 1.8;
+	const surfaceGrid = [-1.8, -1.35, -0.9, -0.45, 0, 0.45, 0.9, 1.35, 1.8];
+	const sliceHalf = 0.72;
+	const patchHalf = 0.5;
+	const surface = (x: number, y: number) => x * x + y * y;
+	const project3 = (x: number, y: number, z: number) => ({
+		x: 260 + (x - y) * 64,
+		y: 330 + (x + y) * 26 - z * 30
+	});
+	const pointString = (points: { x: number; y: number }[]) =>
+		points.map((point) => `${point.x},${point.y}`).join(' ');
+	const pathString = (points: { x: number; y: number }[]) =>
+		points.map((point, index) => `${index === 0 ? 'M' : 'L'}${point.x},${point.y}`).join(' ');
+	const surfaceLine = (axis: 'x' | 'y', fixed: number) =>
+		pathString(
+			Array.from({ length: 41 }, (_, index) => {
+				const moving = -surfaceDomain + (index / 40) * 2 * surfaceDomain;
+				const x = axis === 'x' ? fixed : moving;
+				const y = axis === 'y' ? fixed : moving;
+				return project3(x, y, surface(x, y));
+			})
+		);
+
+	const surfacePoint = $derived(project3(x0, y0, surface(x0, y0)));
+	const sliceCurve = $derived(
+		pathString(
+			Array.from({ length: 41 }, (_, index) => {
+				const t = -sliceHalf + (index / 40) * 2 * sliceHalf;
+				const x = x0 + t * vx;
+				const y = y0 + t * vy;
+				return project3(x, y, surface(x, y));
+			})
+		)
+	);
+	const slicePlane = $derived.by(() => {
+		const xMinus = x0 - sliceHalf * vx;
+		const yMinus = y0 - sliceHalf * vy;
+		const xPlus = x0 + sliceHalf * vx;
+		const yPlus = y0 + sliceHalf * vy;
+		const top = Math.max(surface(xMinus, yMinus), surface(xPlus, yPlus), surface(x0, y0)) + 0.55;
+		return pointString([
+			project3(xMinus, yMinus, 0),
+			project3(xPlus, yPlus, 0),
+			project3(xPlus, yPlus, top),
+			project3(xMinus, yMinus, top)
+		]);
+	});
+	const tangentSlice = $derived(
+		pathString(
+			[-sliceHalf, sliceHalf].map((t) =>
+				project3(
+					x0 + t * vx,
+					y0 + t * vy,
+					surface(x0, y0) + directionalDerivative * t
+				)
+			)
+		)
+	);
+	const tangentPlane = $derived(
+		pointString(
+			[
+				[-patchHalf, -patchHalf],
+				[patchHalf, -patchHalf],
+				[patchHalf, patchHalf],
+				[-patchHalf, patchHalf]
+			].map(([a, b]) =>
+				project3(x0 + a, y0 + b, surface(x0, y0) + gradX * a + gradY * b)
+			)
+		)
+	);
 </script>
 
 <div class="gradient-explorer">
@@ -50,16 +121,16 @@
 		<DemoCard title="Choose a point and direction">
 			<SliderField
 				label="Point coordinate x₀"
-				min={-1.5}
-				max={1.5}
+				min={-1.1}
+				max={1.1}
 				step={0.1}
 				decimals={1}
 				bind:value={x0}
 			/>
 			<SliderField
 				label="Point coordinate y₀"
-				min={-1.5}
-				max={1.5}
+				min={-1.1}
+				max={1.1}
 				step={0.1}
 				decimals={1}
 				bind:value={y0}
@@ -101,12 +172,14 @@
 		<span><i class="swatch direction"></i>chosen direction</span>
 	</div>
 
-	<div class="plot-shell">
-		<svg
-			viewBox={`0 0 ${width} ${height}`}
-			role="img"
-			aria-label="Circular level curves with the gradient and a chosen direction at a selected point"
-		>
+	<div class="plots-grid">
+		<section class="plot-panel" aria-labelledby="contour-title">
+			<div class="plot-title" id="contour-title">Contour map · view from above</div>
+			<svg
+				viewBox={`0 0 ${width} ${height}`}
+				role="img"
+				aria-label="Circular level curves with the gradient and a chosen direction at a selected point"
+			>
 			<defs>
 				<clipPath id="gradient-direction-clip">
 					<rect x={plotLeft} y={margin.top} width={plotWidth} height={plotHeight} />
@@ -169,7 +242,61 @@
 				/>
 				<circle class="point" cx={sx(x0)} cy={sy(y0)} r="5" />
 			</g>
-		</svg>
+			</svg>
+		</section>
+
+		<section class="plot-panel" aria-labelledby="surface-title">
+			<div class="plot-title" id="surface-title">Surface · directional cross-section</div>
+			<svg
+				class="surface-plot"
+				viewBox="0 0 520 440"
+				role="img"
+				aria-label="Three-dimensional paraboloid with a tangent plane and vertical directional slice"
+			>
+				<polygon class="slice-plane" points={slicePlane} />
+
+				{#each surfaceGrid as value (value)}
+					<path class="surface-grid-line x-line" d={surfaceLine('x', value)} />
+					<path class="surface-grid-line y-line" d={surfaceLine('y', value)} />
+				{/each}
+
+				<line
+					class="surface-axis"
+					x1={project3(-2, 0, 0).x}
+					y1={project3(-2, 0, 0).y}
+					x2={project3(2, 0, 0).x}
+					y2={project3(2, 0, 0).y}
+				/>
+				<line
+					class="surface-axis"
+					x1={project3(0, -2, 0).x}
+					y1={project3(0, -2, 0).y}
+					x2={project3(0, 2, 0).x}
+					y2={project3(0, 2, 0).y}
+				/>
+				<line
+					class="surface-axis"
+					x1={project3(0, 0, 0).x}
+					y1={project3(0, 0, 0).y}
+					x2={project3(0, 0, 5.8).x}
+					y2={project3(0, 0, 5.8).y}
+				/>
+
+				<polygon class="tangent-plane" points={tangentPlane} />
+				<path class="slice-curve" d={sliceCurve} />
+				<path class="slice-tangent" d={tangentSlice} />
+				<circle class="surface-point" cx={surfacePoint.x} cy={surfacePoint.y} r="5" />
+
+				<text class="surface-label" x={project3(2, 0, 0).x + 5} y={project3(2, 0, 0).y + 4}>x</text>
+				<text class="surface-label" x={project3(0, 2, 0).x - 12} y={project3(0, 2, 0).y + 4}>y</text>
+				<text class="surface-label" x={project3(0, 0, 5.8).x + 7} y={project3(0, 0, 5.8).y}>z</text>
+			</svg>
+			<div class="surface-key">
+				<span><i class="patch-key"></i>tangent plane</span>
+				<span><i class="slice-key"></i>vertical slice</span>
+				<span><i class="curve-key"></i>cross-section</span>
+			</div>
+		</section>
 	</div>
 </div>
 
@@ -226,11 +353,27 @@
 		border-color: #2563eb;
 	}
 
-	.plot-shell {
+	.plots-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.8rem;
+	}
+
+	.plot-panel {
 		padding: 0.5rem;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.75rem;
 		background: #fff;
+	}
+
+	.plot-title {
+		margin: 0.1rem 0 0.35rem;
+		font-size: 0.73rem;
+		font-weight: 700;
+		letter-spacing: 0.07em;
+		text-align: center;
+		text-transform: uppercase;
+		color: var(--color-ink-light);
 	}
 
 	svg {
@@ -293,8 +436,106 @@
 		stroke-width: 2;
 	}
 
+	.surface-grid-line {
+		fill: none;
+		stroke-width: 1.25;
+	}
+
+	.surface-grid-line.x-line {
+		stroke: #c4b5fd;
+	}
+
+	.surface-grid-line.y-line {
+		stroke: #bfdbfe;
+	}
+
+	.surface-axis {
+		stroke: var(--color-ink-faint);
+		stroke-width: 1.2;
+	}
+
+	.slice-plane {
+		fill: rgb(37 99 235 / 9%);
+		stroke: rgb(37 99 235 / 42%);
+		stroke-width: 1.2;
+	}
+
+	.tangent-plane {
+		fill: rgb(168 85 247 / 18%);
+		stroke: rgb(168 85 247 / 78%);
+		stroke-width: 1.5;
+	}
+
+	.slice-curve {
+		fill: none;
+		stroke: #2563eb;
+		stroke-width: 3.3;
+		stroke-linecap: round;
+	}
+
+	.slice-tangent {
+		fill: none;
+		stroke: var(--color-d);
+		stroke-width: 2.6;
+		stroke-dasharray: 7 5;
+		stroke-linecap: round;
+	}
+
+	.surface-point {
+		fill: var(--color-ink);
+		stroke: #fff;
+		stroke-width: 2;
+	}
+
+	.surface-label {
+		fill: var(--color-ink-faint);
+		font-family: var(--font-sans);
+		font-size: 15px;
+		font-style: italic;
+	}
+
+	.surface-key {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.35rem 0.75rem;
+		margin: 0.15rem 0 0.1rem;
+		font-size: 0.7rem;
+		color: var(--color-ink-light);
+	}
+
+	.surface-key span {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+
+	.surface-key i {
+		display: inline-block;
+		width: 1rem;
+		height: 0.45rem;
+	}
+
+	.patch-key {
+		background: rgb(168 85 247 / 22%);
+		border: 1px solid var(--color-d);
+	}
+
+	.slice-key {
+		background: rgb(37 99 235 / 10%);
+		border: 1px solid #2563eb;
+	}
+
+	.curve-key {
+		border-top: 3px solid #2563eb;
+	}
+
 	@media (max-width: 700px) {
 		.demo-layout {
+			grid-template-columns: 1fr;
+		}
+
+		.plots-grid {
 			grid-template-columns: 1fr;
 		}
 	}

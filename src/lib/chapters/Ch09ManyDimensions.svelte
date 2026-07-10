@@ -7,6 +7,7 @@
 	import ChapterSummary from '$lib/components/ChapterSummary.svelte';
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import GradientDirectionExplorer from '$lib/components/demos/GradientDirectionExplorer.svelte';
+	import JacobianDeformationExplorer from '$lib/components/demos/JacobianDeformationExplorer.svelte';
 	import { reveal } from '$lib/utils/scroll';
 
 	const r = String.raw;
@@ -167,16 +168,17 @@
 				before, now written as a dot product.
 			</p>
 			<p>
-				Use the explorer below. Keep the point fixed and rotate the blue direction. At which angle is
-				the directional derivative largest? At which angles is it zero? Compare the blue arrow with the
-				purple gradient and the highlighted level curve.
+				Use the explorer below. Keep the point fixed and rotate the blue direction. The left view looks
+				down on the level curves; the right view lifts the same data onto the surface. Watch the vertical
+				blue plane cut out a curve on the bowl. At which angle is that cross-section steepest at the marked
+				point? At which angles is its tangent horizontal?
 			</p>
 		</div>
 
 		<div use:reveal>
 			<Figure
 				number="9.1"
-				caption="For f(x,y) = x² + y², the purple gradient points outward and is perpendicular to the level curve through the selected point. The blue unit vector chooses the direction whose rate is being measured."
+				caption="Two views of f(x,y) = x² + y². The contour map shows direction in the input plane. The 3D view shows the corresponding vertical cross-section, together with the tangent plane and the tangent line whose slope is the directional derivative."
 			>
 				<GradientDirectionExplorer />
 			</Figure>
@@ -186,7 +188,8 @@
 			<p>
 				<strong>Takeaway.</strong> The directional derivative is largest when the chosen unit vector
 				points with the gradient, smallest when it points against the gradient, and zero when it is
-				perpendicular to the gradient.
+				perpendicular to the gradient. In the 3D view, these are exactly the steepest upward, steepest
+				downward, and horizontal tangent lines among all vertical cross-sections through the point.
 			</p>
 			<p>
 				The geometry follows from two short facts. First,
@@ -237,6 +240,29 @@
 				The columns show what happens to the two coordinate directions. The determinant
 				<Katex math={r`\det J_F`} /> records signed local area scaling: its magnitude gives the scale
 				factor, while its sign records whether orientation is preserved or reversed.
+			</p>
+			<p>
+				The next explorer uses the nonlinear map <Katex math={r`F(u,v)=(u^2-v^2,2uv)`} />. The blue
+				boundary is the actual image of an ordinary square patch; the dashed purple parallelogram is the
+				Jacobian’s linear prediction. Shrink the patch. Both panels magnify the changing neighborhood so
+				the shapes remain readable. What happens to the visible gap between them?
+			</p>
+		</div>
+
+		<div use:reveal>
+			<Figure
+				number="9.2"
+				caption="A Jacobian is a local deformation. It sends the two coordinate directions to the columns of the matrix, turning a small square into a parallelogram. The panels magnify each selected neighborhood; as the ordinary patch shrinks, its curved image approaches the Jacobian prediction."
+			>
+				<JacobianDeformationExplorer />
+			</Figure>
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>
+				<strong>Takeaway.</strong> The matrix is not merely a table of four derivatives. It is the best
+				linear picture of what the map does near one point. Its columns are the transformed coordinate
+				directions, and <Katex math={r`|\det J_F|`} /> is the corresponding local area factor.
 			</p>
 
 			<h4>Example 2: a local map with two outputs</h4>
