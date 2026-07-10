@@ -8,6 +8,7 @@
 		id?: string;
 		decimals?: number;
 		value?: number;
+		tone?: 'violet' | 'blue' | 'teal' | 'amber' | 'rose';
 	}
 
 	let {
@@ -18,11 +19,13 @@
 		hint,
 		id,
 		decimals = 2,
-		value = $bindable(0)
+		value = $bindable(0),
+		tone = 'violet'
 	}: Props = $props();
 
 	let display = $derived(value.toFixed(decimals));
 	let fieldId = $derived(id ?? `slider-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
+	let progress = $derived(max === min ? 0 : Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100)));
 </script>
 
 <div class="demo-field">
@@ -30,7 +33,16 @@
 		<label class="demo-field-label" for={fieldId}>{label}</label>
 		<span class="demo-field-value">{display}</span>
 	</div>
-	<input class="demo-slider" id={fieldId} type="range" {min} {max} {step} bind:value />
+	<input
+		class="demo-slider tone-{tone}"
+		style={`--slider-progress: ${progress}%;`}
+		id={fieldId}
+		type="range"
+		{min}
+		{max}
+		{step}
+		bind:value
+	/>
 	{#if hint}
 		<div class="demo-field-hint">{hint}</div>
 	{/if}

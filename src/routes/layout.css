@@ -318,10 +318,11 @@ h4 {
 }
 
 .demo-card {
-	border: 1px solid var(--color-border-light);
+	border: 1px solid color-mix(in srgb, var(--color-border-light) 84%, var(--color-d) 16%);
 	border-radius: 0.8rem;
-	background: white;
+	background: linear-gradient(145deg, #fff 0%, color-mix(in srgb, #fff 94%, var(--color-d-soft) 6%) 100%);
 	padding: 0.85rem 0.95rem;
+	min-width: 0;
 }
 
 .demo-card + .demo-card {
@@ -378,45 +379,90 @@ h4 {
 }
 
 .demo-slider {
+	--slider-accent: #a855f7;
+	--slider-accent-end: #7c3aed;
 	-webkit-appearance: none;
 	appearance: none;
 	width: 100%;
 	height: 1.35rem;
 	background: transparent;
 	cursor: pointer;
+	outline: none;
+}
+
+.demo-slider.tone-blue {
+	--slider-accent: #2563eb;
+	--slider-accent-end: #0ea5e9;
+}
+
+.demo-slider.tone-teal {
+	--slider-accent: #0f766e;
+	--slider-accent-end: #14b8a6;
+}
+
+.demo-slider.tone-amber {
+	--slider-accent: #b45309;
+	--slider-accent-end: #f59e0b;
+}
+
+.demo-slider.tone-rose {
+	--slider-accent: #be123c;
+	--slider-accent-end: #fb7185;
 }
 
 .demo-slider::-webkit-slider-runnable-track {
-	height: 0.32rem;
+	height: 0.34rem;
 	border-radius: 999px;
-	background: linear-gradient(90deg, #e9ddfb, #d9c1f8);
+	background: linear-gradient(
+		90deg,
+		var(--slider-accent) 0%,
+		var(--slider-accent-end) var(--slider-progress),
+		#ebe7ef var(--slider-progress),
+		#ebe7ef 100%
+	);
+	box-shadow: inset 0 0 0 1px rgb(96 74 120 / 7%);
 }
 
 .demo-slider::-moz-range-track {
-	height: 0.32rem;
+	height: 0.34rem;
 	border-radius: 999px;
-	background: linear-gradient(90deg, #e9ddfb, #d9c1f8);
+	background: linear-gradient(
+		90deg,
+		var(--slider-accent) 0%,
+		var(--slider-accent-end) var(--slider-progress),
+		#ebe7ef var(--slider-progress),
+		#ebe7ef 100%
+	);
+	box-shadow: inset 0 0 0 1px rgb(96 74 120 / 7%);
 }
 
 .demo-slider::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	appearance: none;
 	margin-top: -6px;
-	width: 14px;
-	height: 14px;
+	width: 16px;
+	height: 16px;
 	border-radius: 999px;
-	border: 2px solid white;
-	background: var(--color-d);
-	box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.35);
+	border: 3px solid white;
+	background: var(--slider-accent);
+	box-shadow: 0 1px 4px rgb(65 38 88 / 22%), 0 0 0 1px color-mix(in srgb, var(--slider-accent) 42%, transparent);
 }
 
 .demo-slider::-moz-range-thumb {
-	width: 14px;
-	height: 14px;
+	width: 16px;
+	height: 16px;
 	border-radius: 999px;
-	border: 2px solid white;
-	background: var(--color-d);
-	box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.35);
+	border: 3px solid white;
+	background: var(--slider-accent);
+	box-shadow: 0 1px 4px rgb(65 38 88 / 22%), 0 0 0 1px color-mix(in srgb, var(--slider-accent) 42%, transparent);
+}
+
+.demo-slider:focus-visible::-webkit-slider-thumb {
+	box-shadow: 0 0 0 4px color-mix(in srgb, var(--slider-accent) 22%, transparent), 0 0 0 1px var(--slider-accent);
+}
+
+.demo-slider:focus-visible::-moz-range-thumb {
+	box-shadow: 0 0 0 4px color-mix(in srgb, var(--slider-accent) 22%, transparent), 0 0 0 1px var(--slider-accent);
 }
 
 .demo-toggle-field {
@@ -438,13 +484,16 @@ h4 {
 	border: 1px solid var(--color-border);
 	background: #f2eee6;
 	position: relative;
+	padding: 0;
+	box-sizing: border-box;
+	flex: 0 0 auto;
 	cursor: pointer;
 	transition: all 0.16s ease;
 }
 
 .demo-switch.is-on {
-	background: #d8bcf9;
-	border-color: #c89ef6;
+	background: linear-gradient(90deg, #a855f7, #7c3aed);
+	border-color: #8b5cf6;
 }
 
 .demo-switch-knob {
@@ -454,13 +503,18 @@ h4 {
 	width: calc(1.25rem - 4px);
 	height: calc(1.25rem - 4px);
 	border-radius: 999px;
-	background: white;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+	background: #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 0 0 1px rgb(30 20 40 / 10%);
 	transition: transform 0.16s ease;
 }
 
 .demo-switch.is-on .demo-switch-knob {
 	transform: translateX(0.9rem);
+}
+
+.demo-switch:focus-visible {
+	outline: 3px solid rgb(168 85 247 / 22%);
+	outline-offset: 2px;
 }
 
 .demo-equation-panel {
@@ -469,6 +523,7 @@ h4 {
 	background: white;
 	padding: 0.6rem 0.85rem;
 	margin-top: 0.75rem;
+	min-width: 0;
 }
 
 .demo-legend {
