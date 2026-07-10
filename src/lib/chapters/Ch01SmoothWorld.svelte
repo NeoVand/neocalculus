@@ -109,7 +109,7 @@
 		</div>
 	</div>
 
-	<div use:reveal={{ delay: 80 }}>
+	<div class="content-width" use:reveal={{ delay: 80 }}>
 		<PerfectZoom />
 	</div>
 
