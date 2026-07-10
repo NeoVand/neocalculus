@@ -86,12 +86,12 @@
 			<p>
 				The approximation sign matters: <Katex math="\Delta x" /> is an ordinary number, so a finite gap
 				can remain. In the lab below, move <Katex math="\Delta x" /> and increase the zoom. The blue segment
-				measures that gap.
+				measures that gap in red.
 			</p>
 		</div>
 	</div>
 
-	<div use:reveal>
+	<div class="content-width" use:reveal>
 		<figure class="neo-figure">
 			<SlopeEquationMachine />
 			<figcaption>

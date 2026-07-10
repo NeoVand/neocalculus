@@ -48,16 +48,12 @@
 	let fShifted = $derived(curve.fn(xShifted));
 	let slopeA = $derived(curve.dfn(a));
 	let predicted = $derived(fA + slopeA * deltaX);
-	let actualChange = $derived(fShifted - fA);
-	let linearChange = $derived(slopeA * deltaX);
 	let deviation = $derived(fShifted - predicted);
 
 	let leftValue = $derived(num(fShifted));
 	let rightValue = $derived(num(predicted));
 	let devAbsValue = $derived(num(Math.abs(deviation), 7));
 	let deltaValue = $derived(num(deltaX));
-	let changeValue = $derived(num(actualChange));
-	let linearValue = $derived(num(linearChange));
 
 	function getGridStep(range: number): number {
 		const raw = range / 6;
@@ -137,8 +133,8 @@
 			ctx.stroke();
 		}
 
-		ctx.strokeStyle = theme.violet;
-		ctx.lineWidth = 2.6 * dpr;
+		ctx.strokeStyle = theme.blue;
+		ctx.lineWidth = 2.2 * dpr;
 		ctx.beginPath();
 		let penDown = false;
 		for (let i = 0; i <= 700; i += 1) {
@@ -160,8 +156,8 @@
 		ctx.stroke();
 
 		ctx.beginPath();
-		ctx.strokeStyle = theme.amber;
-		ctx.lineWidth = 2.1 * dpr;
+		ctx.strokeStyle = theme.violet;
+		ctx.lineWidth = 1.8 * dpr;
 		ctx.setLineDash([8 * dpr, 6 * dpr]);
 		const yLeft = yA + slopeA * (xMin - a);
 		const yRight = yA + slopeA * (xMax - a);
@@ -176,11 +172,11 @@
 		const connTop = Math.min(yActual, yPred);
 		const connHeight = Math.abs(yActual - yPred);
 
-		ctx.fillStyle = theme.blue;
+		ctx.fillStyle = theme.rose;
 		ctx.fillRect(x2 - 1.8 * dpr, connTop, 3.6 * dpr, connHeight);
 
 		ctx.beginPath();
-		ctx.fillStyle = theme.blue;
+		ctx.fillStyle = theme.amber;
 		ctx.arc(x2, yActual, 5.7 * dpr, 0, Math.PI * 2);
 		ctx.fill();
 
@@ -230,40 +226,16 @@
 	});
 </script>
 
-<div class="demo-container content-width slope-shell">
-	<div class="hero">
-		<div class="hero-eyebrow">Finite Change and the Local Line</div>
-		<div class="hero-title">One input step, one linear prediction, one visible gap</div>
-	</div>
-
-	<div class="equation-block">
-		<div class="equation-main">
-			<Katex math={String.raw`f(a+\Delta x)\approx f(a)+f'(a)\Delta x`} />
-		</div>
+<div class="demo-container slope-shell">
+	<div class="equation-row">
+		<div class="equation-main"><Katex math={String.raw`f(a+\Delta x)\approx f(a)+f'(a)\Delta x`} /></div>
 		<div class="equation-sub"><Katex math={'f(x)=' + curve.tex} /></div>
 	</div>
 
-	<div class="verify-row" aria-live="polite">
-		<div class="verify-cell">
-			<span class="verify-label">Exact Value</span>
-			<span class="verify-value">{leftValue}</span>
-			<span class="verify-caption">f(a+Δx)</span>
-		</div>
-		<div class="verify-cell">
-			<span class="verify-label">Linear Model</span>
-			<span class="verify-value">{rightValue}</span>
-			<span class="verify-caption">f(a)+f'(a)Δx</span>
-		</div>
-		<div class="verify-cell verify-cell-accent">
-			<span class="verify-label">Deviation</span>
-			<span class="verify-value">{devAbsValue}</span>
-			<span class="verify-caption">absolute gap</span>
-		</div>
-	</div>
-
 	<div class="plot-key" aria-label="Plot key">
-		<span><i class="key-line curve"></i>curve <Katex math="f(x)" /></span>
+		<span><i class="key-line curve"></i>curve</span>
 		<span><i class="key-line tangent"></i>local line</span>
+		<span><i class="key-line point"></i>exact value</span>
 		<span><i class="key-line gap"></i>deviation</span>
 	</div>
 
@@ -274,10 +246,10 @@
 		></canvas>
 	</div>
 
-	<div class="stats-row" aria-live="polite">
-		<div class="stat-cell"><span>Δx</span><strong>{deltaValue}</strong></div>
-		<div class="stat-cell"><span>f(a+Δx)-f(a)</span><strong>{changeValue}</strong></div>
-		<div class="stat-cell"><span>f'(a)Δx</span><strong>{linearValue}</strong></div>
+	<div class="reading-row" aria-live="polite">
+		<div class="reading"><span>Exact <Katex math={String.raw`f(a+\Delta x)`} /></span><strong>{leftValue}</strong></div>
+		<div class="reading"><span>Local line <Katex math={String.raw`f(a)+f'(a)\Delta x`} /></span><strong>{rightValue}</strong></div>
+		<div class="reading deviation"><span>Absolute deviation</span><strong>{devAbsValue}</strong></div>
 	</div>
 
 	<div class="controls-panel">
@@ -333,116 +305,70 @@
 
 <style>
 	.slope-shell {
-		--panel-bg: linear-gradient(165deg, #fefcf9 0%, #f8f5ff 48%, #f5f8ff 100%);
-		--panel-stroke: #e4dbef;
-		--tile-bg: #fbf9ff;
-		--tile-stroke: #e5ddf4;
-		--tile-shadow: 0 12px 24px rgba(82, 53, 128, 0.07);
-		background: var(--panel-bg);
-		border: 1px solid var(--panel-stroke);
-		border-radius: 1.75rem;
-		padding: clamp(1rem, 2.3vw, 1.7rem);
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.8),
-			0 22px 34px rgba(37, 17, 64, 0.06);
-	}
-
-	.hero {
-		display: grid;
-		justify-items: center;
-		text-align: center;
-		gap: 0.38rem;
-		margin-bottom: 0.72rem;
-	}
-
-	.hero-eyebrow {
 		font-family: var(--font-sans);
-		font-size: 0.69rem;
-		font-weight: 700;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		color: var(--color-ink-faint);
+		margin-block: var(--space-lg);
+		padding: 0;
+		border: 0;
+		border-radius: 0;
+		background: transparent;
+		box-shadow: none;
 	}
 
-	.hero-title {
-		font-family: var(--font-serif);
-		font-size: clamp(0.96rem, 1.5vw, 1.13rem);
-		letter-spacing: 0.01em;
-		color: var(--color-ink);
-		line-height: 1.3;
-	}
-
-	.equation-block {
-		display: grid;
-		gap: 0.32rem;
-		justify-items: center;
-		background: color-mix(in srgb, var(--color-surface) 92%, var(--color-d) 8%);
-		border: 1px solid color-mix(in srgb, var(--color-border) 72%, var(--color-d) 28%);
-		border-radius: 1rem;
-		padding: 0.72rem 0.85rem;
-		margin: 0 0 0.7rem;
+	.equation-row {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 0 0.15rem 0.65rem;
+		border-bottom: 1px solid var(--color-border-light);
 	}
 
 	.equation-main :global(.katex) {
-		font-size: 1.36em;
+		font-size: clamp(0.95em, 2.5vw, 1.22em);
 		color: var(--color-d);
+		white-space: nowrap;
 	}
 
 	.equation-sub :global(.katex) {
-		font-size: 1.03em;
+		font-size: 0.92em;
 		color: var(--color-ink-light);
+		white-space: nowrap;
 	}
 
-	.verify-row,
-	.stats-row {
+	.reading-row {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.62rem;
-		margin-bottom: 0.66rem;
+		margin: 0.72rem 0 0.55rem;
+		border-block: 1px solid var(--color-border-light);
 	}
 
-	.verify-cell,
-	.stat-cell {
+	.reading {
 		display: grid;
-		gap: 0.15rem;
-		align-items: center;
-		justify-items: center;
-		padding: 0.72rem 0.62rem;
-		border: 1px solid var(--tile-stroke);
-		border-radius: 0.85rem;
-		background: var(--tile-bg);
-		box-shadow: var(--tile-shadow);
+		gap: 0.12rem;
+		padding: 0.55rem 0.7rem;
+		text-align: center;
+		border-right: 1px solid var(--color-border-light);
 	}
 
-	.verify-cell-accent {
-		background: color-mix(in srgb, var(--color-surface) 91%, var(--plot-amber) 9%);
-		border-color: color-mix(in srgb, var(--color-border) 68%, var(--plot-amber) 32%);
+	.reading:last-child {
+		border-right: 0;
 	}
 
-	.verify-label,
-	.stat-cell span {
-		font-family: var(--font-sans);
-		font-size: 0.62rem;
-		font-weight: 700;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
+	.reading span {
+		font-size: 0.72rem;
 		color: var(--color-ink-faint);
 	}
 
-	.verify-value,
-	.stat-cell strong {
+	.reading strong {
 		font-family: var(--font-mono);
-		font-size: 1rem;
-		font-weight: 700;
+		font-size: 0.9rem;
+		font-weight: 600;
 		color: var(--color-ink);
 		font-variant-numeric: tabular-nums;
 	}
 
-	.verify-caption {
-		font-family: var(--font-serif);
-		font-size: 0.75rem;
-		font-style: italic;
-		color: var(--color-ink-light);
+	.reading.deviation strong {
+		color: var(--plot-error);
 	}
 
 	.plot-key {
@@ -450,7 +376,7 @@
 		justify-content: center;
 		flex-wrap: wrap;
 		gap: 0.45rem 1rem;
-		margin: 0.08rem 0 0.42rem;
+		margin: 0.55rem 0 0.4rem;
 		font-family: var(--font-sans);
 		font-size: 0.7rem;
 		color: var(--color-ink-faint);
@@ -474,27 +400,32 @@
 	}
 
 	.key-line.curve {
-		background: var(--plot-violet);
+		background: var(--plot-curve);
 	}
 
 	.key-line.tangent {
-		background: var(--plot-amber);
+		background: var(--plot-tangent);
+	}
+
+	.key-line.point {
+		width: 0.48rem;
+		height: 0.48rem;
+		background: var(--plot-point);
 	}
 
 	.key-line.gap {
-		background: var(--plot-blue);
+		background: var(--plot-error);
 	}
 
 	.canvas-wrapper {
 		width: 100%;
 		aspect-ratio: 16 / 9;
-		border-radius: 1.05rem;
+		border-radius: 0.75rem;
 		overflow: hidden;
-		border: 1px solid var(--tile-stroke);
+		border: 1px solid var(--color-border-light);
 		position: relative;
 		margin: 0.35rem 0 0.72rem;
-		background: var(--color-surface);
-		box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-ink) 12%, transparent);
+		background: var(--plot-background);
 	}
 
 	canvas {
@@ -505,11 +436,8 @@
 
 	.controls-panel {
 		display: grid;
-		gap: 0.22rem;
-		background: color-mix(in srgb, var(--color-surface) 94%, var(--color-d) 6%);
-		border: 1px solid var(--color-border);
-		border-radius: 1rem;
-		padding: 0.28rem 0.62rem 0.44rem;
+		gap: 0.12rem;
+		padding: 0.25rem 0.15rem 0;
 	}
 
 	.toolbar {
@@ -544,30 +472,26 @@
 	}
 
 	@media (max-width: 760px) {
-		.verify-row,
-		.stats-row {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: 0.35rem;
+		.equation-row {
+			align-items: center;
+			flex-direction: column;
+			gap: 0.2rem;
 		}
 
-		.verify-cell,
-		.stat-cell {
-			padding: 0.56rem 0.28rem;
+		.reading-row {
+			grid-template-columns: 1fr;
 		}
 
-		.verify-value,
-		.stat-cell strong {
-			font-size: clamp(0.69rem, 3vw, 0.82rem);
+		.reading {
+			grid-template-columns: 1fr auto;
+			align-items: baseline;
+			text-align: left;
+			border-right: 0;
+			border-bottom: 1px solid var(--color-border-light);
 		}
 
-		.verify-label,
-		.stat-cell span {
-			font-size: 0.52rem;
-			letter-spacing: 0.07em;
-		}
-
-		.verify-caption {
-			font-size: 0.62rem;
+		.reading:last-child {
+			border-bottom: 0;
 		}
 
 		.toolbar-val {
