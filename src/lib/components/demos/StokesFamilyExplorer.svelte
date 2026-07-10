@@ -65,6 +65,55 @@
 
 	let selected = $state<CaseId>('green');
 	const current = $derived(cases.find((item) => item.id === selected) ?? cases[0]);
+
+	const pathFromPoints = (points: { x: number; y: number }[], close = false) =>
+		`${points.map((point, index) => `${index === 0 ? 'M' : 'L'}${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(' ')}${close ? ' Z' : ''}`;
+	const sample = <T,>(count: number, fn: (index: number) => T): T[] =>
+		Array.from({ length: count }, (_, index) => fn(index));
+
+	const ftcY = (x: number) => {
+		const t = (x - 92) / 456;
+		return 145 - 28 * Math.sin(t * Math.PI * 1.35) - 13 * Math.sin(t * Math.PI * 3.4);
+	};
+	const ftcCurvePoints = sample(81, (index) => {
+		const x = 92 + (456 * index) / 80;
+		return { x, y: ftcY(x) };
+	});
+	const ftcCurvePath = pathFromPoints(ftcCurvePoints);
+	const ftcFillPath = `${ftcCurvePath} L548,208 L92,208 Z`;
+	const ftcSlices = [124, 172, 220, 268, 316, 364, 412, 460, 508].map((x) => ({ x, y: ftcY(x) }));
+
+	const membranePoint = (radius: number, theta: number) => {
+		const x = radius * Math.cos(theta);
+		const y = radius * Math.sin(theta);
+		const z = 0.78 * (radius * radius - 1);
+		return { x: 320 + x * 205 + y * 42, y: 134 + y * 58 - z * 84 };
+	};
+	const membraneRing = (radius: number) =>
+		pathFromPoints(sample(73, (index) => membranePoint(radius, (index / 72) * Math.PI * 2)), true);
+	const membraneRings = [0.22, 0.45, 0.68, 0.86, 1].map((radius) => ({ radius, path: membraneRing(radius) }));
+	const membraneSpokes = sample(12, (index) => {
+		const theta = (index / 12) * Math.PI * 2;
+		return pathFromPoints(sample(22, (step) => membranePoint(step / 21, theta)));
+	});
+	const boundaryArrows = [0.1, 2.2, 4.3].map((start) =>
+		pathFromPoints(sample(9, (index) => membranePoint(1, start + (index / 8) * 0.55)))
+	);
+	const membraneNormals = [0.3, 2.35, 4.45].map((theta) => {
+		const point = membranePoint(0.48, theta);
+		return { x1: point.x, y1: point.y + 15, x2: point.x, y2: point.y - 34 };
+	});
+
+	const sphereArrows = [
+		[320, 47, 320, 17],
+		[320, 263, 320, 291],
+		[154, 155, 116, 155],
+		[486, 155, 524, 155],
+		[205, 80, 177, 57],
+		[435, 80, 463, 57],
+		[205, 230, 177, 253],
+		[435, 230, 463, 253]
+	];
 </script>
 
 <div class="family-explorer">
@@ -115,14 +164,14 @@
 			{#key selected}
 				<g class="geometry-layer">
 					{#if selected === 'ftc'}
-						<path class="density-fill" d="M92,204 L92,173 C145,142 194,151 242,120 C301,82 356,111 402,92 C453,71 504,103 548,132 L548,204 Z" />
-						<path class="density-curve" d="M92,173 C145,142 194,151 242,120 C301,82 356,111 402,92 C453,71 504,103 548,132" />
-						<line class="interval-line" x1="92" y1="204" x2="548" y2="204" />
-						{#each [132, 188, 244, 300, 356, 412, 468, 524] as x (x)}
-							<line class="density-slice" x1={x} y1="204" x2={x} y2={x < 250 ? 143 : x < 420 ? 105 : 126} />
+						<path class="density-fill" d={ftcFillPath} />
+						<path class="density-curve" d={ftcCurvePath} />
+						<line class="interval-line" x1="92" y1="208" x2="548" y2="208" />
+						{#each ftcSlices as slice (slice.x)}
+							<line class="density-slice" x1={slice.x} y1="208" x2={slice.x} y2={slice.y} />
 						{/each}
-						<circle class="endpoint endpoint-start" cx="92" cy="204" r="9" />
-						<circle class="endpoint endpoint-end" cx="548" cy="204" r="9" />
+						<circle class="endpoint endpoint-start" cx="92" cy="208" r="9" />
+						<circle class="endpoint endpoint-end" cx="548" cy="208" r="9" />
 						<text class="endpoint-value" x="92" y="240" text-anchor="middle">−F(a)</text>
 						<text class="endpoint-value" x="548" y="240" text-anchor="middle">+F(b)</text>
 						<text class="inside-caption" x="320" y="270" text-anchor="middle">sum the local changes F′(x) dx</text>
@@ -139,30 +188,36 @@
 						<path class="label-leader" d="M445,244 L492,270" />
 						<text class="boundary-caption" x="600" y="278" text-anchor="end">counterclockwise circulation</text>
 					{:else if selected === 'stokes'}
-						<path class="surface-shape" d="M78,205 C158,65 286,53 564,138 C501,264 282,292 78,205 Z" />
-						<path class="surface-mesh" d="M119,166 C236,122 385,126 531,161" />
-						<path class="surface-mesh" d="M96,211 C235,167 403,181 515,221" />
-						<path class="surface-mesh" d="M190,92 C170,160 194,235 266,276" />
-						<path class="surface-mesh" d="M330,73 C301,150 332,229 413,257" />
-						<path class="boundary-segment" d="M78,205 C158,65 286,53 385,78" marker-end="url(#family-boundary-arrow)" />
-						<path class="boundary-segment" d="M385,78 C460,96 521,112 564,138" marker-end="url(#family-boundary-arrow)" />
-						<path class="boundary-segment" d="M564,138 C501,264 282,292 78,205" marker-end="url(#family-boundary-arrow)" />
-						{#each [[210,180,210,112],[325,170,325,96],[438,182,438,116]] as arrow (arrow.join('-'))}
-							<line class="flux-arrow" x1={arrow[0]} y1={arrow[1]} x2={arrow[2]} y2={arrow[3]} marker-end="url(#family-field-arrow)" />
+						<path class="surface-shape" d={membraneRing(1)} />
+						{#each membraneRings as ring (ring.radius)}
+							<path class:ring-boundary={ring.radius === 1} class="surface-mesh" d={ring.path} />
 						{/each}
-						<text class="inside-caption" x="322" y="218" text-anchor="middle">curl flux through the oriented surface</text>
-						<path class="label-leader" d="M455,239 L508,270" />
-						<text class="boundary-caption" x="600" y="278" text-anchor="end">circulation on the edge</text>
+						{#each membraneSpokes as spoke (spoke)}
+							<path class="surface-mesh" d={spoke} />
+						{/each}
+						{#each boundaryArrows as arrowPath (arrowPath)}
+							<path class="boundary-segment boundary-arrow" d={arrowPath} marker-end="url(#family-boundary-arrow)" />
+						{/each}
+						{#each membraneNormals as arrow (`${arrow.x1}-${arrow.y1}`)}
+							<line class="flux-arrow" x1={arrow.x1} y1={arrow.y1} x2={arrow.x2} y2={arrow.y2} marker-end="url(#family-field-arrow)" />
+						{/each}
+						<text class="inside-caption" x="320" y="236" text-anchor="middle">curl flux through the hanging surface</text>
+						<text class="boundary-caption" x="590" y="270" text-anchor="end">circulation follows the closed rim</text>
 					{:else}
 						<ellipse class="volume-shape" cx="320" cy="157" rx="174" ry="112" />
-						<path class="volume-back" d="M146,157 C188,104 451,104 494,157" />
-						<path class="volume-front" d="M146,157 C188,216 451,216 494,157" />
-						{#each [[320,157,320,42],[320,157,320,272],[320,157,145,157],[320,157,495,157],[320,157,194,72],[320,157,446,72],[320,157,195,241],[320,157,445,241]] as arrow (arrow.join('-'))}
+						<ellipse class="sphere-longitude" cx="320" cy="157" rx="58" ry="112" />
+						<path class="volume-back" d="M146,157 C188,111 451,111 494,157" />
+						<path class="volume-front" d="M146,157 C188,203 451,203 494,157" />
+						<ellipse class="sphere-latitude" cx="320" cy="118" rx="140" ry="28" />
+						<ellipse class="sphere-latitude" cx="320" cy="196" rx="140" ry="28" />
+						{#each sphereArrows as arrow (arrow.join('-'))}
 							<line class="flux-arrow" x1={arrow[0]} y1={arrow[1]} x2={arrow[2]} y2={arrow[3]} marker-end="url(#family-field-arrow)" />
 						{/each}
-						<circle class="source-point" cx="320" cy="157" r="7" />
-						<text class="inside-caption label-halo" x="320" y="195" text-anchor="middle">source density inside V</text>
-						<text class="boundary-caption label-halo" x="512" y="256" text-anchor="end">outward flux through ∂V</text>
+						{#each [[282,139],[326,170],[365,135],[296,187],[350,201]] as source (source.join('-'))}
+							<circle class="source-point" cx={source[0]} cy={source[1]} r="5" />
+						{/each}
+						<text class="inside-caption" x="320" y="161" text-anchor="middle">sources fill V</text>
+						<text class="boundary-caption" x="596" y="280" text-anchor="end">flux leaves through the closed surface</text>
 					{/if}
 				</g>
 			{/key}
@@ -372,10 +427,31 @@
 
 	.surface-mesh,
 	.volume-back,
-	.volume-front {
+	.volume-front,
+	.sphere-longitude,
+	.sphere-latitude {
 		fill: none;
 		stroke: var(--plot-axis);
 		stroke-width: 1.2;
+	}
+
+	.surface-mesh {
+		stroke-opacity: 0.82;
+	}
+
+	.surface-mesh.ring-boundary {
+		stroke: var(--plot-violet);
+		stroke-width: 3.2;
+		stroke-opacity: 1;
+	}
+
+	.boundary-arrow {
+		stroke-width: 3.6;
+	}
+
+	.sphere-longitude,
+	.sphere-latitude {
+		stroke: color-mix(in srgb, var(--plot-violet) 52%, var(--plot-axis));
 	}
 
 	.volume-shape {
@@ -402,13 +478,6 @@
 
 	.boundary-caption {
 		fill: var(--plot-violet);
-	}
-
-	.label-halo {
-		paint-order: stroke;
-		stroke: var(--plot-background);
-		stroke-width: 8px;
-		stroke-linejoin: round;
 	}
 
 	.label-leader {
