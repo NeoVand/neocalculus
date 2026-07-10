@@ -83,6 +83,60 @@
 	const ftcFillPath = `${ftcCurvePath} L548,208 L92,208 Z`;
 	const ftcSlices = [124, 172, 220, 268, 316, 364, 412, 460, 508].map((x) => ({ x, y: ftcY(x) }));
 
+	const arrowheadPoints = (
+		tip: { x: number; y: number },
+		direction: { x: number; y: number },
+		length: number,
+		width: number
+	) => {
+		const magnitude = Math.hypot(direction.x, direction.y) || 1;
+		const ux = direction.x / magnitude;
+		const uy = direction.y / magnitude;
+		const baseX = tip.x - ux * length;
+		const baseY = tip.y - uy * length;
+		return `${tip.x.toFixed(1)},${tip.y.toFixed(1)} ${(baseX - uy * width).toFixed(1)},${(baseY + ux * width).toFixed(1)} ${(baseX + uy * width).toFixed(1)},${(baseY - ux * width).toFixed(1)}`;
+	};
+
+	const greenPoint = (theta: number) => ({
+		x: 320 + 220 * Math.cos(theta) + 14 * Math.cos(2 * theta),
+		y: 158 - 88 * Math.sin(theta) + 8 * Math.sin(3 * theta)
+	});
+	const greenBoundaryPath = pathFromPoints(
+		sample(181, (index) => greenPoint((index / 180) * Math.PI * 2)),
+		true
+	);
+	const greenBoundaryArrowheads = [0.35, 1.92, 3.5, 5.08].map((theta) => {
+		const point = greenPoint(theta);
+		const before = greenPoint(theta - 0.01);
+		const after = greenPoint(theta + 0.01);
+		return arrowheadPoints(point, { x: after.x - before.x, y: after.y - before.y }, 12, 5.5);
+	});
+	const greenFieldArrows = [
+		[205, 115],
+		[302, 100],
+		[410, 118],
+		[170, 170],
+		[470, 165],
+		[220, 215],
+		[330, 225],
+		[430, 205]
+	].map(([x, y]) => {
+		const dx = x - 320;
+		const dy = y - 158;
+		const magnitude = Math.hypot(dx, dy) || 1;
+		const ux = dy / magnitude;
+		const uy = -dx / magnitude;
+		const halfLength = 15;
+		const end = { x: x + ux * halfLength, y: y + uy * halfLength };
+		return {
+			x1: x - ux * halfLength,
+			y1: y - uy * halfLength,
+			x2: end.x,
+			y2: end.y,
+			head: arrowheadPoints(end, { x: ux, y: uy }, 8, 3.8)
+		};
+	});
+
 	const membranePoint = (radius: number, theta: number) => {
 		const x = radius * Math.cos(theta);
 		const y = radius * Math.sin(theta);
@@ -176,17 +230,16 @@
 						<text class="endpoint-value" x="548" y="240" text-anchor="middle">+F(b)</text>
 						<text class="inside-caption" x="320" y="270" text-anchor="middle">sum the local changes F′(x) dx</text>
 					{:else if selected === 'green'}
-						<path class="region-shape" d="M92,175 C84,82 179,48 294,69 C402,36 538,81 552,164 C568,251 449,270 334,248 C222,278 106,253 92,175 Z" />
-						<path class="boundary-segment" d="M92,175 C84,82 179,48 294,69" marker-end="url(#family-boundary-arrow)" />
-						<path class="boundary-segment" d="M294,69 C402,36 538,81 552,164" marker-end="url(#family-boundary-arrow)" />
-						<path class="boundary-segment" d="M552,164 C568,251 449,270 334,248" marker-end="url(#family-boundary-arrow)" />
-						<path class="boundary-segment" d="M334,248 C222,278 106,253 92,175" marker-end="url(#family-boundary-arrow)" />
-						{#each [[190,130],[320,112],[444,145],[238,207],[390,210]] as point (`${point[0]}-${point[1]}`)}
-							<path class="curl-arrow" d={`M${point[0]-17},${point[1]+3} C${point[0]-21},${point[1]-17} ${point[0]+12},${point[1]-24} ${point[0]+19},${point[1]-5}`} marker-end="url(#family-field-arrow)" />
+						<path class="green-region" d={greenBoundaryPath} />
+						{#each greenBoundaryArrowheads as points (points)}
+							<polygon class="boundary-arrowhead" {points} />
 						{/each}
-						<text class="inside-caption" x="320" y="166" text-anchor="middle">curl accumulated through the region</text>
-						<path class="label-leader" d="M445,244 L492,270" />
-						<text class="boundary-caption" x="600" y="278" text-anchor="end">counterclockwise circulation</text>
+						{#each greenFieldArrows as arrow (`${arrow.x1}-${arrow.y1}`)}
+							<line class="field-arrow-line" x1={arrow.x1} y1={arrow.y1} x2={arrow.x2} y2={arrow.y2} />
+							<polygon class="field-arrowhead" points={arrow.head} />
+						{/each}
+						<text class="inside-caption" x="320" y="164" text-anchor="middle">positive curl throughout R</text>
+						<text class="orientation-label" x="320" y="279" text-anchor="middle">positive orientation is counterclockwise</text>
 					{:else if selected === 'stokes'}
 						<path class="surface-shape" d={membraneRing(1)} />
 						{#each membraneRings as ring (ring.radius)}
@@ -367,11 +420,39 @@
 		fill: var(--plot-violet);
 	}
 
-	.region-shape,
 	.surface-shape,
 	.density-fill {
 		fill: url(#family-region-fill);
 		stroke: none;
+	}
+
+	.green-region {
+		fill: url(#family-region-fill);
+		stroke: var(--plot-violet);
+		stroke-width: 2.8;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.boundary-arrowhead {
+		fill: var(--plot-violet);
+	}
+
+	.field-arrow-line {
+		stroke: var(--plot-blue);
+		stroke-width: 2.1;
+		stroke-linecap: round;
+	}
+
+	.field-arrowhead {
+		fill: var(--plot-blue);
+	}
+
+	.orientation-label {
+		fill: var(--color-ink-faint);
+		font-family: var(--font-sans);
+		font-size: 12px;
+		font-weight: 650;
 	}
 
 	.density-curve {
@@ -417,7 +498,6 @@
 		stroke-linecap: round;
 	}
 
-	.curl-arrow,
 	.flux-arrow {
 		fill: none;
 		stroke: var(--plot-blue);
@@ -478,13 +558,6 @@
 
 	.boundary-caption {
 		fill: var(--plot-violet);
-	}
-
-	.label-leader {
-		fill: none;
-		stroke: var(--plot-violet);
-		stroke-width: 1.2;
-		stroke-opacity: 0.65;
 	}
 
 	.equation-flow {
