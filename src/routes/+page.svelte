@@ -221,6 +221,27 @@
 		z-index: 0;
 	}
 
+	:global(html[data-theme='dark']) .hero {
+		background:
+			radial-gradient(126% 96% at 8% 12%, rgba(64, 105, 175, 0.16) 0%, transparent 56%),
+			radial-gradient(118% 92% at 95% 14%, rgba(192, 132, 252, 0.08) 0%, transparent 64%),
+			linear-gradient(180deg, #171a24 0%, #141720 48%, #12151d 78%, var(--color-paper) 100%);
+	}
+
+	:global(html[data-theme='dark']) .hero::before {
+		background: radial-gradient(circle, rgba(96, 165, 250, 0.13) 0%, rgba(96, 165, 250, 0) 70%);
+	}
+
+	:global(html[data-theme='dark']) .hero::after {
+		background: linear-gradient(
+			180deg,
+			rgba(17, 19, 26, 0) 0%,
+			rgba(17, 19, 26, 0.48) 45%,
+			rgba(17, 19, 26, 0.84) 78%,
+			var(--color-paper) 100%
+		);
+	}
+
 	.hero::before {
 		width: min(42rem, 72vw);
 		aspect-ratio: 1;

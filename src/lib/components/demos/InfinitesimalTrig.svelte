@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { getPlotTheme, THEME_CHANGE_EVENT } from '$lib/utils/theme';
+
 	let canvasSin: HTMLCanvasElement | undefined;
 	let canvasCos: HTMLCanvasElement | undefined;
 
@@ -10,12 +13,6 @@
 	let angle = $derived(D_MIN * Math.pow(D_MAX / D_MIN, angleSlider / 100));
 	let sineRatio = $derived(Math.sin(angle) / angle);
 	let cosineRatio = $derived((1 - Math.cos(angle)) / angle);
-
-	const PURPLE = '#a855f7';
-	const RED = '#ef4444';
-	const BLUE = '#3b82f6';
-	const INK = '#1a1a2e';
-	const FAINT = '#d0cec8';
 
 	function redraw() {
 		drawSine();
@@ -48,6 +45,7 @@
 	function drawSine() {
 		if (!canvasSin) return;
 		const ctx = canvasSin.getContext('2d')!;
+		const theme = getPlotTheme();
 		const dpr = window.devicePixelRatio || 1;
 		const rect = canvasSin.getBoundingClientRect();
 		const W = rect.width * dpr;
@@ -110,11 +108,11 @@
 		const toY = (y: number) => H - ((y - vyMin) / (vyMax - vyMin)) * H;
 
 		ctx.clearRect(0, 0, W, H);
-		ctx.fillStyle = '#fdfbf7';
+		ctx.fillStyle = theme.background;
 		ctx.fillRect(0, 0, W, H);
 
 		// x-axis
-		ctx.strokeStyle = FAINT;
+		ctx.strokeStyle = theme.axis;
 		ctx.lineWidth = 1 * dpr;
 		ctx.beginPath();
 		ctx.moveTo(toX(vxMin), toY(0));
@@ -125,14 +123,14 @@
 		const cx = toX(0),
 			cy = toY(0);
 		const rPx = toX(1) - toX(0);
-		ctx.strokeStyle = '#cbc5bb';
+		ctx.strokeStyle = theme.axis;
 		ctx.lineWidth = 1.35 * dpr;
 		ctx.beginPath();
 		ctx.arc(cx, cy, rPx, 0, Math.PI * 2);
 		ctx.stroke();
 
 		// Radius line from origin to point on circle
-		ctx.strokeStyle = '#b0ada6';
+		ctx.strokeStyle = theme.muted;
 		ctx.lineWidth = 1.2 * dpr;
 		ctx.beginPath();
 		ctx.moveTo(toX(0), toY(0));
@@ -140,14 +138,14 @@
 		ctx.stroke();
 
 		// The highlighted arc from (1,0) to (cos d, sin d) — PURPLE
-		ctx.strokeStyle = PURPLE;
+		ctx.strokeStyle = theme.violet;
 		ctx.lineWidth = (2.8 + 0.8 * tinyProgress) * dpr;
 		ctx.beginPath();
 		ctx.arc(cx, cy, rPx, -theta, 0);
 		ctx.stroke();
 
 		// The sin(d) vertical line: from (cos d, 0) to (cos d, sin d) — RED
-		ctx.strokeStyle = RED;
+		ctx.strokeStyle = theme.rose;
 		ctx.lineWidth = 3 * dpr;
 		ctx.beginPath();
 		ctx.moveTo(toX(cosTheta), toY(0));
@@ -155,12 +153,12 @@
 		ctx.stroke();
 
 		// Points
-		ctx.fillStyle = INK;
+		ctx.fillStyle = theme.ink;
 		ctx.beginPath();
 		ctx.arc(toX(1), toY(0), 3 * dpr, 0, Math.PI * 2);
 		ctx.fill();
 
-		ctx.fillStyle = PURPLE;
+		ctx.fillStyle = theme.violet;
 		ctx.beginPath();
 		ctx.arc(toX(cosTheta), toY(sinTheta), 4 * dpr, 0, Math.PI * 2);
 		ctx.fill();
@@ -169,12 +167,12 @@
 		ctx.font = `600 ${11 * dpr}px Inter, system-ui, sans-serif`;
 
 		// "sin d" label — to the LEFT of the vertical red line
-		ctx.fillStyle = RED;
+		ctx.fillStyle = theme.rose;
 		ctx.textAlign = 'right';
 		ctx.fillText('sin θ', toX(cosTheta) - 6 * dpr, toY(sinTheta / 2));
 
 		// "arc = d" label — to the RIGHT of the arc
-		ctx.fillStyle = PURPLE;
+		ctx.fillStyle = theme.violet;
 		ctx.textAlign = 'center';
 		const midAngle = theta / 2;
 		const labelR = 1 + vRange * 0.05;
@@ -185,7 +183,7 @@
 		// Difference percentage
 		const diff = Math.abs(theta - sinTheta);
 		const pct = theta > 0 ? (diff / theta) * 100 : 0;
-		ctx.fillStyle = '#94919b';
+		ctx.fillStyle = theme.muted;
 		ctx.font = `${10 * dpr}px Inter, system-ui, sans-serif`;
 		ctx.textAlign = 'right';
 		ctx.fillText(`diff: ${pct.toFixed(pct < 0.1 ? 3 : 1)}%`, W - 6 * dpr, 14 * dpr);
@@ -193,7 +191,7 @@
 		// Zoom badge to make scale changes explicit.
 		const visibleZoom = fullRange / vRange;
 		ctx.textAlign = 'left';
-		ctx.fillStyle = '#8f8a98';
+		ctx.fillStyle = theme.muted;
 		ctx.fillText(
 			`zoom ×${visibleZoom >= 10 ? visibleZoom.toFixed(0) : visibleZoom.toFixed(1)}`,
 			6 * dpr,
@@ -204,6 +202,7 @@
 	function drawCosine() {
 		if (!canvasCos) return;
 		const ctx = canvasCos.getContext('2d')!;
+		const theme = getPlotTheme();
 		const dpr = window.devicePixelRatio || 1;
 		const rect = canvasCos.getBoundingClientRect();
 		const W = rect.width * dpr;
@@ -225,11 +224,11 @@
 		const toY = (y: number) => H - ((y - vMin) / vRange) * H;
 
 		ctx.clearRect(0, 0, W, H);
-		ctx.fillStyle = '#fdfbf7';
+		ctx.fillStyle = theme.background;
 		ctx.fillRect(0, 0, W, H);
 
 		// Axes
-		ctx.strokeStyle = FAINT;
+		ctx.strokeStyle = theme.axis;
 		ctx.lineWidth = 1 * dpr;
 		ctx.beginPath();
 		ctx.moveTo(toX(vMin), toY(0));
@@ -244,14 +243,14 @@
 		const cx = toX(0),
 			cy = toY(0);
 		const rPx = toX(1) - toX(0);
-		ctx.strokeStyle = '#cdc7be';
+		ctx.strokeStyle = theme.axis;
 		ctx.lineWidth = 1.8 * dpr;
 		ctx.beginPath();
 		ctx.arc(cx, cy, rPx, 0, Math.PI * 2);
 		ctx.stroke();
 
 		// Radius line from origin to point on circle (thin)
-		ctx.strokeStyle = '#b0ada6';
+		ctx.strokeStyle = theme.muted;
 		ctx.lineWidth = 1.2 * dpr;
 		ctx.beginPath();
 		ctx.moveTo(toX(0), toY(0));
@@ -259,7 +258,7 @@
 		ctx.stroke();
 
 		// cos(d) horizontal segment: from origin to (cos d, 0) — BLUE, thick
-		ctx.strokeStyle = BLUE;
+		ctx.strokeStyle = theme.blue;
 		ctx.lineWidth = 3.5 * dpr;
 		ctx.beginPath();
 		ctx.moveTo(toX(0), toY(0));
@@ -267,7 +266,7 @@
 		ctx.stroke();
 
 		// Dashed vertical from (cos d, 0) up to (cos d, sin d)
-		ctx.strokeStyle = '#b0ada6';
+		ctx.strokeStyle = theme.muted;
 		ctx.lineWidth = 1 * dpr;
 		ctx.setLineDash([4 * dpr, 3 * dpr]);
 		ctx.beginPath();
@@ -277,7 +276,7 @@
 		ctx.setLineDash([]);
 
 		// Tick mark at x = 1 on the axis
-		ctx.strokeStyle = '#94919b';
+		ctx.strokeStyle = theme.muted;
 		ctx.lineWidth = 1 * dpr;
 		ctx.beginPath();
 		ctx.moveTo(toX(1), toY(0) - 4 * dpr);
@@ -285,11 +284,11 @@
 		ctx.stroke();
 
 		// Points
-		ctx.fillStyle = BLUE;
+		ctx.fillStyle = theme.blue;
 		ctx.beginPath();
 		ctx.arc(toX(cosTheta), toY(0), 4 * dpr, 0, Math.PI * 2);
 		ctx.fill();
-		ctx.fillStyle = PURPLE;
+		ctx.fillStyle = theme.violet;
 		ctx.beginPath();
 		ctx.arc(toX(cosTheta), toY(sinTheta), 4 * dpr, 0, Math.PI * 2);
 		ctx.fill();
@@ -298,12 +297,12 @@
 		ctx.font = `600 ${11 * dpr}px Inter, system-ui, sans-serif`;
 
 		// "cos d" below the blue segment
-		ctx.fillStyle = BLUE;
+		ctx.fillStyle = theme.blue;
 		ctx.textAlign = 'center';
 		ctx.fillText('cos θ', toX(cosTheta / 2), toY(0) + 18 * dpr);
 
 		// "1" at the tick mark
-		ctx.fillStyle = '#94919b';
+		ctx.fillStyle = theme.muted;
 		ctx.font = `${10 * dpr}px Inter, system-ui, sans-serif`;
 		ctx.textAlign = 'center';
 		ctx.fillText('1', toX(1), toY(0) + 18 * dpr);
@@ -311,9 +310,14 @@
 		// cos(d) value in top corner
 		ctx.font = `${10 * dpr}px Inter, system-ui, sans-serif`;
 		ctx.textAlign = 'right';
-		ctx.fillStyle = '#94919b';
+		ctx.fillStyle = theme.muted;
 		ctx.fillText(`cos θ = ${cosTheta.toFixed(4)}`, W - 6 * dpr, 14 * dpr);
 	}
+
+	onMount(() => {
+		window.addEventListener(THEME_CHANGE_EVENT, redraw);
+		return () => window.removeEventListener(THEME_CHANGE_EVENT, redraw);
+	});
 </script>
 
 <div class="demo-container content-width">
@@ -386,8 +390,8 @@
 				></canvas>
 			</div>
 			<p class="panel-subtitle">
-				The <strong style="color:#ef4444">red line</strong> (sin θ) and the
-				<strong style="color:#a855f7">purple arc</strong> (length θ) approach one another as θ shrinks.
+				The <strong style="color:var(--plot-rose)">red line</strong> (sin θ) and the
+				<strong style="color:var(--plot-violet)">purple arc</strong> (length θ) approach one another as θ shrinks.
 			</p>
 		</div>
 		<div class="panel">
@@ -399,7 +403,7 @@
 				></canvas>
 			</div>
 			<p class="panel-subtitle">
-				The <strong style="color:#3b82f6">blue gap</strong> (1 − cos θ) shrinks faster than θ. The first-order
+				The <strong style="color:var(--plot-blue)">blue gap</strong> (1 − cos θ) shrinks faster than θ. The first-order
 				model discards this gap.
 			</p>
 		</div>

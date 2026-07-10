@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { ensureJSXGraph } from '$lib/utils/jsxgraph-loader';
+	import { getPlotTheme, THEME_CHANGE_EVENT } from '$lib/utils/theme';
 
 	interface Props {
 		/** Function that receives the JXG global and the board, and draws on it. */
@@ -47,8 +48,10 @@
 
 		const init = async () => {
 			try {
+				loadError = false;
 				jxg = await ensureJSXGraph();
 				if (disposed) return;
+				const theme = getPlotTheme();
 
 				board = jxg.JSXGraph.initBoard(boardId, {
 					boundingbox,
@@ -66,17 +69,17 @@
 					defaultAxes: {
 						x: {
 							ticks: {
-								strokeColor: '#ccc8bf',
+								strokeColor: theme.axis,
 								label: { fontSize: 11, cssClass: 'jsx-tick-label', anchorX: 'middle' }
 							},
-							strokeColor: '#ccc8bf'
+							strokeColor: theme.axis
 						},
 						y: {
 							ticks: {
-								strokeColor: '#ccc8bf',
+								strokeColor: theme.axis,
 								label: { fontSize: 11, cssClass: 'jsx-tick-label', anchorX: 'right' }
 							},
-							strokeColor: '#ccc8bf'
+							strokeColor: theme.axis
 						}
 					}
 				});
@@ -88,10 +91,21 @@
 			}
 		};
 
+		const handleThemeChange = () => {
+			if (disposed || !jxg) return;
+			if (board) {
+				jxg.JSXGraph.freeBoard(board);
+				board = null;
+			}
+			void init();
+		};
+
+		window.addEventListener(THEME_CHANGE_EVENT, handleThemeChange);
 		void init();
 
 		return () => {
 			disposed = true;
+			window.removeEventListener(THEME_CHANGE_EVENT, handleThemeChange);
 			if (board && jxg) {
 				try {
 					jxg.JSXGraph.freeBoard(board);
@@ -135,7 +149,7 @@
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.5rem;
 		overflow: hidden;
-		background: white;
+		background: var(--plot-background);
 		display: grid;
 		place-items: center;
 	}
@@ -153,7 +167,7 @@
 	}
 
 	.jsx-board-wrapper :global(.jxgbox) {
-		background: white !important;
+		background: var(--plot-background) !important;
 	}
 
 	/* Hide JSXGraph default navigation */
@@ -164,7 +178,7 @@
 	/* Style tick labels */
 	.jsx-board-wrapper :global(.jsx-tick-label) {
 		font-family: var(--font-sans) !important;
-		fill: #aaa !important;
+		fill: var(--plot-muted) !important;
 	}
 
 	/* Style text elements */

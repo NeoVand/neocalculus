@@ -141,7 +141,7 @@
 		font-weight: 700;
 		letter-spacing: 0.07em;
 		text-transform: uppercase;
-		color: #065f46;
+		color: var(--color-success);
 		background: rgba(16, 185, 129, 0.16);
 		border: 1px solid rgba(16, 185, 129, 0.25);
 		padding: 0.14rem 0.4rem;
@@ -174,7 +174,7 @@
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.55rem;
 		padding: 0.5rem 0.56rem;
-		background: white;
+		background: var(--color-surface);
 	}
 
 	.dependency-node.lane-bridge {

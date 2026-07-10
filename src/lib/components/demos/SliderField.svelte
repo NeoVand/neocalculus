@@ -9,6 +9,7 @@
 		decimals?: number;
 		value?: number;
 		tone?: 'violet' | 'blue' | 'teal' | 'amber' | 'rose';
+		oninput?: () => void;
 	}
 
 	let {
@@ -20,7 +21,8 @@
 		id,
 		decimals = 2,
 		value = $bindable(0),
-		tone = 'violet'
+		tone = 'violet',
+		oninput
 	}: Props = $props();
 
 	let display = $derived(value.toFixed(decimals));
@@ -42,6 +44,7 @@
 		{max}
 		{step}
 		bind:value
+		oninput={() => oninput?.()}
 	/>
 	{#if hint}
 		<div class="demo-field-hint">{hint}</div>

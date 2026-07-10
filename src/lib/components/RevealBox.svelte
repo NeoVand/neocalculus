@@ -103,6 +103,6 @@
 	}
 
 	.tone-warning .reveal-title {
-		color: #b42318;
+		color: var(--plot-rose);
 	}
 </style>

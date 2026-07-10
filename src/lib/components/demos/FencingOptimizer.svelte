@@ -259,7 +259,7 @@
 	}
 
 	.feedback.found {
-		color: #047857;
+		color: var(--color-success);
 		font-weight: 650;
 	}
 

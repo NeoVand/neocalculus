@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import Katex from '$lib/components/Katex.svelte';
+	import { getPlotTheme, THEME_CHANGE_EVENT } from '$lib/utils/theme';
 
 	let canvas: HTMLCanvasElement;
 	let container: HTMLDivElement;
@@ -60,6 +62,7 @@
 		if (!canvas) return;
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
+		const theme = getPlotTheme();
 
 		const dpr = window.devicePixelRatio || 1;
 		const rect = canvas.getBoundingClientRect();
@@ -98,11 +101,11 @@
 		ctx.clearRect(0, 0, w, h);
 
 		// Background
-		ctx.fillStyle = '#FDFBF7';
+		ctx.fillStyle = theme.background;
 		ctx.fillRect(0, 0, w, h);
 
 		// Grid — subtle, thin lines
-		ctx.strokeStyle = '#f0ece4';
+		ctx.strokeStyle = theme.grid;
 		ctx.lineWidth = 0.5 * dpr;
 		const gridStep = getGridStep(rangeX * 2);
 		const gridXStart = Math.floor(xMin / gridStep) * gridStep;
@@ -123,7 +126,7 @@
 
 		// Axes
 		if (xMin <= 0 && xMax >= 0) {
-			ctx.strokeStyle = '#d4d0c8';
+			ctx.strokeStyle = theme.axis;
 			ctx.lineWidth = 1 * dpr;
 			ctx.beginPath();
 			ctx.moveTo(toX(0), 0);
@@ -131,7 +134,7 @@
 			ctx.stroke();
 		}
 		if (yMin <= 0 && yMax >= 0) {
-			ctx.strokeStyle = '#d4d0c8';
+			ctx.strokeStyle = theme.axis;
 			ctx.lineWidth = 1 * dpr;
 			ctx.beginPath();
 			ctx.moveTo(0, toY(0));
@@ -141,7 +144,7 @@
 
 		// Curve (drawn first, below tangent) — skip NaN/Infinity points
 		const isConverged = zoom >= 80;
-		ctx.strokeStyle = isConverged ? '#a855f7' : '#1a1a2e';
+		ctx.strokeStyle = isConverged ? theme.violet : theme.ink;
 		ctx.lineWidth = 2.5 * dpr;
 		const steps = 600;
 		let penDown = false;
@@ -163,7 +166,8 @@
 		if (showTangent && validCenter) {
 			const slope = curve.dfn(cx);
 			ctx.beginPath();
-			ctx.strokeStyle = zoom >= 80 ? 'rgba(168, 85, 247, 0.9)' : 'rgba(168, 85, 247, 0.5)';
+			ctx.strokeStyle = theme.violet;
+			ctx.globalAlpha = zoom >= 80 ? 0.95 : 0.58;
 			ctx.lineWidth = (zoom >= 80 ? 3 : 2) * dpr;
 			ctx.setLineDash(zoom >= 80 ? [] : [8 * dpr, 6 * dpr]);
 			if (!isFinite(slope) || Math.abs(slope) > 1000) {
@@ -176,17 +180,18 @@
 				ctx.lineTo(toX(xMax), toY(tangentY(xMax)));
 			}
 			ctx.stroke();
+			ctx.globalAlpha = 1;
 			ctx.setLineDash([]);
 		}
 
 		// Center point — only if valid
 		if (validCenter) {
 			ctx.beginPath();
-			ctx.fillStyle = '#a855f7';
+			ctx.fillStyle = theme.violet;
 			ctx.arc(toX(cx), toY(cy), 5 * dpr, 0, Math.PI * 2);
 			ctx.fill();
 			ctx.beginPath();
-			ctx.fillStyle = 'white';
+			ctx.fillStyle = theme.outline;
 			ctx.arc(toX(cx), toY(cy), 2.5 * dpr, 0, Math.PI * 2);
 			ctx.fill();
 		}
@@ -219,6 +224,11 @@
 		canvas = node;
 		redrawNext();
 	}
+
+	onMount(() => {
+		window.addEventListener(THEME_CHANGE_EVENT, redrawNext);
+		return () => window.removeEventListener(THEME_CHANGE_EVENT, redrawNext);
+	});
 </script>
 
 <div class="demo-container content-width">
@@ -317,7 +327,7 @@
 		padding: 0.38rem 0.3rem;
 		border-radius: 0.5rem;
 		border: 1px solid var(--color-border-light);
-		background: white;
+		background: var(--color-surface);
 		color: var(--color-ink-light);
 		cursor: pointer;
 		transition: all 0.12s ease;
@@ -382,7 +392,7 @@
 		padding: 0.28rem 0.65rem;
 		border-radius: 999px;
 		border: 1.5px solid var(--color-border);
-		background: white;
+		background: var(--color-surface);
 		color: var(--color-ink-faint);
 		cursor: pointer;
 		transition: all 0.12s ease;

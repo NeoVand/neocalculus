@@ -373,7 +373,7 @@
 
 			<Exercise number={6}>
 				<p>
-					With upward positive and <Katex math={r`a=-10\ \mathrm{m/s^2`} />, a ball is thrown
+					With upward positive and <Katex math={r`a=-10\ \mathrm{m/s^2}`} />, a ball is thrown
 					upward from a 15-metre platform at <Katex math={r`10\ \mathrm{m/s}`} />. Find its height
 					and velocity after one second.
 				</p>

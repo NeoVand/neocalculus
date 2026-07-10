@@ -70,14 +70,14 @@
 		font-weight: 700;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
-		color: #854d0e;
+		color: var(--plot-amber);
 	}
 
 	.wormhole-return-label {
 		font-family: var(--font-sans);
 		font-size: 0.74rem;
 		font-weight: 600;
-		color: #78350f;
+		color: var(--color-ink-light);
 	}
 
 	@media (max-width: 768px) {

@@ -243,11 +243,11 @@
 		max-width: 34rem;
 		width: min(34rem, 100%);
 		padding: 0.78rem 0.76rem 0.72rem;
-		border: 1px solid color-mix(in srgb, var(--color-border) 82%, #9ec5fe 18%);
+		border: 1px solid color-mix(in srgb, var(--color-border) 82%, var(--plot-blue) 18%);
 		border-radius: 0.9rem;
 		background:
-			radial-gradient(circle at 90% 6%, rgba(30, 144, 255, 0.06), transparent 36%),
-			linear-gradient(165deg, #ffffff 0%, #fbfcff 55%, #f8f8ff 100%);
+			radial-gradient(circle at 90% 6%, color-mix(in srgb, var(--plot-blue) 8%, transparent), transparent 36%),
+			linear-gradient(165deg, var(--color-surface-raised) 0%, var(--color-surface) 100%);
 		text-align: left;
 		animation: float-down 1.2s var(--ease-out-expo);
 	}
@@ -309,7 +309,7 @@
 
 	.toc-card li button:hover,
 	.toc-mobile-drawer li button:hover {
-		background: color-mix(in srgb, var(--color-d-soft) 54%, white 46%);
+		background: color-mix(in srgb, var(--color-d-soft) 54%, var(--color-surface) 46%);
 	}
 
 	.toc-card .toc-number {
@@ -379,12 +379,12 @@
 		display: none;
 		width: min(17.5rem, calc(100vw - 1.5rem));
 		padding: 0.68rem;
-		border: 1px solid color-mix(in srgb, var(--color-border-light) 78%, white 22%);
+		border: 1px solid color-mix(in srgb, var(--color-border-light) 78%, var(--color-surface) 22%);
 		border-radius: 0.95rem;
 		background:
-			radial-gradient(circle at 94% 6%, rgba(168, 85, 247, 0.08), transparent 45%),
-			linear-gradient(172deg, rgba(255, 255, 255, 0.97), rgba(251, 250, 255, 0.95));
-		box-shadow: 0 14px 30px rgba(18, 24, 33, 0.1);
+			radial-gradient(circle at 94% 6%, var(--color-d-glow), transparent 45%),
+			linear-gradient(172deg, color-mix(in srgb, var(--color-surface-raised) 97%, transparent), color-mix(in srgb, var(--color-surface) 95%, transparent));
+		box-shadow: 0 14px 30px var(--color-shadow);
 		backdrop-filter: blur(2px);
 		overflow: clip;
 		--toc-motion: cubic-bezier(0.22, 1, 0.36, 1);
@@ -441,8 +441,8 @@
 		height: 1.9rem;
 		border: none;
 		border-radius: 0.58rem;
-		background: color-mix(in srgb, var(--color-d-soft) 60%, white 40%);
-		color: color-mix(in srgb, var(--color-d) 82%, #6d28d9 18%);
+		background: color-mix(in srgb, var(--color-d-soft) 60%, var(--color-surface) 40%);
+		color: var(--color-d);
 		display: grid;
 		place-items: center;
 		flex-shrink: 0;
@@ -454,11 +454,11 @@
 	}
 
 	.toc-rail-collapse:hover {
-		background: color-mix(in srgb, var(--color-d-soft) 78%, white 22%);
+		background: color-mix(in srgb, var(--color-d-soft) 78%, var(--color-surface) 22%);
 	}
 
 	.toc-rail-collapse:focus-visible {
-		outline: 2px solid color-mix(in srgb, var(--color-d) 70%, white 30%);
+		outline: 2px solid color-mix(in srgb, var(--color-d) 70%, var(--color-surface) 30%);
 		outline-offset: 2px;
 	}
 
@@ -526,7 +526,7 @@
 
 	.toc-rail-meter {
 		height: 0.32rem;
-		background: color-mix(in srgb, var(--color-d-soft) 72%, white 28%);
+		background: color-mix(in srgb, var(--color-d-soft) 72%, var(--color-surface) 28%);
 		border-radius: 999px;
 		overflow: hidden;
 	}
@@ -585,12 +585,12 @@
 		min-width: 12rem;
 		max-width: min(18rem, calc(100vw - 2rem));
 		border: 1px solid var(--color-border);
-		background: white;
+		background: var(--color-surface-raised);
 		border-radius: 0.85rem;
 		padding: 0.48rem 0.62rem;
 		text-align: left;
 		cursor: pointer;
-		box-shadow: 0 10px 24px rgba(18, 24, 33, 0.16);
+		box-shadow: 0 10px 24px var(--color-shadow);
 	}
 
 	.toc-mobile-meta {
@@ -635,9 +635,9 @@
 		max-height: 76vh;
 		overflow-y: auto;
 		padding: 1rem 1rem 1.35rem;
-		background: white;
+		background: var(--color-surface-raised);
 		border-radius: 1rem 1rem 0 0;
-		box-shadow: 0 -12px 36px rgba(18, 24, 33, 0.18);
+		box-shadow: 0 -12px 36px var(--color-shadow);
 	}
 
 	.toc-mobile-drawer header {

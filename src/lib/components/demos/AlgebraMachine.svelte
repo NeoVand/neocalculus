@@ -292,7 +292,7 @@
 		padding: 0.35rem 0.85rem;
 		border-radius: 999px;
 		border: 1px solid var(--color-border);
-		background: white;
+		background: var(--color-surface);
 		color: var(--color-ink-light);
 		cursor: pointer;
 		transition: all 0.15s ease;

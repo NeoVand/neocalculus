@@ -64,7 +64,7 @@
 	.translation-pane {
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.6rem;
-		background: white;
+		background: var(--color-surface);
 		padding: 0.8rem;
 	}
 

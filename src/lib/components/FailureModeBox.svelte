@@ -45,7 +45,7 @@
 		font-weight: 700;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
-		color: #b42318;
+		color: var(--plot-rose);
 		margin-bottom: 0.55rem;
 	}
 

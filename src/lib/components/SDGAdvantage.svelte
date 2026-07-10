@@ -34,7 +34,7 @@
 		font-weight: 700;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
-		color: #a855f7;
+		color: var(--color-d);
 		margin-bottom: 0.6rem;
 		display: flex;
 		align-items: center;
@@ -42,7 +42,7 @@
 	}
 
 	.sdg-advantage-header svg {
-		color: #a855f7;
+		color: var(--color-d);
 		flex-shrink: 0;
 		opacity: 0.8;
 	}
@@ -61,6 +61,6 @@
 	}
 
 	.sdg-advantage-content :global(strong) {
-		color: #a855f7;
+		color: var(--color-d);
 	}
 </style>

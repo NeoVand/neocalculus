@@ -43,7 +43,7 @@
 		font-weight: 700;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
-		color: #854d0e;
+		color: var(--plot-amber);
 		background: #fef3c7;
 		border: 1px solid #fde68a;
 		padding: 0.16rem 0.35rem;

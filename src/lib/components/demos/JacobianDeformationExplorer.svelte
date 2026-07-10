@@ -224,7 +224,7 @@
 		padding: 0.5rem;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.75rem;
-		background: #fff;
+		background: var(--color-surface);
 	}
 
 	svg {

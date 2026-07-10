@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Katex from '$lib/components/Katex.svelte';
+	import { getPlotTheme, THEME_CHANGE_EVENT } from '$lib/utils/theme';
 
 	const canvasId = 'slope-equation-canvas';
 	let canvasNode: HTMLCanvasElement | null = null;
@@ -80,6 +81,7 @@
 	function draw(canvas: HTMLCanvasElement) {
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
+		const theme = getPlotTheme();
 
 		const dpr = window.devicePixelRatio || 1;
 		const rect = canvas.getBoundingClientRect();
@@ -97,10 +99,10 @@
 		const toY = (y: number) => h - ((y - yMin) / (yMax - yMin)) * h;
 
 		ctx.clearRect(0, 0, w, h);
-		ctx.fillStyle = '#FDFBF7';
+		ctx.fillStyle = theme.background;
 		ctx.fillRect(0, 0, w, h);
 
-		ctx.strokeStyle = '#f0ece4';
+		ctx.strokeStyle = theme.grid;
 		ctx.lineWidth = 0.5 * dpr;
 		const gridStep = getGridStep(rangeX * 2);
 		const gridXStart = Math.floor(xMin / gridStep) * gridStep;
@@ -119,7 +121,7 @@
 		}
 
 		if (xMin <= 0 && xMax >= 0) {
-			ctx.strokeStyle = '#d4d0c8';
+			ctx.strokeStyle = theme.axis;
 			ctx.lineWidth = 1 * dpr;
 			ctx.beginPath();
 			ctx.moveTo(toX(0), 0);
@@ -127,7 +129,7 @@
 			ctx.stroke();
 		}
 		if (yMin <= 0 && yMax >= 0) {
-			ctx.strokeStyle = '#d4d0c8';
+			ctx.strokeStyle = theme.axis;
 			ctx.lineWidth = 1 * dpr;
 			ctx.beginPath();
 			ctx.moveTo(0, toY(0));
@@ -135,7 +137,7 @@
 			ctx.stroke();
 		}
 
-		ctx.strokeStyle = '#7c3aed';
+		ctx.strokeStyle = theme.violet;
 		ctx.lineWidth = 2.6 * dpr;
 		ctx.beginPath();
 		let penDown = false;
@@ -158,7 +160,7 @@
 		ctx.stroke();
 
 		ctx.beginPath();
-		ctx.strokeStyle = '#f97316';
+		ctx.strokeStyle = theme.amber;
 		ctx.lineWidth = 2.1 * dpr;
 		ctx.setLineDash([8 * dpr, 6 * dpr]);
 		const yLeft = yA + slopeA * (xMin - a);
@@ -174,17 +176,17 @@
 		const connTop = Math.min(yActual, yPred);
 		const connHeight = Math.abs(yActual - yPred);
 
-		ctx.fillStyle = '#2563eb';
+		ctx.fillStyle = theme.blue;
 		ctx.fillRect(x2 - 1.8 * dpr, connTop, 3.6 * dpr, connHeight);
 
 		ctx.beginPath();
-		ctx.fillStyle = '#2563eb';
+		ctx.fillStyle = theme.blue;
 		ctx.arc(x2, yActual, 5.7 * dpr, 0, Math.PI * 2);
 		ctx.fill();
 
 		const yDim = Math.min(h - 24 * dpr, Math.max(toY(0) + 18 * dpr, h * 0.78));
 		const xA = toX(a);
-		ctx.strokeStyle = '#64748b';
+		ctx.strokeStyle = theme.muted;
 		ctx.lineWidth = 1.7 * dpr;
 		ctx.beginPath();
 		ctx.moveTo(xA, yDim);
@@ -198,7 +200,7 @@
 		ctx.lineTo(x2, yDim + 5 * dpr);
 		ctx.stroke();
 
-		ctx.fillStyle = '#64748b';
+		ctx.fillStyle = theme.muted;
 		ctx.font = `${13 * dpr}px var(--font-serif)`;
 		ctx.textAlign = 'center';
 		ctx.fillText('a', xA, yDim + 20 * dpr);
@@ -213,9 +215,11 @@
 
 		resizeObserver = new ResizeObserver(() => requestDraw());
 		resizeObserver.observe(wrapperNode);
+		window.addEventListener(THEME_CHANGE_EVENT, requestDraw);
 		requestDraw();
 
 		return () => {
+			window.removeEventListener(THEME_CHANGE_EVENT, requestDraw);
 			if (resizeObserver) {
 				resizeObserver.disconnect();
 				resizeObserver = null;
@@ -357,14 +361,14 @@
 		font-weight: 700;
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
-		color: #8d86a0;
+		color: var(--color-ink-faint);
 	}
 
 	.hero-title {
 		font-family: var(--font-serif);
 		font-size: clamp(0.96rem, 1.5vw, 1.13rem);
 		letter-spacing: 0.01em;
-		color: #3f3655;
+		color: var(--color-ink);
 		line-height: 1.3;
 	}
 
@@ -372,8 +376,8 @@
 		display: grid;
 		gap: 0.32rem;
 		justify-items: center;
-		background: linear-gradient(180deg, #ffffff8c 0%, #f9f3ff99 100%);
-		border: 1px solid #e8def6;
+		background: color-mix(in srgb, var(--color-surface) 92%, var(--color-d) 8%);
+		border: 1px solid color-mix(in srgb, var(--color-border) 72%, var(--color-d) 28%);
 		border-radius: 1rem;
 		padding: 0.72rem 0.85rem;
 		margin: 0 0 0.7rem;
@@ -381,12 +385,12 @@
 
 	.equation-main :global(.katex) {
 		font-size: 1.36em;
-		color: #7c3aed;
+		color: var(--color-d);
 	}
 
 	.equation-sub :global(.katex) {
 		font-size: 1.03em;
-		color: #5b4d78;
+		color: var(--color-ink-light);
 	}
 
 	.verify-row,
@@ -411,8 +415,8 @@
 	}
 
 	.verify-cell-accent {
-		background: linear-gradient(180deg, #fffaf5 0%, #fff5ef 100%);
-		border-color: #f1d5bf;
+		background: color-mix(in srgb, var(--color-surface) 91%, var(--plot-amber) 9%);
+		border-color: color-mix(in srgb, var(--color-border) 68%, var(--plot-amber) 32%);
 	}
 
 	.verify-label,
@@ -422,7 +426,7 @@
 		font-weight: 700;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: #8a819d;
+		color: var(--color-ink-faint);
 	}
 
 	.verify-value,
@@ -430,7 +434,7 @@
 		font-family: var(--font-mono);
 		font-size: 1rem;
 		font-weight: 700;
-		color: #1f1836;
+		color: var(--color-ink);
 		font-variant-numeric: tabular-nums;
 	}
 
@@ -438,7 +442,7 @@
 		font-family: var(--font-serif);
 		font-size: 0.75rem;
 		font-style: italic;
-		color: #7f7397;
+		color: var(--color-ink-light);
 	}
 
 	.plot-key {
@@ -470,15 +474,15 @@
 	}
 
 	.key-line.curve {
-		background: #7c3aed;
+		background: var(--plot-violet);
 	}
 
 	.key-line.tangent {
-		background: #f97316;
+		background: var(--plot-amber);
 	}
 
 	.key-line.gap {
-		background: #2563eb;
+		background: var(--plot-blue);
 	}
 
 	.canvas-wrapper {
@@ -489,8 +493,8 @@
 		border: 1px solid var(--tile-stroke);
 		position: relative;
 		margin: 0.35rem 0 0.72rem;
-		background: #fff;
-		box-shadow: inset 0 1px 0 #fff;
+		background: var(--color-surface);
+		box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-ink) 12%, transparent);
 	}
 
 	canvas {
@@ -502,8 +506,8 @@
 	.controls-panel {
 		display: grid;
 		gap: 0.22rem;
-		background: linear-gradient(180deg, #ffffff80 0%, #f5f3fb 100%);
-		border: 1px solid #e3dae9;
+		background: color-mix(in srgb, var(--color-surface) 94%, var(--color-d) 6%);
+		border: 1px solid var(--color-border);
 		border-radius: 1rem;
 		padding: 0.28rem 0.62rem 0.44rem;
 	}
@@ -520,7 +524,7 @@
 		font-family: var(--font-sans);
 		font-size: 0.74rem;
 		font-weight: 600;
-		color: #7e7590;
+		color: var(--color-ink-light);
 		white-space: nowrap;
 		min-width: 2rem;
 	}
@@ -533,7 +537,7 @@
 		font-family: var(--font-mono);
 		font-size: 0.8rem;
 		font-weight: 700;
-		color: #7c3aed;
+		color: var(--color-d);
 		min-width: 6.2em;
 		text-align: right;
 		font-variant-numeric: tabular-nums;

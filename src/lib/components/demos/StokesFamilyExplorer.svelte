@@ -155,7 +155,7 @@
 		padding: 0.55rem 0.45rem;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.65rem;
-		background: #fff;
+		background: var(--color-surface);
 		font-family: var(--font-sans);
 		color: var(--color-ink-light);
 		cursor: pointer;
@@ -194,7 +194,7 @@
 		padding: 0.4rem;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.75rem;
-		background: #fff;
+		background: var(--color-surface);
 	}
 
 	svg {

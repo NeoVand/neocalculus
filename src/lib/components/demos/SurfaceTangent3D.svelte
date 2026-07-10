@@ -1,14 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import DemoHeader from '$lib/components/demos/DemoHeader.svelte';
 	import DemoCard from '$lib/components/demos/DemoCard.svelte';
 	import SliderField from '$lib/components/demos/SliderField.svelte';
 	import EquationPanel from '$lib/components/demos/EquationPanel.svelte';
 	import Katex from '$lib/components/Katex.svelte';
+	import { getPlotTheme, THEME_CHANGE_EVENT } from '$lib/utils/theme';
 
-	let canvas: HTMLCanvasElement;
-	let host: HTMLDivElement;
-	let mounted = $state(false);
+	let canvas: HTMLCanvasElement | undefined;
 
 	let x0 = $state(0.7);
 	let y0 = $state(0.8);
@@ -58,6 +56,7 @@
 		if (!canvas) return;
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
+		const theme = getPlotTheme();
 
 		const dpr = window.devicePixelRatio || 1;
 		const rect = canvas.getBoundingClientRect();
@@ -67,10 +66,10 @@
 		canvas.height = H;
 
 		ctx.clearRect(0, 0, W, H);
-		ctx.fillStyle = '#ffffff';
+		ctx.fillStyle = theme.background;
 		ctx.fillRect(0, 0, W, H);
 
-		ctx.strokeStyle = '#efe9df';
+		ctx.strokeStyle = theme.grid;
 		ctx.lineWidth = 1.2;
 		for (let xv = -2.2; xv <= 2.2; xv += 0.4) {
 			ctx.beginPath();
@@ -105,14 +104,17 @@
 			else ctx.lineTo(p.x, p.y);
 		}
 		ctx.closePath();
-		ctx.fillStyle = 'rgba(168,85,247,0.18)';
+		ctx.fillStyle = theme.violet;
+		ctx.globalAlpha = 0.18;
 		ctx.fill();
-		ctx.strokeStyle = 'rgba(168,85,247,0.75)';
+		ctx.globalAlpha = 0.78;
+		ctx.strokeStyle = theme.violet;
 		ctx.lineWidth = 1.4;
 		ctx.stroke();
+		ctx.globalAlpha = 1;
 
 		const p0 = project(x0, y0, z0, W, H);
-		ctx.fillStyle = '#1a1a2e';
+		ctx.fillStyle = theme.ink;
 		ctx.beginPath();
 		ctx.arc(p0.x, p0.y, 4.2, 0, Math.PI * 2);
 		ctx.fill();
@@ -121,37 +123,47 @@
 		const gx = (fx / gradMag) * 0.95;
 		const gy = (fy / gradMag) * 0.95;
 		const gradEnd = project(x0 + gx, y0 + gy, z0 + fx * gx + fy * gy, W, H);
-		drawArrow(ctx, p0.x, p0.y, gradEnd.x, gradEnd.y, '#3b82f6', 2.2);
+		drawArrow(ctx, p0.x, p0.y, gradEnd.x, gradEnd.y, theme.blue, 2.2);
 
 		const nx = -fx;
 		const ny = -fy;
 		const nz = 1;
 		const nmag = Math.hypot(nx, ny, nz);
 		const normalEnd = project(x0 + (nx / nmag) * 0.9, y0 + (ny / nmag) * 0.9, z0 + (nz / nmag) * 0.9, W, H);
-		drawArrow(ctx, p0.x, p0.y, normalEnd.x, normalEnd.y, '#ef4444', 2.1);
+		drawArrow(ctx, p0.x, p0.y, normalEnd.x, normalEnd.y, theme.rose, 2.1);
 
 		ctx.font = `${11 * dpr}px Inter, system-ui, sans-serif`;
-		ctx.fillStyle = '#3b82f6';
+		ctx.fillStyle = theme.blue;
 		ctx.fillText('gradient direction', gradEnd.x + 6, gradEnd.y - 4);
-		ctx.fillStyle = '#ef4444';
+		ctx.fillStyle = theme.rose;
 		ctx.fillText('surface normal', normalEnd.x + 6, normalEnd.y - 4);
-		ctx.fillStyle = '#6b6875';
+		ctx.fillStyle = theme.muted;
 		ctx.fillText('purple patch: tangent plane', W * 0.05, H * 0.08);
 	}
 
-	$effect(() => {
-		x0;
-		y0;
-		if (mounted) draw();
-	});
+	function attachCanvas(node: HTMLCanvasElement) {
+		canvas = node;
+		requestAnimationFrame(draw);
+		return () => {
+			if (canvas === node) canvas = undefined;
+		};
+	}
 
-	onMount(() => {
-		mounted = true;
-		draw();
-		const ro = new ResizeObserver(() => draw());
-		ro.observe(host);
-		return () => ro.disconnect();
-	});
+	function scheduleDraw() {
+		requestAnimationFrame(draw);
+	}
+
+	function observeSurface(node: HTMLDivElement) {
+		const ro = new ResizeObserver(draw);
+		ro.observe(node);
+		window.addEventListener(THEME_CHANGE_EVENT, draw);
+		requestAnimationFrame(draw);
+		return () => {
+			ro.disconnect();
+			window.removeEventListener(THEME_CHANGE_EVENT, draw);
+		};
+	}
+
 </script>
 
 <div class="demo-container content-width">
@@ -167,6 +179,7 @@
 				max={1.8}
 				step={0.01}
 				decimals={2}
+				oninput={scheduleDraw}
 				bind:value={x0}
 			/>
 			<SliderField
@@ -177,14 +190,15 @@
 				max={1.8}
 				step={0.01}
 				decimals={2}
+				oninput={scheduleDraw}
 				bind:value={y0}
 			/>
 		</div>
 	</DemoCard>
 
 	<DemoCard title="Surface z = 0.34x² + 0.22y²">
-		<div bind:this={host} class="surface-wrap">
-			<canvas bind:this={canvas}></canvas>
+		<div class="surface-wrap" {@attach observeSurface}>
+			<canvas {@attach attachCanvas}></canvas>
 		</div>
 	</DemoCard>
 
@@ -208,6 +222,6 @@
 		width: 100%;
 		height: 100%;
 		display: block;
-		background: white;
+		background: var(--color-surface);
 	}
 </style>

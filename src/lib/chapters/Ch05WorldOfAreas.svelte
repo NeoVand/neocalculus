@@ -494,7 +494,7 @@
 		border: 1px solid color-mix(in srgb, var(--color-d) 24%, var(--color-border-light));
 		border-radius: 0.9rem;
 		overflow: hidden;
-		background: #fff;
+		background: var(--color-surface);
 		box-shadow: 0 12px 30px rgba(32, 27, 46, 0.06);
 	}
 
@@ -634,7 +634,7 @@
 		gap: 0.75rem;
 		padding: 0.85rem 1.25rem;
 		border-top: 1px solid var(--color-border-light);
-		background: #fafaf9;
+		background: var(--color-surface-subtle);
 		font-family: var(--font-sans);
 		color: var(--color-ink-light);
 	}

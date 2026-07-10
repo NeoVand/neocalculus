@@ -41,6 +41,56 @@
 	--w-content: 44rem;
 	--w-wide: 56rem;
 	--w-max: 72rem;
+	--color-surface: #ffffff;
+	--color-surface-raised: #fffefa;
+	--color-surface-subtle: #f8f6f1;
+	--color-surface-soft: #f8f6f1;
+	--color-shadow: rgba(24, 18, 31, 0.1);
+	--plot-background: #fdfbf7;
+	--plot-grid: #f0ece4;
+	--plot-axis: #d4d0c8;
+	--plot-ink: #1a1a2e;
+	--plot-muted: #77716a;
+	--plot-outline: #ffffff;
+	--plot-violet: #a855f7;
+	--plot-blue: #2563eb;
+	--plot-teal: #059669;
+	--plot-amber: #d97706;
+	--plot-rose: #ef4444;
+	color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+	--color-paper: #11131a;
+	--color-paper-warm: #171922;
+	--color-ink: #eeedf5;
+	--color-ink-light: #b9b7c8;
+	--color-ink-faint: #8e8a9e;
+	--color-d: #c084fc;
+	--color-d-glow: rgba(192, 132, 252, 0.16);
+	--color-d-soft: rgba(192, 132, 252, 0.08);
+	--color-vanish: #fb7185;
+	--color-result: #60a5fa;
+	--color-success: #34d399;
+	--color-border: #3a3d4b;
+	--color-border-light: #292c38;
+	--color-surface: #181b24;
+	--color-surface-raised: #20232e;
+	--color-surface-subtle: #151821;
+	--color-surface-soft: #151821;
+	--color-shadow: rgba(0, 0, 0, 0.34);
+	--plot-background: #151821;
+	--plot-grid: #242834;
+	--plot-axis: #454a5b;
+	--plot-ink: #eeedf5;
+	--plot-muted: #a5a2b3;
+	--plot-outline: #181b24;
+	--plot-violet: #c084fc;
+	--plot-blue: #60a5fa;
+	--plot-teal: #34d399;
+	--plot-amber: #fbbf24;
+	--plot-rose: #fb7185;
+	color-scheme: dark;
 }
 
 /* ═══════════════════════════════════════════
@@ -60,6 +110,9 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	overflow-x: hidden;
+	transition:
+		background-color 0.22s ease,
+		color 0.22s ease;
 }
 
 ::selection {
@@ -244,7 +297,7 @@ h4 {
    DERIVATION BLOCKS
    ═══════════════════════════════════════════ */
 .derivation {
-	background: white;
+	background: var(--color-surface);
 	border: 1px solid var(--color-border-light);
 	border-radius: 0.75rem;
 	padding: 1.5rem;
@@ -304,7 +357,7 @@ h4 {
 	width: 100%;
 	min-width: 0;
 	box-sizing: border-box;
-	background: white;
+	background: var(--color-surface);
 	border: 1px solid var(--color-border);
 	border-radius: 1rem;
 	padding: var(--space-md);
@@ -331,7 +384,7 @@ h4 {
 .demo-card {
 	border: 1px solid color-mix(in srgb, var(--color-border-light) 84%, var(--color-d) 16%);
 	border-radius: 0.8rem;
-	background: linear-gradient(145deg, #fff 0%, color-mix(in srgb, #fff 94%, var(--color-d-soft) 6%) 100%);
+	background: linear-gradient(145deg, var(--color-surface) 0%, color-mix(in srgb, var(--color-surface) 94%, var(--color-d-soft) 6%) 100%);
 	padding: 0.85rem 0.95rem;
 	min-width: 0;
 }
@@ -428,8 +481,8 @@ h4 {
 		90deg,
 		var(--slider-accent) 0%,
 		var(--slider-accent-end) var(--slider-progress),
-		#ebe7ef var(--slider-progress),
-		#ebe7ef 100%
+		var(--color-border) var(--slider-progress),
+		var(--color-border) 100%
 	);
 	box-shadow: inset 0 0 0 1px rgb(96 74 120 / 7%);
 }
@@ -441,8 +494,8 @@ h4 {
 		90deg,
 		var(--slider-accent) 0%,
 		var(--slider-accent-end) var(--slider-progress),
-		#ebe7ef var(--slider-progress),
-		#ebe7ef 100%
+		var(--color-border) var(--slider-progress),
+		var(--color-border) 100%
 	);
 	box-shadow: inset 0 0 0 1px rgb(96 74 120 / 7%);
 }
@@ -454,7 +507,7 @@ h4 {
 	width: 16px;
 	height: 16px;
 	border-radius: 999px;
-	border: 3px solid white;
+	border: 3px solid var(--color-surface);
 	background: var(--slider-accent);
 	box-shadow: 0 1px 4px rgb(65 38 88 / 22%), 0 0 0 1px color-mix(in srgb, var(--slider-accent) 42%, transparent);
 }
@@ -463,7 +516,7 @@ h4 {
 	width: 16px;
 	height: 16px;
 	border-radius: 999px;
-	border: 3px solid white;
+	border: 3px solid var(--color-surface);
 	background: var(--slider-accent);
 	box-shadow: 0 1px 4px rgb(65 38 88 / 22%), 0 0 0 1px color-mix(in srgb, var(--slider-accent) 42%, transparent);
 }
@@ -493,7 +546,7 @@ h4 {
 	height: 1.25rem;
 	border-radius: 999px;
 	border: 1px solid var(--color-border);
-	background: #f2eee6;
+	background: var(--color-border);
 	position: relative;
 	padding: 0;
 	box-sizing: border-box;
@@ -514,7 +567,7 @@ h4 {
 	width: calc(1.25rem - 4px);
 	height: calc(1.25rem - 4px);
 	border-radius: 999px;
-	background: #fff;
+	background: var(--color-surface-raised);
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 0 0 1px rgb(30 20 40 / 10%);
 	transition: transform 0.16s ease;
 }
@@ -531,7 +584,7 @@ h4 {
 .demo-equation-panel {
 	border: 1px solid var(--color-border-light);
 	border-radius: 0.75rem;
-	background: white;
+	background: var(--color-surface);
 	padding: 0.6rem 0.85rem;
 	margin-top: 0.75rem;
 	min-width: 0;
@@ -569,8 +622,8 @@ h4 {
 	border-radius: 0.75rem;
 	padding: 1.25rem var(--space-md);
 	margin: var(--space-md) 0;
-	background: linear-gradient(135deg, #faf5ff, #f5f3ff);
-	border: 1px solid #c4b5fd;
+	background: linear-gradient(135deg, color-mix(in srgb, var(--color-surface) 88%, var(--color-d) 12%), color-mix(in srgb, var(--color-surface) 94%, var(--color-d) 6%));
+	border: 1px solid color-mix(in srgb, var(--color-border) 62%, var(--color-d) 38%);
 }
 
 .callout-title {
@@ -609,8 +662,8 @@ h4 {
 .callout-theorem,
 .callout-key-idea,
 .callout-warning {
-	background: linear-gradient(135deg, #faf5ff, #f5f3ff);
-	border: 1px solid #c4b5fd;
+	background: linear-gradient(135deg, color-mix(in srgb, var(--color-surface) 88%, var(--color-d) 12%), color-mix(in srgb, var(--color-surface) 94%, var(--color-d) 6%));
+	border: 1px solid color-mix(in srgb, var(--color-border) 62%, var(--color-d) 38%);
 }
 
 .callout-definition .callout-title,
@@ -663,7 +716,7 @@ h4 {
 .inline-plot svg {
 	border: 1px solid var(--color-border-light);
 	border-radius: 0.75rem;
-	background: #fdfbf7;
+	background: var(--plot-background);
 }
 
 .inline-plot figcaption {
@@ -682,11 +735,11 @@ h4 {
 	border-radius: 0.75rem;
 	padding: 1.25rem var(--space-md);
 	margin: var(--space-sm) 0;
-	background: white;
+	background: var(--color-surface);
 }
 
 .exercise.exercise-extension {
-	background: linear-gradient(135deg, #fcfcfb, #f8f7f4);
+	background: linear-gradient(135deg, var(--color-surface), var(--color-surface-subtle));
 }
 
 .exercise.exercise-extension .exercise-header {
@@ -753,7 +806,7 @@ h4 {
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
-	background: linear-gradient(135deg, #fafaf9, #f5f5f4);
+	background: linear-gradient(135deg, var(--color-surface), var(--color-surface-subtle));
 }
 
 .exercises-group-title::-webkit-details-marker {
@@ -794,7 +847,7 @@ h4 {
 	border-radius: 0.75rem;
 	margin: var(--space-md) 0;
 	overflow: hidden;
-	background: linear-gradient(135deg, #fafaf9, #f5f5f4);
+	background: linear-gradient(135deg, var(--color-surface), var(--color-surface-subtle));
 }
 
 .dig-deeper summary {
@@ -1053,6 +1106,200 @@ h4 {
 }
 
 /* ═══════════════════════════════════════════
+   DARK READING MODE
+   ═══════════════════════════════════════════ */
+:root[data-theme='dark'] :where(
+		.proof-drawer,
+		.sdg-advantage,
+		.translation-box,
+		.standard-calc-box,
+		.looking-ahead,
+		.history-box,
+		.reveal-box,
+		.model-scope-box,
+		.chapter-shell-inner,
+		.dependency-details
+	) {
+	background: linear-gradient(135deg, var(--color-surface), var(--color-surface-subtle)) !important;
+	border-color: var(--color-border) !important;
+}
+
+:root[data-theme='dark'] :where(.failure-mode-box, .tone-warning, .chapter-shell-error .chapter-shell-inner) {
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-surface) 88%, var(--plot-rose) 12%),
+		var(--color-surface-subtle)
+	) !important;
+	border-color: color-mix(in srgb, var(--color-border) 65%, var(--plot-rose) 35%) !important;
+}
+
+:root[data-theme='dark'] :where(.tone-math, .sdg-advantage, .model-scope-box) {
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-surface) 88%, var(--color-d) 12%),
+		var(--color-surface-subtle)
+	) !important;
+	border-color: color-mix(in srgb, var(--color-border) 64%, var(--color-d) 36%) !important;
+}
+
+:root[data-theme='dark'] :where(.translation-pane, .proof-content, .dependency-node, .chapter-shell-button) {
+	background: var(--color-surface-raised) !important;
+	border-color: var(--color-border) !important;
+}
+
+:root[data-theme='dark'] :where(.wormhole-link, .wormhole-return) {
+	background: color-mix(in srgb, var(--color-surface-raised) 88%, var(--plot-amber) 12%) !important;
+	border-color: color-mix(in srgb, var(--color-border) 60%, var(--plot-amber) 40%) !important;
+	color: var(--color-ink) !important;
+}
+
+:root[data-theme='dark'] :where(.optimizer, .plot-shell) {
+	background: linear-gradient(145deg, var(--color-surface), var(--color-surface-subtle)) !important;
+	border-color: var(--color-border) !important;
+}
+
+:root[data-theme='dark'] :where(.optimizer-graphic, .diagram, .controls, .legend, .proof, .final-box) {
+	background: color-mix(in srgb, var(--color-surface) 94%, var(--color-d) 6%) !important;
+	border-color: var(--color-border) !important;
+}
+
+:root[data-theme='dark'] .slope-shell {
+	--panel-bg: linear-gradient(165deg, var(--color-surface) 0%, var(--color-surface-subtle) 100%);
+	--panel-stroke: var(--color-border);
+	--tile-bg: var(--color-surface-raised);
+	--tile-stroke: var(--color-border);
+	--tile-shadow: 0 12px 24px var(--color-shadow);
+}
+
+:root[data-theme='dark'] .slope-shell :where(.equation-block, .controls-panel, .verify-cell-accent) {
+	background: color-mix(in srgb, var(--color-surface) 91%, var(--color-d) 9%) !important;
+	border-color: var(--color-border) !important;
+}
+
+:root[data-theme='dark'] .slope-shell :where(.verify-cell, .stat-cell) {
+	background: var(--color-surface-raised) !important;
+	border-color: var(--color-border) !important;
+}
+
+:root[data-theme='dark'] :where(.canvas-overlay, .zoom-badge) {
+	background: color-mix(in srgb, var(--color-surface-raised) 90%, transparent) !important;
+	border-color: var(--color-border) !important;
+}
+
+:root[data-theme='dark'] input:not([type='range']),
+:root[data-theme='dark'] select,
+:root[data-theme='dark'] textarea {
+	background-color: var(--color-surface-raised);
+	border-color: var(--color-border);
+	color: var(--color-ink);
+}
+
+:root[data-theme='dark'] svg text {
+	fill: var(--plot-muted);
+}
+
+:root[data-theme='dark'] svg :where(.axis, .grid, .circle) {
+	stroke: var(--plot-axis) !important;
+}
+
+:root[data-theme='dark'] svg :where(.curve, .surface-curve, .function-curve) {
+	stroke: var(--plot-ink) !important;
+}
+
+:root[data-theme='dark'] svg [fill='white' i],
+:root[data-theme='dark'] svg [fill='#fff' i],
+:root[data-theme='dark'] svg [fill='#ffffff' i],
+:root[data-theme='dark'] svg [fill='#fdfbf7' i] {
+	fill: var(--plot-background) !important;
+}
+
+:root[data-theme='dark'] svg [stroke='#1a1a2e' i],
+:root[data-theme='dark'] svg [stroke='#222' i] {
+	stroke: var(--plot-ink) !important;
+}
+
+:root[data-theme='dark'] svg [fill='#1a1a2e' i],
+:root[data-theme='dark'] svg [fill='#222' i] {
+	fill: var(--plot-ink) !important;
+}
+
+:root[data-theme='dark'] svg [stroke='#f0ece4' i],
+:root[data-theme='dark'] svg [stroke='#efe9df' i],
+:root[data-theme='dark'] svg [stroke='#eee8f8' i],
+:root[data-theme='dark'] svg [stroke='#ece8e0' i],
+:root[data-theme='dark'] svg [stroke='#e5e1d8' i],
+:root[data-theme='dark'] svg [stroke='#e2ddd3' i],
+:root[data-theme='dark'] svg [stroke='#d4d0c8' i],
+:root[data-theme='dark'] svg [stroke='#d1d5db' i],
+:root[data-theme='dark'] svg [stroke='#c9c5bd' i],
+:root[data-theme='dark'] svg [stroke='#c8c2b8' i],
+:root[data-theme='dark'] svg [stroke='#b8b1a5' i] {
+	stroke: var(--plot-axis) !important;
+}
+
+:root[data-theme='dark'] svg [fill='#2563eb' i],
+:root[data-theme='dark'] svg [fill='#3b82f6' i] {
+	fill: var(--plot-blue) !important;
+}
+
+:root[data-theme='dark'] svg [stroke='#2563eb' i],
+:root[data-theme='dark'] svg [stroke='#3b82f6' i] {
+	stroke: var(--plot-blue) !important;
+}
+
+:root[data-theme='dark'] svg [fill='#a855f7' i],
+:root[data-theme='dark'] svg [fill='#7c3aed' i],
+:root[data-theme='dark'] svg [fill='#8b5cf6' i] {
+	fill: var(--plot-violet) !important;
+}
+
+:root[data-theme='dark'] svg [stroke='#a855f7' i],
+:root[data-theme='dark'] svg [stroke='#7c3aed' i],
+:root[data-theme='dark'] svg [stroke='#8b5cf6' i] {
+	stroke: var(--plot-violet) !important;
+}
+
+:root[data-theme='dark'] svg [fill='#059669' i],
+:root[data-theme='dark'] svg [fill='#0f766e' i] {
+	fill: var(--plot-teal) !important;
+}
+
+:root[data-theme='dark'] svg [stroke='#059669' i],
+:root[data-theme='dark'] svg [stroke='#0f766e' i] {
+	stroke: var(--plot-teal) !important;
+}
+
+:root[data-theme='dark'] svg [fill='#ef4444' i],
+:root[data-theme='dark'] svg [fill='#dc2626' i],
+:root[data-theme='dark'] svg [fill='#e11d48' i],
+:root[data-theme='dark'] svg [fill='#be123c' i] {
+	fill: var(--plot-rose) !important;
+}
+
+:root[data-theme='dark'] svg [stroke='#ef4444' i],
+:root[data-theme='dark'] svg [stroke='#dc2626' i],
+:root[data-theme='dark'] svg [stroke='#e11d48' i],
+:root[data-theme='dark'] svg [stroke='#be123c' i] {
+	stroke: var(--plot-rose) !important;
+}
+
+:root[data-theme='dark'] svg [fill='#d97706' i],
+:root[data-theme='dark'] svg [fill='#f59e0b' i],
+:root[data-theme='dark'] svg [fill='#f97316' i] {
+	fill: var(--plot-amber) !important;
+}
+
+:root[data-theme='dark'] svg [stroke='#d97706' i],
+:root[data-theme='dark'] svg [stroke='#f59e0b' i],
+:root[data-theme='dark'] svg [stroke='#f97316' i] {
+	stroke: var(--plot-amber) !important;
+}
+
+:root[data-theme='dark'] .JXGtext {
+	color: var(--plot-muted) !important;
+}
+
+/* ═══════════════════════════════════════════
    REDUCED MOTION
    ═══════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
@@ -1073,6 +1320,25 @@ h4 {
    PRINT STYLES
    ═══════════════════════════════════════════ */
 @media print {
+	:root[data-theme='dark'] {
+		--color-paper: #ffffff;
+		--color-paper-warm: #f5f0e6;
+		--color-ink: #1a1a2e;
+		--color-ink-light: #4a4a6a;
+		--color-ink-faint: #77737f;
+		--color-border: #d8d3ca;
+		--color-border-light: #e8e3da;
+		--color-surface: #ffffff;
+		--color-surface-raised: #ffffff;
+		--color-surface-subtle: #f8f6f1;
+		--plot-background: #ffffff;
+		--plot-grid: #ece8e0;
+		--plot-axis: #cbc6bd;
+		--plot-ink: #1a1a2e;
+		--plot-muted: #66616c;
+		color-scheme: light;
+	}
+
 	body {
 		background: white;
 		color: black;
@@ -1081,6 +1347,7 @@ h4 {
 	}
 
 	.progress-bar,
+	.theme-toggle,
 	.chapter-sidebar,
 	.chapter-mobile-toggle,
 	.chapter-mobile-drawer,

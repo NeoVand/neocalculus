@@ -135,7 +135,7 @@
 		font-weight: 600;
 		letter-spacing: 0.02em;
 		color: var(--color-d);
-		background: white;
+		background: var(--color-surface);
 		border: 1px solid var(--color-border);
 		border-radius: 999px;
 		padding: 0.4rem 0.85rem;

@@ -157,7 +157,7 @@
 		height: auto;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.75rem;
-		background: white;
+		background: var(--color-surface);
 	}
 
 	.slice-readout {

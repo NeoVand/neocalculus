@@ -2,6 +2,7 @@
 	import 'katex/dist/katex.min.css';
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { onMount } from 'svelte';
 
 	let { children } = $props();
@@ -46,5 +47,7 @@
 	aria-valuemin={0}
 	aria-valuemax={100}
 ></div>
+
+<ThemeToggle />
 
 {@render children()}

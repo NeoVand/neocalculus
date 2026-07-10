@@ -194,7 +194,7 @@
 		padding: 0.5rem 0.64rem;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.56rem;
-		background: #fff;
+		background: var(--color-surface);
 	}
 
 	.control label {
@@ -225,7 +225,7 @@
 		height: auto;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.72rem;
-		background: #fff;
+		background: var(--color-surface);
 	}
 
 	.axis {
@@ -321,7 +321,7 @@
 		padding: 0.66rem 0.78rem;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.62rem;
-		background: #fff;
+		background: var(--color-surface);
 	}
 
 	.item {
@@ -364,7 +364,7 @@
 		padding: 0.74rem 0.86rem;
 		border: 1px solid #ded4f6;
 		border-radius: 0.66rem;
-		background: #fff;
+		background: var(--color-surface);
 	}
 
 	.proof p {

@@ -127,7 +127,7 @@
 
 	.rule-tabs button {
 		border: 1px solid var(--color-border);
-		background: white;
+		background: var(--color-surface);
 		color: var(--color-ink-light);
 		font-family: var(--font-sans);
 		font-size: 0.75rem;

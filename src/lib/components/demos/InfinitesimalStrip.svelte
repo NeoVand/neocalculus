@@ -155,8 +155,10 @@
 	</DemoCard>
 
 	<EquationPanel title="From the finite picture to the first-order equation">
-		<Katex math={String.raw`A(x_0+h)-A(x_0)\approx f(x_0)\,h\quad\text{for small ordinary }h`} display />
-		<Katex math={String.raw`A(x_0+d)-A(x_0)=f(x_0)\,d\quad(d^2=0)`} display />
+		<div class="compact-equations">
+			<Katex math={String.raw`\begin{aligned}A(x_0+h)-A(x_0)\\&\approx f(x_0)\,h\\&\text{for small ordinary }h\end{aligned}`} display />
+			<Katex math={String.raw`\begin{aligned}A(x_0+d)-A(x_0)&=f(x_0)\,d\\&\hspace{2em}(d^2=0)\end{aligned}`} display />
+		</div>
 	</EquationPanel>
 </div>
 
@@ -166,7 +168,7 @@
 		height: auto;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.75rem;
-		background: white;
+		background: var(--color-surface);
 	}
 
 	.measure-row {
@@ -215,6 +217,10 @@
 	}
 
 	@media (max-width: 520px) {
+		.compact-equations :global(.katex) {
+			font-size: 0.9em;
+		}
+
 		.measure-row {
 			grid-template-columns: 1fr;
 			gap: 0.35rem;

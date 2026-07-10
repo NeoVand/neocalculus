@@ -248,7 +248,7 @@
 	.meter-label strong {
 		font-family: var(--font-mono);
 		font-size: 0.68rem;
-		color: #c2410c;
+		color: var(--plot-amber);
 		font-variant-numeric: tabular-nums;
 	}
 
@@ -271,7 +271,7 @@
 		padding: 0.5rem;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.75rem;
-		background: #fff;
+		background: var(--color-surface);
 	}
 
 	svg {
@@ -338,7 +338,7 @@
 	}
 
 	.error-label {
-		fill: #c2410c;
+		fill: var(--plot-amber);
 		font-family: var(--font-mono);
 		font-size: 11px;
 		font-weight: 650;

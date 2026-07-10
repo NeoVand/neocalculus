@@ -272,7 +272,7 @@
 		padding: 1.5rem 1.6rem;
 		border: 1px solid var(--color-border-light);
 		border-radius: 1.02rem;
-		background: white;
+		background: var(--color-surface);
 	}
 
 	.geometry-block :global(.neo-figure) {
@@ -313,7 +313,7 @@
 		padding: 0.95rem 1rem;
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.72rem;
-		background: #fff;
+		background: var(--color-surface);
 	}
 
 	.chain {
@@ -334,12 +334,12 @@
 		margin: 0.24rem 0 0.2rem;
 		padding: 0.36rem 0.56rem;
 		border-radius: 0.5rem;
-		border: 1px solid #e6d9ff;
-		background: #f8f3ff;
+		border: 1px solid color-mix(in srgb, var(--color-border) 66%, var(--color-d) 34%);
+		background: color-mix(in srgb, var(--color-surface) 90%, var(--color-d) 10%);
 	}
 
 	.rule :global(.katex) {
-		color: #7c3aed;
+		color: var(--color-d);
 		font-weight: 600;
 		font-size: 0.92em;
 	}

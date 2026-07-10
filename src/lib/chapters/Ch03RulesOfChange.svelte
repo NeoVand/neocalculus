@@ -188,7 +188,7 @@
 
 		<div class="key-equation" use:reveal>
 			<Katex
-				math={r`\begin{aligned}(\tan x)'&=\frac{(\cos x)(\cos x)-(\sin x)(-\sin x)}{\cos^2x}\\&=\sec^2x.\end{aligned}`}
+				math={r`\begin{aligned}(\tan x)'&=\frac{\cos^2x+\sin^2x}{\cos^2x}\\&=\frac{1}{\cos^2x}=\sec^2x.\end{aligned}`}
 				display
 			/>
 		</div>

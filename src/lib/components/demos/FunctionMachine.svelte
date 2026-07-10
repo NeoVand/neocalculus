@@ -443,7 +443,7 @@
 		display: flex; align-items: center; justify-content: center;
 	}
 
-	.fm-val :global(.katex) { font-size: 1.1em; color: #7c3aed; }
+	.fm-val :global(.katex) { font-size: 1.1em; color: var(--color-d); }
 
 	.fm-val-in { left: var(--rest-l); transition: left 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease; }
 	.fm-val-in.appear { left: var(--rest-l); opacity: 1; transition: opacity 0.45s ease; }
