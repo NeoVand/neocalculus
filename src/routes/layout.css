@@ -57,6 +57,12 @@
 	--plot-teal: #059669;
 	--plot-amber: #d97706;
 	--plot-rose: #ef4444;
+	/* Semantic plot roles: keep the same mathematical object visually stable across chapters. */
+	--plot-curve: var(--plot-blue);
+	--plot-tangent: var(--plot-violet);
+	--plot-point: var(--plot-amber);
+	--plot-solution: var(--plot-teal);
+	--plot-error: var(--plot-rose);
 	color-scheme: light;
 }
 
