@@ -12,6 +12,7 @@
 	const centerY = 158;
 	const plotW = W - left - right;
 	const radiusScale = 52;
+	const sectionSamples = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4];
 
 	let x = $state(2.4);
 
@@ -20,6 +21,8 @@
 	const volume = $derived((Math.PI * x * x) / 2);
 	const sx = (value: number) => left + (value / 4) * plotW;
 	const sy = (value: number) => centerY - value * radiusScale;
+	const radiusLabelX = $derived(x > 3.15 ? sx(x) - 22 : sx(x) + 22);
+	const radiusLabelAnchor = $derived(x > 3.15 ? 'end' : 'start');
 
 	const topPath = $derived.by(() => {
 		let path = '';
@@ -83,6 +86,21 @@
 			<path d={topPath} fill="none" stroke="#1a1a2e" stroke-width="2.4" />
 			<path d={bottomPath} fill="none" stroke="#1a1a2e" stroke-width="1.5" stroke-opacity="0.45" />
 
+			<g class="section-contours" aria-hidden="true">
+				{#each sectionSamples.filter((sample) => sample < x - 0.08) as sample (sample)}
+					<ellipse
+						cx={sx(sample)}
+						cy={centerY}
+						rx="7"
+						ry={Math.sqrt(sample) * radiusScale}
+						fill="none"
+						stroke="#3b82f6"
+						stroke-width="0.8"
+						stroke-opacity="0.18"
+					/>
+				{/each}
+			</g>
+
 			<ellipse
 				cx={sx(x)}
 				cy={centerY}
@@ -102,16 +120,29 @@
 				stroke-dasharray="5 4"
 			/>
 
-			<text x={sx(x) + 20} y={sy(radius / 2)} fill="#7e22ce" font-size="12" font-family="var(--font-sans)">
+			<text
+				x={radiusLabelX}
+				y={sy(radius / 2)}
+				text-anchor={radiusLabelAnchor}
+				class="plot-label"
+				fill="#7e22ce"
+				font-size="12"
+				font-family="var(--font-sans)"
+			>
 				r = √x = {radius.toFixed(2)}
 			</text>
-			<text x={sx(x)} y={centerY + radius * radiusScale + 24} text-anchor="middle" fill="#7e22ce" font-size="12" font-family="var(--font-sans)">
+			<text x={sx(x)} y={centerY + radius * radiusScale + 24} text-anchor="middle" class="plot-label" fill="#7e22ce" font-size="12" font-family="var(--font-sans)">
 				x = {x.toFixed(2)}
 			</text>
-			<text x={W - right - 8} y={centerY - 10} text-anchor="end" fill="#77716a" font-size="12" font-family="var(--font-sans)">
+			<text x={W - right - 8} y={centerY - 10} text-anchor="end" class="plot-label" fill="#77716a" font-size="12" font-family="var(--font-sans)">
 				y = √x
 			</text>
 		</svg>
+		<div class="slice-readout" aria-live="polite">
+			<span><small>position</small>x = {x.toFixed(2)}</span>
+			<span><small>radius</small>r = {radius.toFixed(2)}</span>
+			<span><small>disk area</small>A = {area.toFixed(2)}</span>
+		</div>
 	</DemoCard>
 
 	<EquationPanel title="Cross-section and accumulated volume">
@@ -127,5 +158,41 @@
 		border: 1px solid var(--color-border-light);
 		border-radius: 0.75rem;
 		background: white;
+	}
+
+	.slice-readout {
+		display: none;
+	}
+
+	@media (max-width: 520px) {
+		.plot-label {
+			display: none;
+		}
+
+		.slice-readout {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 0.3rem;
+			margin-top: 0.45rem;
+			font-family: var(--font-mono);
+			font-size: 0.67rem;
+			font-weight: 700;
+			color: var(--color-ink-light);
+			font-variant-numeric: tabular-nums;
+		}
+
+		.slice-readout span {
+			display: grid;
+			gap: 0.05rem;
+		}
+
+		.slice-readout small {
+			font-family: var(--font-sans);
+			font-size: 0.54rem;
+			font-weight: 600;
+			letter-spacing: 0.05em;
+			text-transform: uppercase;
+			color: var(--color-ink-faint);
+		}
 	}
 </style>
