@@ -23,9 +23,9 @@
 		});
 
 		const points = [
-			{ x: -1, color: '#059669', label: 'local maximum (−1, 4)', labelY: 4.45 },
-			{ x: 1, color: '#ef4444', label: 'local minimum (1, 0)', labelY: -0.45 },
-			{ x: 0, color: '#f59e0b', label: 'inflection (0, 2)', labelY: 2.35 }
+			{ x: -1, labelX: -1, color: 'var(--plot-solution)', label: 'local maximum (−1, 4)', labelY: 4.45, anchorX: 'middle' },
+			{ x: 1, labelX: 1, color: 'var(--plot-error)', label: 'local minimum (1, 0)', labelY: -0.45, anchorX: 'middle' },
+			{ x: 0, labelX: 0.2, color: 'var(--plot-point)', label: 'inflection (0, 2)', labelY: 2.35, anchorX: 'left' }
 		];
 
 		for (const point of points) {
@@ -37,10 +37,10 @@
 				fixed: true,
 				highlight: false
 			});
-			board.create('text', [point.x, point.labelY, point.label], {
+			board.create('text', [point.labelX, point.labelY, point.label], {
 				fontSize: 10,
 				color: point.color,
-				anchorX: 'middle',
+				anchorX: point.anchorX,
 				highlight: false,
 				fontWeight: 'bold'
 			});
@@ -89,7 +89,7 @@
 					const x = probe.X();
 					const slope = 3 * x * x - 3;
 					const bend = 6 * x;
-					return `drag the purple point · x=${x.toFixed(2)} · f′=${slope.toFixed(2)} · f″=${bend.toFixed(2)}`;
+					return `x=${x.toFixed(2)} · f′=${slope.toFixed(2)} · f″=${bend.toFixed(2)}`;
 				}
 			],
 			{
@@ -423,6 +423,7 @@
 		</div>
 
 		<div use:reveal>
+			<p class="plot-instruction">Drag the purple point along the curve; the live values above the plot report the first and second derivatives.</p>
 			<JSXGraphBoard
 				setup={setupBehaviorGraph}
 				boundingbox={[-2.55, 5, 2.55, -1]}
@@ -732,3 +733,13 @@
 		</LookingAhead>
 	</div>
 </section>
+
+<style>
+	.plot-instruction {
+		margin: var(--space-md) 0 0.45rem;
+		font-family: var(--font-sans);
+		font-size: 0.8rem;
+		line-height: 1.5;
+		color: var(--color-ink-light);
+	}
+</style>
