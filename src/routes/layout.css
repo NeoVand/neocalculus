@@ -97,6 +97,14 @@ h4 {
 	margin-inline: auto;
 }
 
+@media (min-width: 1280px) {
+	body:has(.toc-rail:not(.collapsed)) .page-wrapper {
+		width: min(var(--w-max), calc(100% - 19.5rem));
+		margin-left: auto;
+		margin-right: 19.5rem;
+	}
+}
+
 .page-wrapper > .chapter:first-child {
 	border-top: none;
 }

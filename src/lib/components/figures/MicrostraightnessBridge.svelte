@@ -234,6 +234,7 @@
 			boundingbox={[0.35, 2.85, 4.1, 0.25]}
 			aspectRatio={(4.1 - 0.35) / (2.85 - 0.25)}
 			axes={false}
+			embedded
 		/>
 		<div class="legend-row">
 			<span class="legend-chip curve"></span>

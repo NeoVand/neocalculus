@@ -23,7 +23,6 @@
 		/>
 		<line x1="123" y1="162" x2="179" y2="92" class="tangent" />
 		<circle cx="151" cy="127" r="3" fill="#a855f7" />
-		<text x="178" y="86" class="note">one local direction</text>
 		<text x="111" y="190" text-anchor="middle" class="formula">f(x) = x²</text>
 	</g>
 
@@ -37,7 +36,6 @@
 		<circle cx="345" cy="152" r="3.5" fill="#a855f7" />
 		<line x1="308" y1="180" x2="345" y2="152" class="tangent faint" />
 		<line x1="345" y1="152" x2="382" y2="180" class="tangent faint" />
-		<text x="345" y="132" text-anchor="middle" class="note">two competing directions</text>
 		<text x="345" y="190" text-anchor="middle" class="formula">f(x) = |x|</text>
 	</g>
 
@@ -51,7 +49,6 @@
 		<line x1="579" y1="132" x2="579" y2="72" class="tangent faint" />
 		<circle cx="579" cy="132" r="3.5" fill="white" stroke="#1a1a2e" stroke-width="1.5" />
 		<circle cx="579" cy="72" r="3.5" fill="#1a1a2e" />
-		<text x="596" y="106" class="note">no connecting direction</text>
 		<text x="579" y="190" text-anchor="middle" class="formula">step function</text>
 	</g>
 </svg>
@@ -86,13 +83,6 @@
 
 	.faint {
 		opacity: 0.7;
-	}
-
-	.note {
-		font-family: var(--font-sans);
-		font-size: 8px;
-		font-weight: 600;
-		fill: #a855f7;
 	}
 
 	.formula {

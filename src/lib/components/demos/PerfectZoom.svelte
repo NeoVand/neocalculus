@@ -1,10 +1,8 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import katex from 'katex';
+	import Katex from '$lib/components/Katex.svelte';
 
 	let canvas: HTMLCanvasElement;
 	let container: HTMLDivElement;
-	let mounted = $state(false);
 
 	// Each curve: fn, dfn, tex (KaTeX), cx (default x), xRange [min, max] for point slider
 	type Curve = {
@@ -41,10 +39,6 @@
 		sigmoid:   { fn: x => 1/(1+Math.exp(-x)),        dfn: x => { const s=1/(1+Math.exp(-x)); return s*(1-s); }, tex: '\\sigma(x)', cx: 0, xRange: [-5, 5] },
 		gaussian:  { fn: x => Math.exp(-x*x),            dfn: x => -2*x*Math.exp(-x*x),          tex: 'e^{-x^2}',          cx: 0.5,      xRange: [-3, 3] },
 	};
-
-	function renderTex(tex: string): string {
-		return katex.renderToString(tex, { throwOnError: false, displayMode: false });
-	}
 
 	let zoomSlider = $state(0);
 	let zoom = $derived(Math.pow(10, (zoomSlider / 100) * 3));
@@ -209,20 +203,22 @@
 		return 10 * mag;
 	}
 
-	$effect(() => {
-		// Touch all reactive deps
-		selectedCurve; zoomSlider; showTangent; pointSlider; centerX; curveData;
-		if (mounted) draw();
-	});
+	function redrawNext() {
+		requestAnimationFrame(() => draw());
+	}
 
-	onMount(() => {
-		mounted = true;
-		draw();
+	function attachContainer(node: HTMLDivElement) {
+		container = node;
+		const observer = new ResizeObserver(() => draw());
+		observer.observe(node);
+		redrawNext();
+		return () => observer.disconnect();
+	}
 
-		const ro = new ResizeObserver(() => draw());
-		ro.observe(container);
-		return () => ro.disconnect();
-	});
+	function attachCanvas(node: HTMLCanvasElement) {
+		canvas = node;
+		redrawNext();
+	}
 </script>
 
 <div class="demo-container content-width">
@@ -234,7 +230,7 @@
 
 	<!-- Function picker: bento grid with KaTeX labels -->
 	<div class="fn-grid">
-		{#each Object.entries(curves) as [key, c]}
+		{#each Object.entries(curves) as [key, c] (key)}
 			<button
 				class="fn-cell"
 				class:active={selectedCurve === key}
@@ -243,21 +239,32 @@
 					zoomSlider = 0;
 					const cv = curves[key];
 					pointSlider = Math.round(((cv.cx - cv.xRange[0]) / (cv.xRange[1] - cv.xRange[0])) * 1000);
+					redrawNext();
 				}}
-			>{@html renderTex(c.tex)}</button>
+			><Katex math={c.tex} /></button>
 		{/each}
 	</div>
 
 	<!-- Zoom control -->
 	<div class="toolbar">
 		<span class="toolbar-lbl">Zoom</span>
-		<input type="range" min="0" max="100" step="0.5" bind:value={zoomSlider} class="toolbar-slider" />
+		<input
+			type="range"
+			min="0"
+			max="100"
+			step="0.5"
+			bind:value={zoomSlider}
+			oninput={redrawNext}
+			class="toolbar-slider demo-slider"
+			style={`--slider-progress: ${zoomSlider}%;`}
+			aria-label="Zoom level"
+		/>
 		<span class="toolbar-val">{zoom.toFixed(zoom < 10 ? 1 : 0)}×</span>
 	</div>
 
 	<!-- Canvas -->
-	<div bind:this={container} class="canvas-wrapper">
-		<canvas bind:this={canvas}></canvas>
+	<div {@attach attachContainer} class="canvas-wrapper">
+		<canvas {@attach attachCanvas}></canvas>
 		{#if zoom >= 80}
 			<div class="canvas-overlay" class:converged={zoom >= 400}>
 				{#if zoom < 400}
@@ -272,9 +279,26 @@
 	<!-- Point + tangent controls -->
 	<div class="toolbar">
 		<span class="toolbar-lbl"><em>x</em> =</span>
-		<input type="range" min="0" max="1000" step="1" bind:value={pointSlider} class="toolbar-slider" />
+		<input
+			type="range"
+			min="0"
+			max="1000"
+			step="1"
+			bind:value={pointSlider}
+			oninput={redrawNext}
+			class="toolbar-slider demo-slider tone-blue"
+			style={`--slider-progress: ${pointSlider / 10}%;`}
+			aria-label="Point coordinate"
+		/>
 		<span class="toolbar-val">{centerX.toFixed(2)}</span>
-		<button class="tangent-btn" class:active={showTangent} onclick={() => showTangent = !showTangent}>
+		<button
+			class="tangent-btn"
+			class:active={showTangent}
+			onclick={() => {
+				showTangent = !showTangent;
+				redrawNext();
+			}}
+		>
 			Tangent {showTangent ? 'on' : 'off'}
 		</button>
 	</div>
@@ -338,9 +362,7 @@
 
 	.toolbar-slider {
 		flex: 1;
-		accent-color: var(--color-d);
-		cursor: pointer;
-		height: 4px;
+		min-width: 0;
 	}
 
 	.toolbar-val {

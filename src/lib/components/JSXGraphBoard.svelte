@@ -16,6 +16,8 @@
 		/** Figure number for labeling. */
 		number?: string;
 		class?: string;
+		/** Render without a nested figure wrapper when placed inside another Figure component. */
+		embedded?: boolean;
 	}
 
 	let {
@@ -25,7 +27,8 @@
 		axes = true,
 		caption,
 		number: figNumber,
-		class: className = ''
+		class: className = '',
+		embedded = false
 	}: Props = $props();
 
 	let board: any = null;
@@ -94,7 +97,7 @@
 	});
 </script>
 
-<figure class="neo-figure jsx-figure {className}">
+{#snippet boardContent()}
 	<div class="jsx-board-wrapper" style="aspect-ratio: {aspectRatio};">
 		{#if loadError}
 			<div class="jsx-fallback">Interactive figure failed to load.</div>
@@ -102,13 +105,23 @@
 			<div id={boardId} class="jxgbox" style="width:100%; height:100%;"></div>
 		{/if}
 	</div>
+{/snippet}
+
+{#if embedded}
+	<div class="jsx-embedded {className}">
+		{@render boardContent()}
+	</div>
+{:else}
+	<figure class="neo-figure jsx-figure {className}">
+		{@render boardContent()}
 	{#if caption}
 		<figcaption>
 			{#if figNumber}<span class="figure-number">Figure {figNumber}.</span>{/if}
 			{caption}
 		</figcaption>
 	{/if}
-</figure>
+	</figure>
+{/if}
 
 <style>
 	.jsx-board-wrapper {
@@ -119,6 +132,11 @@
 		background: white;
 		display: grid;
 		place-items: center;
+	}
+
+	.jsx-embedded {
+		width: 100%;
+		min-width: 0;
 	}
 
 	.jsx-fallback {
