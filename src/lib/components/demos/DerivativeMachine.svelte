@@ -192,7 +192,7 @@
 		machinePath,
 		machinePath
 	].join(';');
-	const machinePathKeyTimes = '0;0.12;0.14;0.18;0.22;0.62;0.635;0.65;0.68;0.72;1';
+	const machinePathKeyTimes = '0;0.12;0.14;0.18;0.22;0.65;0.66;0.675;0.705;0.735;1';
 </script>
 
 <div
@@ -293,7 +293,21 @@
 					values={machinePathAnimation}
 				></animate>
 			</path>
-			<path d={machinePath} fill="url(#derivativeTravelHalo)" stroke="none" class="travel-halo">
+			<path
+				d={machinePath}
+				fill="url(#derivativeTravelHalo)"
+				stroke="none"
+				opacity="0"
+				class="travel-halo"
+			>
+				<animate
+					attributeName="opacity"
+					dur={`${scenarioDuration}s`}
+					repeatCount="indefinite"
+					calcMode="linear"
+					keyTimes="0;0.18;0.22;0.66;0.70;1"
+					values="0;0;1;1;0;0"
+				></animate>
 				<animate
 					attributeName="d"
 					dur={`${scenarioDuration}s`}
@@ -346,7 +360,7 @@
 							stroke-linejoin="round"
 						></path>
 
-						<g class="moving-tangent">
+						<g class="moving-tangent" opacity="0">
 							<line
 								x1="-82"
 								y1="0"
@@ -364,6 +378,14 @@
 								stroke="var(--plot-outline)"
 								stroke-width="1.5"
 							></circle>
+							<animate
+								attributeName="opacity"
+								dur={`${scenarioDuration}s`}
+								repeatCount="indefinite"
+								calcMode="linear"
+								keyTimes="0;0.22;0.24;0.66;0.70;1"
+								values="0;0;1;1;0;0"
+							></animate>
 							<animateMotion
 								dur={`${scenarioDuration}s`}
 								repeatCount="indefinite"
@@ -430,11 +452,6 @@
 	.machine-glow {
 		opacity: 0.18;
 		animation: machine-breathe 6.6s ease-in-out infinite;
-	}
-
-	.travel-halo {
-		opacity: 0;
-		animation: travel-halo-cycle 6.6s linear infinite;
 	}
 
 	.side-label {
@@ -513,11 +530,6 @@
 		transform-box: fill-box;
 	}
 
-	.moving-tangent {
-		opacity: 0;
-		animation: tangent-cycle 6.6s ease infinite;
-	}
-
 	.static-tangent {
 		display: none;
 	}
@@ -527,10 +539,10 @@
 			opacity: 0;
 		}
 		1.8%,
-		31.5% {
+		33.33% {
 			opacity: 1;
 		}
-		33.33%,
+		35.13%,
 		100% {
 			opacity: 0;
 		}
@@ -568,36 +580,6 @@
 		96%,
 		100% {
 			left: var(--output-rest-left);
-			opacity: 0;
-		}
-	}
-
-	@keyframes tangent-cycle {
-		0%,
-		19% {
-			opacity: 0;
-		}
-		24%,
-		64% {
-			opacity: 1;
-		}
-		69%,
-		100% {
-			opacity: 0;
-		}
-	}
-
-	@keyframes travel-halo-cycle {
-		0%,
-		18% {
-			opacity: 0;
-		}
-		22%,
-		64% {
-			opacity: 1;
-		}
-		69%,
-		100% {
 			opacity: 0;
 		}
 	}
@@ -641,7 +623,6 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.machine-glow,
-		.travel-halo,
 		.scenario-layer,
 		.function-pill,
 		.moving-tangent {
@@ -667,6 +648,10 @@
 		}
 
 		.moving-tangent {
+			display: none;
+		}
+
+		.travel-halo {
 			display: none;
 		}
 
