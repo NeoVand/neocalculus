@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import Ch01 from '$lib/chapters/Ch01SmoothWorld.svelte';
 	import ChapterNav from '$lib/components/ChapterNav.svelte';
 	import HeroCurves from '$lib/components/HeroCurves.svelte';
@@ -69,6 +70,40 @@
 			subtitle: 'Exterior derivative and Stokes unification'
 		}
 	] as const;
+
+	onMount(() => {
+		let frameId = 0;
+
+		const restoreHashTarget = () => {
+			cancelAnimationFrame(frameId);
+
+			const targetId = decodeURIComponent(window.location.hash.slice(1));
+			if (!targetId) return;
+
+			// A reload with an unchanged hash can restore a stale scroll offset instead of the anchor.
+			// Correct it once after layout settles, then leave ordinary reader scrolling untouched.
+			frameId = requestAnimationFrame(() => {
+				frameId = requestAnimationFrame(() => {
+					const target = document.getElementById(targetId);
+					if (!target) return;
+
+					const root = document.documentElement;
+					const previousScrollBehavior = root.style.scrollBehavior;
+					root.style.scrollBehavior = 'auto';
+					target.scrollIntoView({ block: 'start' });
+					root.style.scrollBehavior = previousScrollBehavior;
+				});
+			});
+		};
+
+		restoreHashTarget();
+		window.addEventListener('hashchange', restoreHashTarget);
+
+		return () => {
+			cancelAnimationFrame(frameId);
+			window.removeEventListener('hashchange', restoreHashTarget);
+		};
+	});
 </script>
 
 <!-- ═══ HERO ═══ -->
