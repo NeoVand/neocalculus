@@ -8,6 +8,7 @@
 	import RevealBox from '$lib/components/RevealBox.svelte';
 	import PerfectZoom from '$lib/components/demos/PerfectZoom.svelte';
 	import FunctionMachine from '$lib/components/demos/FunctionMachine.svelte';
+	import DerivativeMachine from '$lib/components/demos/DerivativeMachine.svelte';
 	import MicrostraightnessBridge from '$lib/components/figures/MicrostraightnessBridge.svelte';
 	import SmoothnessComparison from '$lib/components/figures/SmoothnessComparison.svelte';
 	import { reveal } from '$lib/utils/scroll';
@@ -249,6 +250,27 @@
 			</p>
 			<Katex math={r`f(x+d)=f(x)+f'(x)d`} display />
 		</Callout>
+
+		<div class="neo-prose" use:reveal>
+			<p>
+				A derivative at one input is a number: the slope there. But let the input move, and
+				each point supplies its own slope. Those slope values together form a new function,
+				<Katex math="f'" />. Watch the point travel along each curve below. The purple tangent
+				turns as the local slope changes; the function that records all those slopes emerges on
+				the right.
+			</p>
+			<p>
+				The trigonometric outputs are a preview. In Chapter 2, we will derive them instead of
+				asking you to take them on faith.
+			</p>
+		</div>
+
+		<Figure
+			number="1.4"
+			caption="Differentiation turns a function into its slope function. As the point moves along f, the tangent reveals the slope at each input; f′ collects those slopes into a new function."
+		>
+			<DerivativeMachine />
+		</Figure>
 
 		<div class="neo-prose" use:reveal>
 			<p>
