@@ -503,13 +503,13 @@
 
 	.machine-title {
 		position: absolute;
-		top: 4.2%;
+		top: 7.1%;
 		left: 50%;
 		z-index: 4;
 		transform: translateX(-50%);
 		color: var(--color-ink-faint);
 		font-family: var(--font-sans);
-		font-size: 0.66rem;
+		font-size: 0.78rem;
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		line-height: 1;
