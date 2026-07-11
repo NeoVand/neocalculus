@@ -42,7 +42,6 @@
 			</svg>
 		{/if}
 	</span>
-	<span class="theme-toggle-label">{theme === 'dark' ? 'Light' : 'Dark'}</span>
 </button>
 
 <style>
@@ -51,33 +50,27 @@
 		top: 1rem;
 		right: 1rem;
 		z-index: 101;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
-		min-height: 2.15rem;
-		padding: 0.35rem 0.7rem 0.35rem 0.5rem;
-		border: 1px solid color-mix(in srgb, var(--color-border) 84%, var(--color-d) 16%);
-		border-radius: 999px;
-		background: color-mix(in srgb, var(--color-surface-raised) 94%, transparent 6%);
-		color: var(--color-ink-light);
-		box-shadow: 0 6px 18px var(--color-shadow);
-		backdrop-filter: blur(12px);
-		font-family: var(--font-sans);
-		font-size: 0.72rem;
-		font-weight: 600;
-		letter-spacing: 0.02em;
+		display: grid;
+		place-items: center;
+		width: 2.4rem;
+		height: 2.4rem;
+		padding: 0.48rem;
+		border: 0;
+		border-radius: 50%;
+		background: transparent;
+		color: var(--color-d);
+		opacity: 0.78;
 		cursor: pointer;
 		transition:
-			background-color 0.2s ease,
-			border-color 0.2s ease,
-			color 0.2s ease,
-			transform 0.2s ease;
+			color 0.22s ease,
+			opacity 0.22s ease,
+			transform 0.32s var(--ease-out-expo);
 	}
 
 	.theme-toggle:hover {
-		border-color: color-mix(in srgb, var(--color-d) 50%, var(--color-border));
-		color: var(--color-ink);
-		transform: translateY(-1px);
+		color: color-mix(in srgb, var(--color-d) 72%, var(--color-ink));
+		opacity: 1;
+		transform: rotate(8deg) scale(1.08);
 	}
 
 	.theme-toggle:focus-visible {
@@ -87,8 +80,8 @@
 
 	.theme-toggle-icon,
 	.theme-toggle-icon svg {
-		width: 1.1rem;
-		height: 1.1rem;
+		width: 1.3rem;
+		height: 1.3rem;
 	}
 
 	.theme-toggle-icon {
@@ -109,15 +102,6 @@
 		.theme-toggle {
 			top: 0.75rem;
 			right: 0.75rem;
-			width: 2.25rem;
-			height: 2.25rem;
-			min-height: 0;
-			padding: 0;
-			justify-content: center;
-		}
-
-		.theme-toggle-label {
-			display: none;
 		}
 	}
 </style>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Ch01 from '$lib/chapters/Ch01SmoothWorld.svelte';
 	import ChapterNav from '$lib/components/ChapterNav.svelte';
+	import HeroCurves from '$lib/components/HeroCurves.svelte';
 	import LazyChapter from '$lib/components/LazyChapter.svelte';
 	import Katex from '$lib/components/Katex.svelte';
 	import WormholeReturn from '$lib/components/WormholeReturn.svelte';
@@ -72,6 +73,7 @@
 
 <!-- ═══ HERO ═══ -->
 <section class="hero">
+	<HeroCurves />
 	<div class="hero-shell">
 		<div class="hero-inner">
 			<h1 class="hero-title">Neocalculus</h1>
@@ -267,7 +269,10 @@
 	}
 
 	.hero-shell {
+		position: relative;
+		z-index: 1;
 		width: min(78rem, 100%);
+		min-width: 0;
 		display: grid;
 		gap: clamp(1.1rem, 2.2vw, 2rem);
 		align-items: center;
@@ -283,6 +288,7 @@
 	.hero-inner {
 		position: relative;
 		z-index: 1;
+		min-width: 0;
 		animation: float-down 1s var(--ease-out-expo);
 		text-align: left;
 		max-width: 38rem;
@@ -330,6 +336,7 @@
 	.hero-toc {
 		position: relative;
 		z-index: 1;
+		min-width: 0;
 		display: grid;
 		align-items: center;
 		justify-items: end;
@@ -338,6 +345,8 @@
 	.hero-toc :global(.toc-card) {
 		margin-top: 0;
 		width: min(31rem, 100%);
+		max-width: 100%;
+		box-sizing: border-box;
 		margin-inline: auto;
 	}
 
@@ -360,6 +369,17 @@
 		.hero-motivation {
 			margin-left: auto;
 			margin-right: auto;
+		}
+	}
+
+	@media (max-width: 520px) {
+		.hero-title {
+			font-size: clamp(2.25rem, 10.8vw, 2.8rem);
+			letter-spacing: 0.11em;
+		}
+
+		.hero-motivation {
+			overflow-wrap: anywhere;
 		}
 	}
 
