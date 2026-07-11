@@ -42,20 +42,71 @@
 			domain: [-2.2, 2.2],
 			range: [-0.55, 5.1],
 			travel: [-1.75, 1.75]
+		},
+		{
+			inputMath: String.raw`x^3`,
+			outputMath: String.raw`3x^2`,
+			name: 'the cubing function',
+			fn: (x) => x * x * x,
+			derivative: (x) => 3 * x * x,
+			domain: [-1.8, 1.8],
+			range: [-4.8, 4.8],
+			travel: [-1.55, 1.55]
+		},
+		{
+			inputMath: String.raw`e^x`,
+			outputMath: String.raw`e^x`,
+			name: 'the exponential function',
+			fn: Math.exp,
+			derivative: Math.exp,
+			domain: [-2.2, 2.2],
+			range: [-0.5, 8],
+			travel: [-1.8, 1.8]
+		},
+		{
+			inputMath: String.raw`\ln x`,
+			outputMath: String.raw`\frac{1}{x}`,
+			name: 'the natural logarithm',
+			fn: Math.log,
+			derivative: (x) => 1 / x,
+			domain: [0, 5],
+			range: [-2, 1.8],
+			travel: [0.22, 4.65]
+		},
+		{
+			inputMath: String.raw`\frac{1}{x}`,
+			outputMath: String.raw`-\frac{1}{x^2}`,
+			name: 'the reciprocal function',
+			fn: (x) => 1 / x,
+			derivative: (x) => -1 / (x * x),
+			domain: [0, 5],
+			range: [-0.2, 3.7],
+			travel: [0.32, 4.6]
+		},
+		{
+			inputMath: String.raw`\tan x`,
+			outputMath: String.raw`\sec^2 x`,
+			name: 'the tangent function',
+			fn: Math.tan,
+			derivative: (x) => 1 / Math.cos(x) ** 2,
+			domain: [-1.2, 1.2],
+			range: [-2.65, 2.65],
+			travel: [-1.08, 1.08]
 		}
 	];
 
 	const scenarioDuration = 6.6;
+	const fullCycleDuration = scenarioDuration * scenarios.length;
 	const VW = 560;
-	const VH = 220;
+	const VH = 200;
 	const bodyLeft = 145;
 	const bodyRight = 415;
-	const bodyTop = 10;
-	const bodyBottom = 210;
+	const bodyTop = 8;
+	const bodyBottom = 192;
 	const bodyMid = (bodyTop + bodyBottom) / 2;
 	const funnelLength = 54;
-	const slotHeight = 48;
-	const mouthHeight = 98;
+	const slotHeight = 44;
+	const mouthHeight = 88;
 	const funnelLeft = bodyLeft - funnelLength;
 	const funnelRight = bodyRight + funnelLength;
 	const pillGap = 13;
@@ -69,8 +120,8 @@
 
 	const plotLeft = 174;
 	const plotRight = 386;
-	const plotTop = 36;
-	const plotBottom = 184;
+	const plotTop = 38;
+	const plotBottom = 170;
 	const plotWidth = plotRight - plotLeft;
 	const plotHeight = plotBottom - plotTop;
 
@@ -204,11 +255,13 @@
 	style:--input-hidden-right={inputHiddenRight}
 	style:--output-rest-left={outputRestLeft}
 	style:--output-hidden-left={outputHiddenLeft}
+	style:--full-cycle-duration={`${fullCycleDuration}s`}
 	aria-label="An animated derivative machine. A function enters, a tangent moves along its graph, and the derivative function emerges."
 >
 	<div class="machine-stage">
 		<div class="side-label side-label-left"><Katex math="f(x)" /></div>
 		<div class="side-label side-label-right"><Katex math="f'(x)" /></div>
+		<div class="machine-title">Derivative</div>
 
 		{#each preparedScenarios as scenario (scenario.pathId)}
 			<div
@@ -317,7 +370,6 @@
 					values={machinePathAnimation}
 				></animate>
 			</path>
-
 			<rect
 				x={plotLeft - 9}
 				y={plotTop - 9}
@@ -436,7 +488,7 @@
 		position: relative;
 		width: 100%;
 		max-width: 610px;
-		aspect-ratio: 560 / 220;
+		aspect-ratio: 560 / 200;
 	}
 
 	.machine-svg {
@@ -446,6 +498,21 @@
 		width: 100%;
 		height: 100%;
 		overflow: visible;
+		pointer-events: none;
+	}
+
+	.machine-title {
+		position: absolute;
+		top: 4.2%;
+		left: 50%;
+		z-index: 4;
+		transform: translateX(-50%);
+		color: var(--color-ink-faint);
+		font-family: var(--font-sans);
+		font-size: 0.66rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		line-height: 1;
 		pointer-events: none;
 	}
 
@@ -479,7 +546,7 @@
 
 	.scenario-layer {
 		opacity: 0;
-		animation: scenario-window 19.8s linear var(--scenario-delay) infinite;
+		animation: scenario-window var(--full-cycle-duration) linear var(--scenario-delay) infinite;
 	}
 
 	.pill-scenario {
@@ -538,11 +605,11 @@
 		0% {
 			opacity: 0;
 		}
-		1.8%,
-		33.33% {
+		0.7%,
+		12.5% {
 			opacity: 1;
 		}
-		35.13%,
+		13.2%,
 		100% {
 			opacity: 0;
 		}
@@ -609,6 +676,10 @@
 		.function-pill :global(.katex),
 		.side-label :global(.katex) {
 			font-size: 0.78em;
+		}
+
+		.function-pill-input {
+			padding-inline: 0.4rem;
 		}
 
 		.function-pill-output {
