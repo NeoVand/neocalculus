@@ -45,7 +45,7 @@
 		}
 	];
 
-	const CYCLE_MS = 6600;
+	const scenarioDuration = 6.6;
 	const VW = 560;
 	const VH = 220;
 	const bodyLeft = 145;
@@ -71,58 +71,43 @@
 	const plotWidth = plotRight - plotLeft;
 	const plotHeight = plotBottom - plotTop;
 
-	let elapsed = $state(0);
-
-	let cycleIndex = $derived(Math.floor(elapsed / CYCLE_MS));
-	let localTime = $derived(elapsed % CYCLE_MS);
-	let scenario = $derived(scenarios[cycleIndex % scenarios.length]);
-
-	function clamp(value: number, min = 0, max = 1) {
-		return Math.min(max, Math.max(min, value));
-	}
-
-	function smoothstep(value: number) {
-		const t = clamp(value);
-		return t * t * (3 - 2 * t);
-	}
-
-	function mapPoint(x: number, y: number, current: Scenario) {
-		const [xMin, xMax] = current.domain;
-		const [yMin, yMax] = current.range;
+	function mapPoint(x: number, y: number, scenario: Scenario) {
+		const [xMin, xMax] = scenario.domain;
+		const [yMin, yMax] = scenario.range;
 		return {
 			x: plotLeft + ((x - xMin) / (xMax - xMin)) * plotWidth,
 			y: plotBottom - ((y - yMin) / (yMax - yMin)) * plotHeight
 		};
 	}
 
-	function makeCurve(current: Scenario) {
+	function makeCurvePath(scenario: Scenario) {
 		const points: string[] = [];
-		const [xMin, xMax] = current.domain;
-		for (let i = 0; i <= 120; i += 1) {
-			const x = xMin + ((xMax - xMin) * i) / 120;
-			const point = mapPoint(x, current.fn(x), current);
-			points.push(`${point.x.toFixed(2)},${point.y.toFixed(2)}`);
+		const [travelMin, travelMax] = scenario.travel;
+		for (let i = 0; i <= 140; i += 1) {
+			const x = travelMin + ((travelMax - travelMin) * i) / 140;
+			const point = mapPoint(x, scenario.fn(x), scenario);
+			points.push(`${i === 0 ? 'M' : 'L'} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`);
 		}
 		return points.join(' ');
 	}
 
-	function tangentSegment(current: Scenario, x0: number) {
-		const [xMin, xMax] = current.domain;
-		const [yMin, yMax] = current.range;
-		const y0 = current.fn(x0);
-		const slope = current.derivative(x0);
+	function tangentSegment(scenario: Scenario, x0: number) {
+		const [xMin, xMax] = scenario.domain;
+		const [yMin, yMax] = scenario.range;
+		const y0 = scenario.fn(x0);
+		const slope = scenario.derivative(x0);
 		const candidates: { x: number; y: number }[] = [];
-		const addCandidate = (x: number, y: number) => {
+		const add = (x: number, y: number) => {
 			if (x >= xMin - 1e-6 && x <= xMax + 1e-6 && y >= yMin - 1e-6 && y <= yMax + 1e-6) {
 				candidates.push({ x, y });
 			}
 		};
 
-		addCandidate(xMin, y0 + slope * (xMin - x0));
-		addCandidate(xMax, y0 + slope * (xMax - x0));
+		add(xMin, y0 + slope * (xMin - x0));
+		add(xMax, y0 + slope * (xMax - x0));
 		if (Math.abs(slope) > 1e-7) {
-			addCandidate(x0 + (yMin - y0) / slope, yMin);
-			addCandidate(x0 + (yMax - y0) / slope, yMax);
+			add(x0 + (yMin - y0) / slope, yMin);
+			add(x0 + (yMax - y0) / slope, yMax);
 		}
 
 		let first = candidates[0] ?? { x: xMin, y: y0 };
@@ -141,109 +126,49 @@
 		}
 
 		return {
-			start: mapPoint(first.x, first.y, current),
-			end: mapPoint(second.x, second.y, current)
+			start: mapPoint(first.x, first.y, scenario),
+			end: mapPoint(second.x, second.y, scenario),
+			point: mapPoint(x0, y0, scenario)
 		};
 	}
 
-	let travelProgress = $derived(smoothstep((localTime - 1550) / 2650));
-	let movingX = $derived(
-		scenario.travel[0] + (scenario.travel[1] - scenario.travel[0]) * travelProgress
-	);
-	let movingPoint = $derived(mapPoint(movingX, scenario.fn(movingX), scenario));
-	let tangent = $derived(tangentSegment(scenario, movingX));
-	let curvePoints = $derived(makeCurve(scenario));
-	let curveOpacity = $derived(
-		smoothstep(localTime / 420) * (1 - smoothstep((localTime - 5900) / 520))
-	);
-	let tangentOpacity = $derived(
-		smoothstep((localTime - 1300) / 280) * (1 - smoothstep((localTime - 5450) / 420))
-	);
-	let axisX = $derived(mapPoint(0, 0, scenario).x);
-	let axisY = $derived(mapPoint(0, 0, scenario).y);
-	let inputVisible = $derived(localTime >= 180 && localTime < 1450);
-	let inputSwallowing = $derived(localTime >= 820 && localTime < 1450);
-	let outputVisible = $derived(localTime >= 4250 && localTime < 6150);
-	let outputFading = $derived(localTime >= 5850 && localTime < 6300);
-	let machineActive = $derived(localTime >= 1050 && localTime < 4650);
+	const preparedScenarios = scenarios.map((scenario, index) => ({
+		...scenario,
+		index,
+		pathId: `derivative-path-${index}`,
+		path: makeCurvePath(scenario),
+		axisX: mapPoint(0, 0, scenario).x,
+		axisY: mapPoint(0, 0, scenario).y,
+		staticTangent: tangentSegment(scenario, 0),
+		delay: `${index * scenarioDuration}s`
+	}));
 
-	let machinePath = $derived.by(() => {
-		const inputSpread = inputSwallowing ? 4 : 0;
-		const outputSpread = outputVisible ? 3 : 0;
-		const leftFunnel = funnelLeft - inputSpread;
-		const rightFunnel = funnelRight + outputSpread;
-		const inputMouth = mouthHeight + inputSpread * 3;
-		const outputMouth = mouthHeight + outputSpread * 3;
-		const radius = 15;
-		return [
-			`M ${bodyLeft + radius},${bodyTop}`,
-			`L ${bodyRight - radius},${bodyTop}`,
-			`Q ${bodyRight},${bodyTop} ${bodyRight},${bodyTop + radius}`,
-			`L ${bodyRight},${bodyMid - slotHeight / 2}`,
-			`L ${rightFunnel},${bodyMid - outputMouth / 2}`,
-			`L ${rightFunnel},${bodyMid + outputMouth / 2}`,
-			`L ${bodyRight},${bodyMid + slotHeight / 2}`,
-			`L ${bodyRight},${bodyBottom - radius}`,
-			`Q ${bodyRight},${bodyBottom} ${bodyRight - radius},${bodyBottom}`,
-			`L ${bodyLeft + radius},${bodyBottom}`,
-			`Q ${bodyLeft},${bodyBottom} ${bodyLeft},${bodyBottom - radius}`,
-			`L ${bodyLeft},${bodyMid + slotHeight / 2}`,
-			`L ${leftFunnel},${bodyMid + inputMouth / 2}`,
-			`L ${leftFunnel},${bodyMid - inputMouth / 2}`,
-			`L ${bodyLeft},${bodyMid - slotHeight / 2}`,
-			`L ${bodyLeft},${bodyTop + radius}`,
-			`Q ${bodyLeft},${bodyTop} ${bodyLeft + radius},${bodyTop}`,
-			'Z'
-		].join(' ');
-	});
-
-	function animateMachine(node: HTMLDivElement) {
-		const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		if (reducedMotion) {
-			elapsed = 5000;
-			return;
-		}
-
-		let frame = 0;
-		let previous = performance.now();
-		let visible = true;
-		let pageVisible = document.visibilityState === 'visible';
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				visible = entries[0]?.isIntersecting ?? false;
-				previous = performance.now();
-			},
-			{ threshold: 0.08 }
-		);
-		observer.observe(node);
-
-		const handleVisibility = () => {
-			pageVisible = document.visibilityState === 'visible';
-			previous = performance.now();
-		};
-		document.addEventListener('visibilitychange', handleVisibility);
-
-		const tick = (now: number) => {
-			if (visible && pageVisible) {
-				elapsed += Math.min(now - previous, 50);
-			}
-			previous = now;
-			frame = requestAnimationFrame(tick);
-		};
-		frame = requestAnimationFrame(tick);
-
-		return () => {
-			cancelAnimationFrame(frame);
-			observer.disconnect();
-			document.removeEventListener('visibilitychange', handleVisibility);
-		};
-	}
+	const radius = 15;
+	const machinePath = [
+		`M ${bodyLeft + radius},${bodyTop}`,
+		`L ${bodyRight - radius},${bodyTop}`,
+		`Q ${bodyRight},${bodyTop} ${bodyRight},${bodyTop + radius}`,
+		`L ${bodyRight},${bodyMid - slotHeight / 2}`,
+		`L ${funnelRight},${bodyMid - mouthHeight / 2}`,
+		`L ${funnelRight},${bodyMid + mouthHeight / 2}`,
+		`L ${bodyRight},${bodyMid + slotHeight / 2}`,
+		`L ${bodyRight},${bodyBottom - radius}`,
+		`Q ${bodyRight},${bodyBottom} ${bodyRight - radius},${bodyBottom}`,
+		`L ${bodyLeft + radius},${bodyBottom}`,
+		`Q ${bodyLeft},${bodyBottom} ${bodyLeft},${bodyBottom - radius}`,
+		`L ${bodyLeft},${bodyMid + slotHeight / 2}`,
+		`L ${funnelLeft},${bodyMid + mouthHeight / 2}`,
+		`L ${funnelLeft},${bodyMid - mouthHeight / 2}`,
+		`L ${bodyLeft},${bodyMid - slotHeight / 2}`,
+		`L ${bodyLeft},${bodyTop + radius}`,
+		`Q ${bodyLeft},${bodyTop} ${bodyLeft + radius},${bodyTop}`,
+		'Z'
+	].join(' ');
 </script>
 
 <div
+	id="derivative-machine"
 	class="derivative-machine"
-	{@attach animateMachine}
 	style:--rest-left={restLeft}
 	style:--rest-right={restRight}
 	style:--swallowed-left={swallowedLeft}
@@ -254,19 +179,25 @@
 		<div class="side-label side-label-left"><Katex math="f(x)" /></div>
 		<div class="side-label side-label-right"><Katex math="f'(x)" /></div>
 
-		<div
-			class="function-pill function-pill-input"
-			class:visible={inputVisible}
-			class:swallowing={inputSwallowing}
-		>
-			<Katex math={scenario.inputMath} />
-		</div>
+		{#each preparedScenarios as scenario (scenario.pathId)}
+			<div
+				class="pill-scenario scenario-layer scenario-{scenario.index}"
+				style:--scenario-delay={scenario.delay}
+			>
+				<div class="function-pill function-pill-input">
+					<Katex math={scenario.inputMath} />
+				</div>
+				<div class="function-pill function-pill-output">
+					<Katex math={scenario.outputMath} />
+				</div>
+			</div>
+		{/each}
 
 		<svg
 			class="machine-svg"
 			viewBox={`0 0 ${VW} ${VH}`}
 			role="img"
-			aria-label={`The graph of ${scenario.name} with a tangent moving along it`}
+			aria-label="A point and tangent moving together along three function graphs"
 		>
 			<defs>
 				<linearGradient id="derivativeMachineBody" x1="0" y1="0" x2="0" y2="1">
@@ -292,14 +223,8 @@
 				stroke="var(--color-d)"
 				stroke-width="1.8"
 				stroke-linejoin="round"
-				class="machine-body"
 			></path>
-			<path
-				d={machinePath}
-				fill="url(#derivativeMachineGlow)"
-				stroke="none"
-				class:active={machineActive}
-				class="machine-glow"
+			<path d={machinePath} fill="url(#derivativeMachineGlow)" stroke="none" class="machine-glow"
 			></path>
 
 			<rect
@@ -312,60 +237,91 @@
 				fill-opacity="0.72"
 			></rect>
 
-			<g clip-path="url(#derivativePlotClip)" opacity={curveOpacity}>
-				<line
-					x1={plotLeft}
-					y1={axisY}
-					x2={plotRight}
-					y2={axisY}
-					stroke="var(--plot-axis)"
-					stroke-width="0.8"
-				></line>
-				<line
-					x1={axisX}
-					y1={plotTop}
-					x2={axisX}
-					y2={plotBottom}
-					stroke="var(--plot-axis)"
-					stroke-width="0.8"
-				></line>
-				<polyline
-					points={curvePoints}
-					fill="none"
-					stroke="var(--plot-curve)"
-					stroke-width="2.2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				></polyline>
-				<g opacity={tangentOpacity}>
-					<line
-						x1={tangent.start.x}
-						y1={tangent.start.y}
-						x2={tangent.end.x}
-						y2={tangent.end.y}
-						stroke="var(--plot-tangent)"
-						stroke-width="1.8"
-						stroke-linecap="round"
-					></line>
-					<circle
-						cx={movingPoint.x}
-						cy={movingPoint.y}
-						r="5"
-						fill="var(--plot-point)"
-						stroke="var(--plot-outline)"
-						stroke-width="1.5"
-					></circle>
-				</g>
+			<g clip-path="url(#derivativePlotClip)">
+				{#each preparedScenarios as scenario (scenario.pathId)}
+					<g
+						class="plot-scenario scenario-layer scenario-{scenario.index}"
+						style:--scenario-delay={scenario.delay}
+					>
+						<line
+							x1={plotLeft}
+							y1={scenario.axisY}
+							x2={plotRight}
+							y2={scenario.axisY}
+							stroke="var(--plot-axis)"
+							stroke-width="0.8"
+						></line>
+						<line
+							x1={scenario.axisX}
+							y1={plotTop}
+							x2={scenario.axisX}
+							y2={plotBottom}
+							stroke="var(--plot-axis)"
+							stroke-width="0.8"
+						></line>
+						<path
+							id={scenario.pathId}
+							d={scenario.path}
+							fill="none"
+							stroke="var(--plot-curve)"
+							stroke-width="2.2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						></path>
+
+						<g class="moving-tangent">
+							<line
+								x1="-82"
+								y1="0"
+								x2="82"
+								y2="0"
+								stroke="var(--plot-tangent)"
+								stroke-width="1.8"
+								stroke-linecap="round"
+							></line>
+							<circle
+								cx="0"
+								cy="0"
+								r="5"
+								fill="var(--plot-point)"
+								stroke="var(--plot-outline)"
+								stroke-width="1.5"
+							></circle>
+							<animateMotion
+								dur={`${scenarioDuration}s`}
+								repeatCount="indefinite"
+								rotate="auto"
+								calcMode="linear"
+								keyPoints="0;0;1;1"
+								keyTimes="0;0.22;0.66;1"
+							>
+								<mpath href={`#${scenario.pathId}`}></mpath>
+							</animateMotion>
+						</g>
+
+						<g class="static-tangent">
+							<line
+								x1={scenario.staticTangent.start.x}
+								y1={scenario.staticTangent.start.y}
+								x2={scenario.staticTangent.end.x}
+								y2={scenario.staticTangent.end.y}
+								stroke="var(--plot-tangent)"
+								stroke-width="1.8"
+								stroke-linecap="round"
+							></line>
+							<circle
+								cx={scenario.staticTangent.point.x}
+								cy={scenario.staticTangent.point.y}
+								r="5"
+								fill="var(--plot-point)"
+								stroke="var(--plot-outline)"
+								stroke-width="1.5"
+							></circle>
+						</g>
+					</g>
+				{/each}
 			</g>
 		</svg>
-
-		<div
-			class="function-pill function-pill-output"
-			class:visible={outputVisible}
-			class:fading={outputFading}
-		>
-			<Katex math={scenario.outputMath} />
-		</div>
 	</div>
 </div>
 
@@ -394,23 +350,15 @@
 		pointer-events: none;
 	}
 
-	.machine-body {
-		transition: d 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-	}
-
 	.machine-glow {
-		opacity: 0;
-		transition: opacity 0.5s ease;
-	}
-
-	.machine-glow.active {
-		opacity: 1;
+		opacity: 0.18;
+		animation: machine-breathe 6.6s ease-in-out infinite;
 	}
 
 	.side-label {
 		position: absolute;
 		top: 13%;
-		z-index: 3;
+		z-index: 4;
 		color: var(--color-ink-faint);
 		pointer-events: none;
 	}
@@ -430,10 +378,21 @@
 		color: var(--color-ink-faint);
 	}
 
+	.scenario-layer {
+		opacity: 0;
+		animation: scenario-window 19.8s linear var(--scenario-delay) infinite;
+	}
+
+	.pill-scenario {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
+	}
+
 	.function-pill {
 		position: absolute;
 		top: 50%;
-		z-index: 1;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -459,39 +418,102 @@
 	.function-pill-input {
 		left: var(--rest-left);
 		transform: translate(-50%, -50%);
-		transition:
-			left 0.56s cubic-bezier(0.4, 0, 0.2, 1),
-			opacity 0.35s ease;
-	}
-
-	.function-pill-input.visible {
-		opacity: 1;
-	}
-
-	.function-pill-input.swallowing {
-		left: var(--swallowed-left);
-		opacity: 0;
-		transition:
-			left 0.56s cubic-bezier(0.4, 0, 0.2, 1),
-			opacity 0.18s 0.38s ease;
+		animation: input-cycle 6.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 	}
 
 	.function-pill-output {
 		right: var(--hidden-right);
 		transform: translate(50%, -50%);
-		transition:
-			right 0.58s cubic-bezier(0.16, 1, 0.3, 1),
-			opacity 0.34s ease;
+		animation: output-cycle 6.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 	}
 
-	.function-pill-output.visible {
-		right: var(--rest-right);
-		opacity: 1;
+	.plot-scenario {
+		transform-box: fill-box;
 	}
 
-	.function-pill-output.fading {
+	.moving-tangent {
 		opacity: 0;
-		transition: opacity 0.42s ease;
+		animation: tangent-cycle 6.6s ease infinite;
+	}
+
+	.static-tangent {
+		display: none;
+	}
+
+	@keyframes scenario-window {
+		0% {
+			opacity: 0;
+		}
+		1.8%,
+		31.5% {
+			opacity: 1;
+		}
+		33.33%,
+		100% {
+			opacity: 0;
+		}
+	}
+
+	@keyframes input-cycle {
+		0%,
+		2% {
+			left: var(--rest-left);
+			opacity: 0;
+		}
+		5%,
+		13% {
+			left: var(--rest-left);
+			opacity: 1;
+		}
+		22%,
+		100% {
+			left: var(--swallowed-left);
+			opacity: 0;
+		}
+	}
+
+	@keyframes output-cycle {
+		0%,
+		63% {
+			right: var(--hidden-right);
+			opacity: 0;
+		}
+		70%,
+		88% {
+			right: var(--rest-right);
+			opacity: 1;
+		}
+		96%,
+		100% {
+			right: var(--rest-right);
+			opacity: 0;
+		}
+	}
+
+	@keyframes tangent-cycle {
+		0%,
+		19% {
+			opacity: 0;
+		}
+		24%,
+		82% {
+			opacity: 1;
+		}
+		89%,
+		100% {
+			opacity: 0;
+		}
+	}
+
+	@keyframes machine-breathe {
+		0%,
+		100% {
+			opacity: 0.12;
+		}
+		38%,
+		72% {
+			opacity: 0.32;
+		}
 	}
 
 	@media (max-width: 520px) {
@@ -512,10 +534,37 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.machine-body,
 		.machine-glow,
-		.function-pill {
-			transition: none;
+		.scenario-layer,
+		.function-pill,
+		.moving-tangent {
+			animation: none;
+		}
+
+		.scenario-layer.scenario-0 {
+			opacity: 1;
+		}
+
+		.scenario-layer:not(.scenario-0) {
+			display: none;
+		}
+
+		.function-pill-input {
+			left: var(--rest-left);
+			opacity: 1;
+		}
+
+		.function-pill-output {
+			right: var(--rest-right);
+			opacity: 1;
+		}
+
+		.moving-tangent {
+			display: none;
+		}
+
+		.static-tangent {
+			display: block;
 		}
 	}
 </style>

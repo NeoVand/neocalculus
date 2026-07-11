@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import type { Component } from 'svelte';
 
 	type ChapterModule = {
@@ -36,39 +36,63 @@
 		}
 	}
 
-	function scheduleHashScroll() {
+	async function scheduleHashScroll() {
 		if (typeof window === 'undefined') return;
-		requestAnimationFrame(() => {
-			requestAnimationFrame(() => {
-				scrollToHashTarget();
-			});
-		});
+		await tick();
+		scrollToHashTarget();
 	}
 
 	function beginLoad(force = false) {
 		if (started && !force) return;
 		started = true;
 		modulePromise = load().then((module) => {
-			scheduleHashScroll();
+			void scheduleHashScroll();
 			return module;
 		});
 	}
 
 	onMount(() => {
+		const target = document.getElementById(id);
+		if (!target) return;
+
 		const observer = new IntersectionObserver(
 			(entries) => {
 				if (entries.some((entry) => entry.isIntersecting)) {
 					beginLoad();
-					observer.disconnect();
+					stopWatching();
 				}
 			},
 			{ rootMargin: '800px 0px' }
 		);
 
-		const target = document.getElementById(id);
-		if (target) observer.observe(target);
+		const isNearViewportOrTargeted = () => {
+			const targetHash = decodeURIComponent(window.location.hash.slice(1));
+			if (targetHash === id) return true;
 
-		return () => observer.disconnect();
+			const rect = target.getBoundingClientRect();
+			return rect.top <= window.innerHeight + 800 && rect.bottom >= -800;
+		};
+
+		const checkPosition = () => {
+			if (!isNearViewportOrTargeted()) return;
+			beginLoad();
+			stopWatching();
+		};
+
+		function stopWatching() {
+			observer.disconnect();
+			window.removeEventListener('scroll', checkPosition);
+			window.removeEventListener('resize', checkPosition);
+			window.removeEventListener('hashchange', checkPosition);
+		}
+
+		observer.observe(target);
+		window.addEventListener('scroll', checkPosition, { passive: true });
+		window.addEventListener('resize', checkPosition);
+		window.addEventListener('hashchange', checkPosition);
+		checkPosition();
+
+		return stopWatching;
 	});
 </script>
 
