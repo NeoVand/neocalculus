@@ -157,7 +157,7 @@ h4 {
 }
 
 @media (min-width: 1280px) {
-	body:has(.toc-rail:not(.collapsed)) .page-wrapper {
+	.page-wrapper {
 		width: min(var(--w-max), calc(100% - 19.5rem));
 		margin-left: auto;
 		margin-right: 19.5rem;

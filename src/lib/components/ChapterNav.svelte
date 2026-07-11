@@ -151,8 +151,14 @@
 			{/each}
 		</ol>
 	</nav>
-{:else if isPastHero}
-	<aside class="toc-rail" class:collapsed={railCollapsed} aria-label="Chapter navigator">
+{:else}
+	<aside
+		class="toc-rail"
+		class:visible={isPastHero}
+		class:collapsed={railCollapsed}
+		aria-label="Chapter navigator"
+		aria-hidden={!isPastHero}
+	>
 		<header>
 			<p class="toc-rail-eyebrow">Chapter Navigator</p>
 			<button
@@ -199,17 +205,20 @@
 
 	<button
 		class="toc-mobile-toggle"
+		class:visible={isPastHero}
 		type="button"
 		onclick={() => (isOpen = !isOpen)}
 		aria-label="Toggle chapter navigator"
 		aria-expanded={isOpen}
+		aria-hidden={!isPastHero}
+		tabindex={isPastHero ? undefined : -1}
 	>
 		<span class="toc-mobile-meta">{progressText}</span>
 		<span class="toc-mobile-title">{activeChapter?.number}. {activeChapter?.title}</span>
 	</button>
 {/if}
 
-{#if mode === 'floating' && isOpen}
+{#if mode === 'floating' && isPastHero && isOpen}
 	<button class="toc-mobile-backdrop" type="button" aria-label="Close chapter navigator" onclick={() => (isOpen = false)}></button>
 	<nav class="toc-mobile-drawer" aria-label="Chapter navigator drawer">
 		<header>
@@ -373,7 +382,7 @@
 		position: fixed;
 		right: 1rem;
 		top: 50%;
-		transform: translateY(-50%);
+		transform: translate(0.8rem, -50%);
 		transform-origin: right center;
 		z-index: 52;
 		display: none;
@@ -387,8 +396,28 @@
 		box-shadow: 0 14px 30px var(--color-shadow);
 		backdrop-filter: blur(2px);
 		overflow: clip;
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
 		--toc-motion: cubic-bezier(0.22, 1, 0.36, 1);
 		transition:
+			opacity 0.24s ease,
+			transform 0.34s var(--toc-motion),
+			visibility 0s linear 0.34s,
+			width 0.24s var(--toc-motion),
+			padding 0.24s var(--toc-motion),
+			border-radius 0.24s var(--toc-motion);
+	}
+
+	.toc-rail.visible {
+		transform: translate(0, -50%);
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+		transition:
+			opacity 0.24s ease,
+			transform 0.34s var(--toc-motion),
+			visibility 0s linear,
 			width 0.24s var(--toc-motion),
 			padding 0.24s var(--toc-motion),
 			border-radius 0.24s var(--toc-motion);
@@ -591,6 +620,25 @@
 		text-align: left;
 		cursor: pointer;
 		box-shadow: 0 10px 24px var(--color-shadow);
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transform: translateY(0.65rem);
+		transition:
+			opacity 0.2s ease,
+			transform 0.28s var(--ease-out-expo),
+			visibility 0s linear 0.28s;
+	}
+
+	.toc-mobile-toggle.visible {
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+		transform: translateY(0);
+		transition:
+			opacity 0.2s ease,
+			transform 0.28s var(--ease-out-expo),
+			visibility 0s linear;
 	}
 
 	.toc-mobile-meta {
