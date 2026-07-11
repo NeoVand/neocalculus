@@ -6,6 +6,7 @@
 	import ChapterSummary from '$lib/components/ChapterSummary.svelte';
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import InfinitesimalStrip from '$lib/components/demos/InfinitesimalStrip.svelte';
+	import IntegralMachine from '$lib/components/demos/IntegralMachine.svelte';
 	import { reveal } from '$lib/utils/scroll';
 
 	const r = String.raw;
@@ -159,6 +160,22 @@
 				interval. For example, <Katex math={r`F(t)=t^2`} /> is an antiderivative of
 				<Katex math={r`f(t)=2t`} />.
 			</p>
+			<p>
+				The notation <Katex math={r`\int f(x)\,dx=F(x)+C`} /> packages this reverse
+				operation. The <Katex math="+C" /> is not decoration: every vertical shift has the
+				same derivative, so an indefinite integral describes a whole family rather than one
+				preferred curve.
+			</p>
+		</div>
+
+		<div use:reveal>
+			<Figure number="5.2"
+				caption="The blue integrand enters while its accumulated area fills from left to right. The output is one antiderivative; adding +C recovers the full family described above.">
+				<IntegralMachine />
+			</Figure>
+		</div>
+
+		<div class="neo-prose" use:reveal>
 			<p>
 				The accumulation function <Katex math="A" /> and any antiderivative <Katex math="F" />
 				have the same derivative. The constancy principle from Chapter 3 therefore says that they

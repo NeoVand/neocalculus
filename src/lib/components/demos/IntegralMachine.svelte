@@ -4,9 +4,7 @@
 	type Scenario = {
 		inputMath: string;
 		outputMath: string;
-		name: string;
-		fn: (x: number) => number;
-		derivative: (x: number) => number;
+		integrand: (x: number) => number;
 		domain: [number, number];
 		range: [number, number];
 		travel: [number, number];
@@ -14,84 +12,52 @@
 
 	const scenarios: Scenario[] = [
 		{
-			inputMath: String.raw`\sin x`,
-			outputMath: String.raw`\cos x`,
-			name: 'sine',
-			fn: Math.sin,
-			derivative: Math.cos,
-			domain: [-Math.PI, Math.PI],
-			range: [-1.35, 1.35],
-			travel: [-2.55, 2.55]
+			inputMath: '1',
+			outputMath: String.raw`x`,
+			integrand: () => 1,
+			domain: [-2.5, 2.5],
+			range: [-3, 3],
+			travel: [-2.25, 2.25]
+		},
+		{
+			inputMath: String.raw`2x`,
+			outputMath: String.raw`x^2`,
+			integrand: (x) => 2 * x,
+			domain: [-2.2, 2.2],
+			range: [-4.8, 4.8],
+			travel: [-1.9, 1.9]
 		},
 		{
 			inputMath: String.raw`\cos x`,
-			outputMath: String.raw`-\sin x`,
-			name: 'cosine',
-			fn: Math.cos,
-			derivative: (x) => -Math.sin(x),
+			outputMath: String.raw`\sin x`,
+			integrand: Math.cos,
 			domain: [-Math.PI, Math.PI],
-			range: [-1.35, 1.35],
-			travel: [-2.55, 2.55]
+			range: [-1.45, 1.45],
+			travel: [-2.65, 2.65]
 		},
 		{
-			inputMath: String.raw`x^2`,
-			outputMath: String.raw`2x`,
-			name: 'the squaring function',
-			fn: (x) => x * x,
-			derivative: (x) => 2 * x,
-			domain: [-2.2, 2.2],
-			range: [-0.55, 5.1],
-			travel: [-1.75, 1.75]
-		},
-		{
-			inputMath: String.raw`x^3`,
-			outputMath: String.raw`3x^2`,
-			name: 'the cubing function',
-			fn: (x) => x * x * x,
-			derivative: (x) => 3 * x * x,
-			domain: [-1.8, 1.8],
-			range: [-4.8, 4.8],
-			travel: [-1.55, 1.55]
+			inputMath: String.raw`-\sin x`,
+			outputMath: String.raw`\cos x`,
+			integrand: (x) => -Math.sin(x),
+			domain: [-Math.PI, Math.PI],
+			range: [-1.45, 1.45],
+			travel: [-2.65, 2.65]
 		},
 		{
 			inputMath: String.raw`e^x`,
 			outputMath: String.raw`e^x`,
-			name: 'the exponential function',
-			fn: Math.exp,
-			derivative: Math.exp,
-			domain: [-2.2, 2.2],
-			range: [-0.5, 8],
-			travel: [-1.8, 1.8]
-		},
-		{
-			inputMath: String.raw`\ln x`,
-			outputMath: String.raw`\frac{1}{x}`,
-			name: 'the natural logarithm',
-			fn: Math.log,
-			derivative: (x) => 1 / x,
-			domain: [0, 5],
-			range: [-2, 1.8],
-			travel: [0.22, 4.65]
+			integrand: Math.exp,
+			domain: [-2.2, 2],
+			range: [-0.4, 7],
+			travel: [-1.85, 1.75]
 		},
 		{
 			inputMath: String.raw`\frac{1}{x}`,
-			outputMath: String.raw`-\frac{1}{x^2}`,
-			name: 'the reciprocal function',
-			fn: (x) => 1 / x,
-			derivative: (x) => -1 / (x * x),
+			outputMath: String.raw`\ln x`,
+			integrand: (x) => 1 / x,
 			domain: [0, 5],
-			range: [-0.2, 3.7],
-			travel: [0.32, 4.6]
-		},
-		{
-			inputMath: String.raw`\tan x`,
-			outputMath: String.raw`\sec^2 x`,
-			name: 'the tangent function',
-			fn: Math.tan,
-			derivative: (x) => 1 / Math.cos(x) ** 2,
-			domain: [-1.2, 1.2],
-			range: [-2.65, 2.65],
-			travel: [-1.08, 1.08]
+			range: [-1.6, 3.6],
+			travel: [0.3, 4.6]
 		}
 	];
 
@@ -99,17 +65,17 @@
 	const fullCycleDuration = scenarioDuration * scenarios.length;
 	const VW = 560;
 	const VH = 200;
-	const bodyLeft = 145;
-	const bodyRight = 415;
+	const bodyLeft = 150;
+	const bodyRight = 410;
 	const bodyTop = 8;
 	const bodyBottom = 192;
 	const bodyMid = (bodyTop + bodyBottom) / 2;
-	const funnelLength = 54;
+	const funnelLength = 50;
 	const slotHeight = 44;
 	const mouthHeight = 88;
 	const funnelLeft = bodyLeft - funnelLength;
 	const funnelRight = bodyRight + funnelLength;
-	const pillGap = 13;
+	const pillGap = 15;
 	const labelOffset = 34;
 	const labelLeft = `${((funnelLeft - labelOffset) / VW) * 100}%`;
 	const labelRight = `${((VW - (funnelRight + labelOffset)) / VW) * 100}%`;
@@ -134,66 +100,38 @@
 		};
 	}
 
-	function makeCurvePath(scenario: Scenario) {
+	function makeCurvePath(scenario: Scenario, fn: (x: number) => number) {
 		const points: string[] = [];
 		const [travelMin, travelMax] = scenario.travel;
 		for (let i = 0; i <= 140; i += 1) {
 			const x = travelMin + ((travelMax - travelMin) * i) / 140;
-			const point = mapPoint(x, scenario.fn(x), scenario);
+			const point = mapPoint(x, fn(x), scenario);
 			points.push(`${i === 0 ? 'M' : 'L'} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`);
 		}
 		return points.join(' ');
 	}
 
-	function tangentSegment(scenario: Scenario, x0: number) {
-		const [xMin, xMax] = scenario.domain;
-		const [yMin, yMax] = scenario.range;
-		const y0 = scenario.fn(x0);
-		const slope = scenario.derivative(x0);
-		const candidates: { x: number; y: number }[] = [];
-		const add = (x: number, y: number) => {
-			if (x >= xMin - 1e-6 && x <= xMax + 1e-6 && y >= yMin - 1e-6 && y <= yMax + 1e-6) {
-				candidates.push({ x, y });
-			}
-		};
-
-		add(xMin, y0 + slope * (xMin - x0));
-		add(xMax, y0 + slope * (xMax - x0));
-		if (Math.abs(slope) > 1e-7) {
-			add(x0 + (yMin - y0) / slope, yMin);
-			add(x0 + (yMax - y0) / slope, yMax);
+	function makeAreaPath(scenario: Scenario) {
+		const points: string[] = [];
+		const [travelMin, travelMax] = scenario.travel;
+		const axisY = mapPoint(0, 0, scenario).y;
+		for (let i = 0; i <= 140; i += 1) {
+			const x = travelMin + ((travelMax - travelMin) * i) / 140;
+			const point = mapPoint(x, scenario.integrand(x), scenario);
+			points.push(`L ${point.x.toFixed(2)} ${point.y.toFixed(2)}`);
 		}
-
-		let first = candidates[0] ?? { x: xMin, y: y0 };
-		let second = candidates[1] ?? { x: xMax, y: y0 };
-		let greatestDistance = -1;
-		for (let i = 0; i < candidates.length; i += 1) {
-			for (let j = i + 1; j < candidates.length; j += 1) {
-				const distance =
-					(candidates[i].x - candidates[j].x) ** 2 + (candidates[i].y - candidates[j].y) ** 2;
-				if (distance > greatestDistance) {
-					greatestDistance = distance;
-					first = candidates[i];
-					second = candidates[j];
-				}
-			}
-		}
-
-		return {
-			start: mapPoint(first.x, first.y, scenario),
-			end: mapPoint(second.x, second.y, scenario),
-			point: mapPoint(x0, y0, scenario)
-		};
+		const first = mapPoint(travelMin, 0, scenario);
+		const last = mapPoint(travelMax, 0, scenario);
+		return `M ${first.x.toFixed(2)} ${axisY.toFixed(2)} ${points.join(' ')} L ${last.x.toFixed(2)} ${axisY.toFixed(2)} Z`;
 	}
 
 	const preparedScenarios = scenarios.map((scenario, index) => ({
 		...scenario,
 		index,
-		pathId: `derivative-path-${index}`,
-		path: makeCurvePath(scenario),
+		integrandPath: makeCurvePath(scenario, scenario.integrand),
+		areaPath: makeAreaPath(scenario),
 		axisX: mapPoint(0, 0, scenario).x,
 		axisY: mapPoint(0, 0, scenario).y,
-		staticTangent: tangentSegment(scenario, 0),
 		delay: `${index * scenarioDuration}s`
 	}));
 
@@ -247,8 +185,8 @@
 </script>
 
 <div
-	id="derivative-machine"
-	class="derivative-machine"
+	id="integral-machine"
+	class="integral-machine"
 	style:--label-left={labelLeft}
 	style:--label-right={labelRight}
 	style:--input-rest-right={inputRestRight}
@@ -256,14 +194,14 @@
 	style:--output-rest-left={outputRestLeft}
 	style:--output-hidden-left={outputHiddenLeft}
 	style:--full-cycle-duration={`${fullCycleDuration}s`}
-	aria-label="An animated derivative machine. A function enters, a tangent moves along its graph, and the derivative function emerges."
+	aria-label="An animated antiderivative machine. An integrand enters, the area under its curve fills from left to right, and one antiderivative emerges."
 >
 	<div class="machine-stage">
 		<div class="side-label side-label-left"><Katex math="f(x)" /></div>
-		<div class="side-label side-label-right"><Katex math="f'(x)" /></div>
-		<div class="machine-title">Derivative</div>
+		<div class="side-label side-label-right"><Katex math={String.raw`\int f(x)\,dx`} /></div>
+		<div class="machine-title">Antiderivative</div>
 
-		{#each preparedScenarios as scenario (scenario.pathId)}
+		{#each preparedScenarios as scenario (scenario.index)}
 			<div
 				class="pill-scenario scenario-layer scenario-{scenario.index}"
 				style:--scenario-delay={scenario.delay}
@@ -281,10 +219,10 @@
 			class="machine-svg"
 			viewBox={`0 0 ${VW} ${VH}`}
 			role="img"
-			aria-label="A point and tangent moving together along three function graphs"
+			aria-label="A blue integrand curve with its area filling from left to right"
 		>
 			<defs>
-				<linearGradient id="derivativeMachineBody" x1="0" y1="0" x2="0" y2="1">
+				<linearGradient id="integralMachineBody" x1="0" y1="0" x2="0" y2="1">
 					<stop offset="0%" stop-color="var(--color-surface-raised)"></stop>
 					<stop
 						offset="50%"
@@ -292,15 +230,15 @@
 					></stop>
 					<stop offset="100%" stop-color="var(--color-surface-raised)"></stop>
 				</linearGradient>
-				<radialGradient id="derivativeMachineGlow" cx="50%" cy="50%" r="60%">
+				<radialGradient id="integralMachineGlow" cx="50%" cy="50%" r="60%">
 					<stop offset="0%" stop-color="var(--color-d)" stop-opacity="0.2"></stop>
 					<stop offset="100%" stop-color="var(--color-d)" stop-opacity="0"></stop>
 				</radialGradient>
 				<radialGradient
-					id="derivativeTravelHalo"
+					id="integralTravelHalo"
 					cx={funnelLeft}
 					cy={bodyMid}
-					r="126"
+					r="122"
 					gradientUnits="userSpaceOnUse"
 				>
 					<stop offset="0%" stop-color="var(--color-d)" stop-opacity="0.3"></stop>
@@ -315,14 +253,26 @@
 						values={`${funnelLeft};${funnelLeft};${funnelRight};${funnelRight}`}
 					></animate>
 				</radialGradient>
-				<clipPath id="derivativePlotClip">
+				<clipPath id="integralPlotClip">
 					<rect x={plotLeft} y={plotTop} width={plotWidth} height={plotHeight} rx="11"></rect>
+				</clipPath>
+				<clipPath id="integralAreaReveal">
+					<rect x={plotLeft} y={plotTop - 14} width="0" height={plotHeight + 28}>
+						<animate
+							attributeName="width"
+							dur={`${scenarioDuration}s`}
+							repeatCount="indefinite"
+							calcMode="linear"
+							keyTimes="0;0.22;0.66;1"
+							values={`0;0;${plotWidth};${plotWidth}`}
+						></animate>
+					</rect>
 				</clipPath>
 			</defs>
 
 			<path
 				d={machinePath}
-				fill="url(#derivativeMachineBody)"
+				fill="url(#integralMachineBody)"
 				stroke="var(--color-d)"
 				stroke-width="1.8"
 				stroke-linejoin="round"
@@ -336,7 +286,7 @@
 					values={machinePathAnimation}
 				></animate>
 			</path>
-			<path d={machinePath} fill="url(#derivativeMachineGlow)" stroke="none" class="machine-glow">
+			<path d={machinePath} fill="url(#integralMachineGlow)" stroke="none" class="machine-glow">
 				<animate
 					attributeName="d"
 					dur={`${scenarioDuration}s`}
@@ -348,7 +298,7 @@
 			</path>
 			<path
 				d={machinePath}
-				fill="url(#derivativeTravelHalo)"
+				fill="url(#integralTravelHalo)"
 				stroke="none"
 				opacity="0"
 				class="travel-halo"
@@ -370,6 +320,7 @@
 					values={machinePathAnimation}
 				></animate>
 			</path>
+
 			<rect
 				x={plotLeft - 9}
 				y={plotTop - 9}
@@ -380,8 +331,8 @@
 				fill-opacity="0.72"
 			></rect>
 
-			<g clip-path="url(#derivativePlotClip)">
-				{#each preparedScenarios as scenario (scenario.pathId)}
+			<g clip-path="url(#integralPlotClip)">
+				{#each preparedScenarios as scenario (scenario.index)}
 					<g
 						class="plot-scenario scenario-layer scenario-{scenario.index}"
 						style:--scenario-delay={scenario.delay}
@@ -402,73 +353,17 @@
 							stroke="var(--plot-axis)"
 							stroke-width="0.8"
 						></line>
+						<g class="area-reveal" clip-path="url(#integralAreaReveal)">
+							<path d={scenario.areaPath} fill="var(--color-d)" opacity="0.24"></path>
+						</g>
 						<path
-							id={scenario.pathId}
-							d={scenario.path}
+							d={scenario.integrandPath}
 							fill="none"
 							stroke="var(--plot-curve)"
-							stroke-width="2.2"
+							stroke-width="2"
 							stroke-linecap="round"
 							stroke-linejoin="round"
 						></path>
-
-						<g class="moving-tangent" opacity="0">
-							<line
-								x1="-82"
-								y1="0"
-								x2="82"
-								y2="0"
-								stroke="var(--plot-tangent)"
-								stroke-width="1.8"
-								stroke-linecap="round"
-							></line>
-							<circle
-								cx="0"
-								cy="0"
-								r="5"
-								fill="var(--plot-point)"
-								stroke="var(--plot-outline)"
-								stroke-width="1.5"
-							></circle>
-							<animate
-								attributeName="opacity"
-								dur={`${scenarioDuration}s`}
-								repeatCount="indefinite"
-								calcMode="linear"
-								keyTimes="0;0.22;0.24;0.66;0.70;1"
-								values="0;0;1;1;0;0"
-							></animate>
-							<animateMotion
-								dur={`${scenarioDuration}s`}
-								repeatCount="indefinite"
-								rotate="auto"
-								calcMode="linear"
-								keyPoints="0;0;1;1"
-								keyTimes="0;0.22;0.66;1"
-							>
-								<mpath href={`#${scenario.pathId}`}></mpath>
-							</animateMotion>
-						</g>
-
-						<g class="static-tangent">
-							<line
-								x1={scenario.staticTangent.start.x}
-								y1={scenario.staticTangent.start.y}
-								x2={scenario.staticTangent.end.x}
-								y2={scenario.staticTangent.end.y}
-								stroke="var(--plot-tangent)"
-								stroke-width="1.8"
-								stroke-linecap="round"
-							></line>
-							<circle
-								cx={scenario.staticTangent.point.x}
-								cy={scenario.staticTangent.point.y}
-								r="5"
-								fill="var(--plot-point)"
-								stroke="var(--plot-outline)"
-								stroke-width="1.5"
-							></circle>
-						</g>
 					</g>
 				{/each}
 			</g>
@@ -477,7 +372,7 @@
 </div>
 
 <style>
-	.derivative-machine {
+	.integral-machine {
 		display: flex;
 		justify-content: center;
 		width: 100%;
@@ -540,7 +435,7 @@
 	}
 
 	.side-label :global(.katex) {
-		font-size: 1.04em;
+		font-size: 1em;
 		color: var(--color-ink-faint);
 	}
 
@@ -564,7 +459,7 @@
 		justify-content: center;
 		min-width: 3.25rem;
 		min-height: 2.35rem;
-		padding: 0.28rem 0.7rem;
+		padding: 0.28rem 0.65rem;
 		border: 1.8px solid var(--color-d);
 		border-radius: 999px;
 		background: radial-gradient(
@@ -577,7 +472,7 @@
 	}
 
 	.function-pill :global(.katex) {
-		font-size: 1.04em;
+		font-size: 1em;
 		color: var(--color-d);
 	}
 
@@ -593,23 +488,15 @@
 		animation: output-cycle 6.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 	}
 
-	.plot-scenario {
-		transform-box: fill-box;
-	}
-
-	.static-tangent {
-		display: none;
-	}
-
 	@keyframes scenario-window {
 		0% {
 			opacity: 0;
 		}
-		0.7%,
-		12.5% {
+		0.9%,
+		16.667% {
 			opacity: 1;
 		}
-		13.2%,
+		17.57%,
 		100% {
 			opacity: 0;
 		}
@@ -674,35 +561,38 @@
 		}
 
 		.function-pill {
-			min-width: 2.5rem;
+			min-width: 2.35rem;
 			min-height: 1.9rem;
-			padding: 0.2rem 0.48rem;
+			padding: 0.2rem 0.38rem;
 		}
 
 		.function-pill :global(.katex),
 		.side-label :global(.katex) {
-			font-size: 0.78em;
+			font-size: 0.74em;
 		}
 
 		.function-pill-input {
-			padding-inline: 0.4rem;
+			padding-inline: 0.28rem;
+		}
+
+		.function-pill-input :global(.katex) {
+			font-size: 0.7em;
 		}
 
 		.function-pill-output {
-			min-width: 2.25rem;
-			padding-inline: 0.18rem;
+			min-width: 2.1rem;
+			padding-inline: 0.13rem;
 		}
 
 		.function-pill-output :global(.katex) {
-			font-size: 0.74em;
+			font-size: 0.62em;
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
 		.machine-glow,
 		.scenario-layer,
-		.function-pill,
-		.moving-tangent {
+		.function-pill {
 			animation: none;
 		}
 
@@ -724,16 +614,12 @@
 			opacity: 1;
 		}
 
-		.moving-tangent {
-			display: none;
-		}
-
 		.travel-halo {
 			display: none;
 		}
 
-		.static-tangent {
-			display: block;
+		.area-reveal {
+			clip-path: none;
 		}
 	}
 </style>
