@@ -1,21 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark" style="color-scheme: dark">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<script>
 			try {
 				const savedTheme = localStorage.getItem('neocalculus-theme');
-				const theme =
-					savedTheme === 'light' || savedTheme === 'dark'
-						? savedTheme
-						: matchMedia('(prefers-color-scheme: dark)').matches
-							? 'dark'
-							: 'light';
+				const theme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : 'dark';
 				document.documentElement.dataset.theme = theme;
 				document.documentElement.style.colorScheme = theme;
 			} catch {
-				document.documentElement.dataset.theme = 'light';
+				document.documentElement.dataset.theme = 'dark';
+				document.documentElement.style.colorScheme = 'dark';
 			}
 		</script>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
