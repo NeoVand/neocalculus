@@ -58,11 +58,14 @@
 	const mouthHeight = 98;
 	const funnelLeft = bodyLeft - funnelLength;
 	const funnelRight = bodyRight + funnelLength;
-	const pillMargin = 34;
-	const restLeft = `${((funnelLeft - pillMargin) / VW) * 100}%`;
-	const restRight = `${((VW - (funnelRight + pillMargin)) / VW) * 100}%`;
-	const swallowedLeft = `${((bodyLeft + 22) / VW) * 100}%`;
-	const hiddenRight = `${((VW - (bodyRight - 22)) / VW) * 100}%`;
+	const pillGap = 13;
+	const labelOffset = 34;
+	const labelLeft = `${((funnelLeft - labelOffset) / VW) * 100}%`;
+	const labelRight = `${((VW - (funnelRight + labelOffset)) / VW) * 100}%`;
+	const inputRestRight = `${((VW - (funnelLeft - pillGap)) / VW) * 100}%`;
+	const inputHiddenRight = `${((VW - (bodyLeft + 22)) / VW) * 100}%`;
+	const outputRestLeft = `${((funnelRight + pillGap) / VW) * 100}%`;
+	const outputHiddenLeft = `${((bodyRight - 22) / VW) * 100}%`;
 
 	const plotLeft = 174;
 	const plotRight = 386;
@@ -143,36 +146,64 @@
 		delay: `${index * scenarioDuration}s`
 	}));
 
-	const radius = 15;
-	const machinePath = [
-		`M ${bodyLeft + radius},${bodyTop}`,
-		`L ${bodyRight - radius},${bodyTop}`,
-		`Q ${bodyRight},${bodyTop} ${bodyRight},${bodyTop + radius}`,
-		`L ${bodyRight},${bodyMid - slotHeight / 2}`,
-		`L ${funnelRight},${bodyMid - mouthHeight / 2}`,
-		`L ${funnelRight},${bodyMid + mouthHeight / 2}`,
-		`L ${bodyRight},${bodyMid + slotHeight / 2}`,
-		`L ${bodyRight},${bodyBottom - radius}`,
-		`Q ${bodyRight},${bodyBottom} ${bodyRight - radius},${bodyBottom}`,
-		`L ${bodyLeft + radius},${bodyBottom}`,
-		`Q ${bodyLeft},${bodyBottom} ${bodyLeft},${bodyBottom - radius}`,
-		`L ${bodyLeft},${bodyMid + slotHeight / 2}`,
-		`L ${funnelLeft},${bodyMid + mouthHeight / 2}`,
-		`L ${funnelLeft},${bodyMid - mouthHeight / 2}`,
-		`L ${bodyLeft},${bodyMid - slotHeight / 2}`,
-		`L ${bodyLeft},${bodyTop + radius}`,
-		`Q ${bodyLeft},${bodyTop} ${bodyLeft + radius},${bodyTop}`,
-		'Z'
-	].join(' ');
+	function makeMachinePath(inputSpread = 0, outputSpread = 0) {
+		const radius = 15;
+		const leftMouth = mouthHeight + inputSpread * 3;
+		const rightMouth = mouthHeight + Math.max(outputSpread, 0) * 3;
+		const leftEdge = funnelLeft - inputSpread;
+		const rightEdge = funnelRight + outputSpread;
+
+		return [
+			`M ${bodyLeft + radius},${bodyTop}`,
+			`L ${bodyRight - radius},${bodyTop}`,
+			`Q ${bodyRight},${bodyTop} ${bodyRight},${bodyTop + radius}`,
+			`L ${bodyRight},${bodyMid - slotHeight / 2}`,
+			`L ${rightEdge},${bodyMid - rightMouth / 2}`,
+			`L ${rightEdge},${bodyMid + rightMouth / 2}`,
+			`L ${bodyRight},${bodyMid + slotHeight / 2}`,
+			`L ${bodyRight},${bodyBottom - radius}`,
+			`Q ${bodyRight},${bodyBottom} ${bodyRight - radius},${bodyBottom}`,
+			`L ${bodyLeft + radius},${bodyBottom}`,
+			`Q ${bodyLeft},${bodyBottom} ${bodyLeft},${bodyBottom - radius}`,
+			`L ${bodyLeft},${bodyMid + slotHeight / 2}`,
+			`L ${leftEdge},${bodyMid + leftMouth / 2}`,
+			`L ${leftEdge},${bodyMid - leftMouth / 2}`,
+			`L ${bodyLeft},${bodyMid - slotHeight / 2}`,
+			`L ${bodyLeft},${bodyTop + radius}`,
+			`Q ${bodyLeft},${bodyTop} ${bodyLeft + radius},${bodyTop}`,
+			'Z'
+		].join(' ');
+	}
+
+	const machinePath = makeMachinePath();
+	const intakePath = makeMachinePath(4, 0);
+	const pinchedReleasePath = makeMachinePath(0, -2);
+	const releasePath = makeMachinePath(0, 3);
+	const machinePathAnimation = [
+		machinePath,
+		machinePath,
+		intakePath,
+		intakePath,
+		machinePath,
+		machinePath,
+		pinchedReleasePath,
+		releasePath,
+		releasePath,
+		machinePath,
+		machinePath
+	].join(';');
+	const machinePathKeyTimes = '0;0.12;0.14;0.18;0.22;0.62;0.635;0.65;0.68;0.72;1';
 </script>
 
 <div
 	id="derivative-machine"
 	class="derivative-machine"
-	style:--rest-left={restLeft}
-	style:--rest-right={restRight}
-	style:--swallowed-left={swallowedLeft}
-	style:--hidden-right={hiddenRight}
+	style:--label-left={labelLeft}
+	style:--label-right={labelRight}
+	style:--input-rest-right={inputRestRight}
+	style:--input-hidden-right={inputHiddenRight}
+	style:--output-rest-left={outputRestLeft}
+	style:--output-hidden-left={outputHiddenLeft}
 	aria-label="An animated derivative machine. A function enters, a tangent moves along its graph, and the derivative function emerges."
 >
 	<div class="machine-stage">
@@ -223,9 +254,26 @@
 				stroke="var(--color-d)"
 				stroke-width="1.8"
 				stroke-linejoin="round"
-			></path>
-			<path d={machinePath} fill="url(#derivativeMachineGlow)" stroke="none" class="machine-glow"
-			></path>
+			>
+				<animate
+					attributeName="d"
+					dur={`${scenarioDuration}s`}
+					repeatCount="indefinite"
+					calcMode="linear"
+					keyTimes={machinePathKeyTimes}
+					values={machinePathAnimation}
+				></animate>
+			</path>
+			<path d={machinePath} fill="url(#derivativeMachineGlow)" stroke="none" class="machine-glow">
+				<animate
+					attributeName="d"
+					dur={`${scenarioDuration}s`}
+					repeatCount="indefinite"
+					calcMode="linear"
+					keyTimes={machinePathKeyTimes}
+					values={machinePathAnimation}
+				></animate>
+			</path>
 
 			<rect
 				x={plotLeft - 9}
@@ -364,12 +412,12 @@
 	}
 
 	.side-label-left {
-		left: var(--rest-left);
+		left: var(--label-left);
 		transform: translateX(-50%);
 	}
 
 	.side-label-right {
-		right: var(--rest-right);
+		right: var(--label-right);
 		transform: translateX(50%);
 	}
 
@@ -416,14 +464,14 @@
 	}
 
 	.function-pill-input {
-		left: var(--rest-left);
-		transform: translate(-50%, -50%);
+		right: var(--input-rest-right);
+		transform: translateY(-50%);
 		animation: input-cycle 6.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 	}
 
 	.function-pill-output {
-		right: var(--hidden-right);
-		transform: translate(50%, -50%);
+		left: var(--output-hidden-left);
+		transform: translateY(-50%);
 		animation: output-cycle 6.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 	}
 
@@ -457,17 +505,17 @@
 	@keyframes input-cycle {
 		0%,
 		2% {
-			left: var(--rest-left);
+			right: var(--input-rest-right);
 			opacity: 0;
 		}
 		5%,
 		13% {
-			left: var(--rest-left);
+			right: var(--input-rest-right);
 			opacity: 1;
 		}
 		22%,
 		100% {
-			left: var(--swallowed-left);
+			right: var(--input-hidden-right);
 			opacity: 0;
 		}
 	}
@@ -475,17 +523,17 @@
 	@keyframes output-cycle {
 		0%,
 		63% {
-			right: var(--hidden-right);
+			left: var(--output-hidden-left);
 			opacity: 0;
 		}
 		70%,
 		88% {
-			right: var(--rest-right);
+			left: var(--output-rest-left);
 			opacity: 1;
 		}
 		96%,
 		100% {
-			right: var(--rest-right);
+			left: var(--output-rest-left);
 			opacity: 0;
 		}
 	}
@@ -531,6 +579,15 @@
 		.side-label :global(.katex) {
 			font-size: 0.78em;
 		}
+
+		.function-pill-output {
+			min-width: 2.25rem;
+			padding-inline: 0.18rem;
+		}
+
+		.function-pill-output :global(.katex) {
+			font-size: 0.74em;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
@@ -550,12 +607,12 @@
 		}
 
 		.function-pill-input {
-			left: var(--rest-left);
+			right: var(--input-rest-right);
 			opacity: 1;
 		}
 
 		.function-pill-output {
-			right: var(--rest-right);
+			left: var(--output-rest-left);
 			opacity: 1;
 		}
 
