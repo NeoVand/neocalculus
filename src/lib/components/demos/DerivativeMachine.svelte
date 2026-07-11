@@ -243,6 +243,25 @@
 					<stop offset="0%" stop-color="var(--color-d)" stop-opacity="0.2"></stop>
 					<stop offset="100%" stop-color="var(--color-d)" stop-opacity="0"></stop>
 				</radialGradient>
+				<radialGradient
+					id="derivativeTravelHalo"
+					cx={funnelLeft}
+					cy={bodyMid}
+					r="126"
+					gradientUnits="userSpaceOnUse"
+				>
+					<stop offset="0%" stop-color="var(--color-d)" stop-opacity="0.3"></stop>
+					<stop offset="48%" stop-color="var(--color-d)" stop-opacity="0.11"></stop>
+					<stop offset="100%" stop-color="var(--color-d)" stop-opacity="0"></stop>
+					<animate
+						attributeName="cx"
+						dur={`${scenarioDuration}s`}
+						repeatCount="indefinite"
+						calcMode="linear"
+						keyTimes="0;0.22;0.66;1"
+						values={`${funnelLeft};${funnelLeft};${funnelRight};${funnelRight}`}
+					></animate>
+				</radialGradient>
 				<clipPath id="derivativePlotClip">
 					<rect x={plotLeft} y={plotTop} width={plotWidth} height={plotHeight} rx="11"></rect>
 				</clipPath>
@@ -265,6 +284,16 @@
 				></animate>
 			</path>
 			<path d={machinePath} fill="url(#derivativeMachineGlow)" stroke="none" class="machine-glow">
+				<animate
+					attributeName="d"
+					dur={`${scenarioDuration}s`}
+					repeatCount="indefinite"
+					calcMode="linear"
+					keyTimes={machinePathKeyTimes}
+					values={machinePathAnimation}
+				></animate>
+			</path>
+			<path d={machinePath} fill="url(#derivativeTravelHalo)" stroke="none" class="travel-halo">
 				<animate
 					attributeName="d"
 					dur={`${scenarioDuration}s`}
@@ -403,6 +432,11 @@
 		animation: machine-breathe 6.6s ease-in-out infinite;
 	}
 
+	.travel-halo {
+		opacity: 0;
+		animation: travel-halo-cycle 6.6s linear infinite;
+	}
+
 	.side-label {
 		position: absolute;
 		top: 13%;
@@ -522,11 +556,11 @@
 
 	@keyframes output-cycle {
 		0%,
-		63% {
+		66% {
 			left: var(--output-hidden-left);
 			opacity: 0;
 		}
-		70%,
+		72%,
 		88% {
 			left: var(--output-rest-left);
 			opacity: 1;
@@ -544,10 +578,25 @@
 			opacity: 0;
 		}
 		24%,
-		82% {
+		64% {
 			opacity: 1;
 		}
-		89%,
+		69%,
+		100% {
+			opacity: 0;
+		}
+	}
+
+	@keyframes travel-halo-cycle {
+		0%,
+		18% {
+			opacity: 0;
+		}
+		22%,
+		64% {
+			opacity: 1;
+		}
+		69%,
 		100% {
 			opacity: 0;
 		}
@@ -592,6 +641,7 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.machine-glow,
+		.travel-halo,
 		.scenario-layer,
 		.function-pill,
 		.moving-tangent {
