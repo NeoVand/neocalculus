@@ -104,7 +104,7 @@
    ═══════════════════════════════════════════ */
 html {
 	scroll-behavior: smooth;
-	overflow-x: hidden;
+	overflow-x: clip;
 }
 
 body {
@@ -115,7 +115,7 @@ body {
 	line-height: 1.8;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	overflow-x: hidden;
+	overflow-x: clip;
 	transition:
 		background-color 0.22s ease,
 		color 0.22s ease;
