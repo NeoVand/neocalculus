@@ -1,10 +1,12 @@
 <script lang="ts">
 	import Katex from '$lib/components/Katex.svelte';
 	import Callout from '$lib/components/Callout.svelte';
+	import Figure from '$lib/components/Figure.svelte';
 	import Exercise from '$lib/components/Exercise.svelte';
 	import ChapterSummary from '$lib/components/ChapterSummary.svelte';
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import RuleProver from '$lib/components/demos/RuleProver.svelte';
+	import ChainRuleNudges from '$lib/components/demos/ChainRuleNudges.svelte';
 	import { reveal } from '$lib/utils/scroll';
 
 	const r = String.raw;
@@ -202,6 +204,24 @@
 			</p>
 			<p>
 				Because <Katex math={r`(g'd)^2=(g')^2d^2=0`} />, the inner change is still first order.
+			</p>
+		</div>
+
+		<div use:reveal>
+			<Figure
+				number="3.1"
+				caption="One first-order nudge passes through two local stretches. The inner function turns d into 2x d; the outer function then scales that result by cos(x²)."
+			>
+				<ChainRuleNudges />
+			</Figure>
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>
+				The three number lines use the same scale, so the changing lengths can be compared
+				directly. The outer function never receives the original <Katex math="d" />. It receives
+				the change already produced by the inner function—and that is why the two local stretch
+				factors multiply.
 			</p>
 		</div>
 
