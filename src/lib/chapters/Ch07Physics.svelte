@@ -7,6 +7,7 @@
 	import ChapterSummary from '$lib/components/ChapterSummary.svelte';
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import DifferentialEquationExplorer from '$lib/components/demos/DifferentialEquationExplorer.svelte';
+	import PendulumPhaseLab from '$lib/components/demos/PendulumPhaseLab.svelte';
 	import { reveal } from '$lib/utils/scroll';
 
 	const r = String.raw;
@@ -290,6 +291,39 @@
 				<li>Ask whether the sign, units, and long-term behavior make sense.</li>
 			</ol>
 		</Callout>
+
+		<div class="neo-prose" use:reveal>
+			<h3>A second-order law is a flow through states</h3>
+			<p>
+				A pendulum needs two numbers to determine what happens next: its angle and its angular
+				velocity. Knowing the angle alone does not tell us whether the bob is moving left, moving
+				right, or momentarily at rest. Introduce <Katex math="\omega=\theta'" /> and the single
+				second-order law becomes two linked first-order laws:
+			</p>
+		</div>
+
+		<div class="key-equation" use:reveal>
+			<Katex math="\theta'=\omega,\qquad \omega'=-\sin\theta-b\omega" display />
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>
+				The pair <Katex math="(\theta,\omega)" /> is the pendulum’s <strong>state</strong>. Every
+				possible state is one point in a phase plane. The differential equation places a tiny
+				direction at every point, and the moving pendulum traces one path through those directions.
+				With no damping, energy contours organize the motion. With damping, the path crosses them
+				inward as energy is lost.
+			</p>
+		</div>
+
+		<div id="pendulum-phase-lab" use:reveal>
+			<Figure
+				number="7.2"
+				caption="The physical pendulum and its phase portrait describe the same motion. Drag and throw the bob: its partner point records angle θ horizontally and angular velocity ω vertically. Closed paths are oscillations, paths crossing θ = ±π are full rotations, and damping draws states toward rest."
+			>
+				<PendulumPhaseLab />
+			</Figure>
+		</div>
 
 		<DigDeeper title="Oscillation from a restoring force">
 			<p>
