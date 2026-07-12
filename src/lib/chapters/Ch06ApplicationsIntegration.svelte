@@ -7,6 +7,7 @@
 	import ChapterSummary from '$lib/components/ChapterSummary.svelte';
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import VolumeSlicer from '$lib/components/demos/VolumeSlicer.svelte';
+	import MamikonTangentSweep from '$lib/components/demos/MamikonTangentSweep.svelte';
 	import { reveal } from '$lib/utils/scroll';
 
 	const r = String.raw;
@@ -223,6 +224,39 @@
 				<li><strong>Known cross-section:</strong> <Katex math={r`\int_a^b A(x)\,dx`} />.</li>
 			</ul>
 		</Callout>
+
+		<div class="neo-prose" use:reveal>
+			<h3>A geometric surprise: gather the tangents</h3>
+			<p>
+				Rectangles and disks are not the only shapes that can reveal an accumulation. Fix a
+				line segment of length <Katex math="L" /> tangent to a smooth convex curve and sweep it
+				around the curve. Now translate every tangent segment—without rotating it—so that all
+				starting points coincide.
+			</p>
+			<p>
+				Mamikon’s tangent-sweep theorem says that the swept region and the translated
+				<strong>tangent cluster</strong> have equal area. For one full turn with constant
+				length, the cluster is simply a disk of radius <Katex math="L" />. Change the curve
+				below; the sweep changes shape, while its total area does not.
+			</p>
+		</div>
+
+		<div use:reveal>
+			<Figure
+				number="6.2"
+				caption="The moving tangent sweeps a complicated region, but translating the same segments to one origin gathers an equal area. After one full turn, every chosen curve produces the same disk."
+			>
+				<MamikonTangentSweep />
+			</Figure>
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<p>
+				The equality can be understood locally: each tiny swept sliver is translated rigidly
+				into the cluster, so its area is preserved. The theorem is a geometric reorganization
+				of an accumulation—not a claim that the two regions have the same boundary.
+			</p>
+		</div>
 
 		<div class="neo-prose" use:reveal>
 			<h4>Area between two graphs</h4>
