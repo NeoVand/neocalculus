@@ -13,19 +13,110 @@
 	} from '$lib/utils/webgl';
 
 	let x = $state(2.4);
-	let viewAngle = $state(42);
+	let yaw = $state(1.28);
+	let pitch = $state(0.42);
+	let dragging = $state(false);
 	let renderer: FullscreenShader | undefined;
 	let scheduler: RenderScheduler | undefined;
+	let dragPointer = -1;
+	let dragX = 0;
+	let dragY = 0;
 
 	const radius = $derived(Math.sqrt(x));
 	const area = $derived(Math.PI * x);
 	const volume = $derived((Math.PI * x * x) / 2);
+	const overlayWidth = 1000;
+	const overlayHeight = 722;
+
+	const profileWidth = 360;
+	const profileHeight = 260;
+	const plotLeft = 42;
+	const plotRight = 334;
+	const plotMid = 132;
+	const radiusScale = 48;
+	const profileX = (value: number) => plotLeft + (value / 4) * (plotRight - plotLeft);
+	const profileY = (value: number) => plotMid - value * radiusScale;
+
+	function curvePath(sign: 1 | -1, end = 4) {
+		const points: string[] = [];
+		const count = Math.max(2, Math.ceil(end * 30));
+		for (let index = 0; index <= count; index += 1) {
+			const value = (end * index) / count;
+			points.push(
+				`${index === 0 ? 'M' : 'L'} ${profileX(value)} ${profileY(sign * Math.sqrt(value))}`
+			);
+		}
+		return points.join(' ');
+	}
+
+	function accumulatedPath() {
+		const upper = curvePath(1, x);
+		const lowerPoints: string[] = [];
+		const count = Math.max(2, Math.ceil(x * 30));
+		for (let index = count; index >= 0; index -= 1) {
+			const value = (x * index) / count;
+			lowerPoints.push(`L ${profileX(value)} ${profileY(-Math.sqrt(value))}`);
+		}
+		return `${upper} ${lowerPoints.join(' ')} Z`;
+	}
+
+	function normalize(vector: [number, number, number]): [number, number, number] {
+		const length = Math.hypot(...vector) || 1;
+		return [vector[0] / length, vector[1] / length, vector[2] / length];
+	}
+
+	function cross(
+		a: [number, number, number],
+		b: [number, number, number]
+	): [number, number, number] {
+		return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+	}
+
+	function dot(a: [number, number, number], b: [number, number, number]) {
+		return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+	}
+
+	function projectPoint(point: [number, number, number]) {
+		const target: [number, number, number] = [2, 0, 0];
+		const orbit: [number, number, number] = [
+			Math.cos(pitch) * Math.cos(yaw),
+			Math.sin(pitch),
+			Math.cos(pitch) * Math.sin(yaw)
+		];
+		const eye: [number, number, number] = [
+			target[0] + orbit[0] * 7.2,
+			target[1] + orbit[1] * 7.2,
+			target[2] + orbit[2] * 7.2
+		];
+		const forward = normalize([target[0] - eye[0], target[1] - eye[1], target[2] - eye[2]]);
+		const right = normalize(cross(forward, [0, 1, 0]));
+		const up = cross(right, forward);
+		const relative: [number, number, number] = [
+			point[0] - eye[0],
+			point[1] - eye[1],
+			point[2] - eye[2]
+		];
+		const depth = Math.max(0.1, dot(relative, forward));
+		const horizontal = dot(relative, right) / (depth * 0.78);
+		const vertical = dot(relative, up) / (depth * 0.78);
+		return {
+			x: overlayWidth / 2 + horizontal * overlayHeight,
+			y: overlayHeight / 2 - vertical * overlayHeight
+		};
+	}
+
+	const projectedRadius = $derived.by(() => {
+		const center = projectPoint([x, 0, 0]);
+		const end = projectPoint([x, radius * 0.78, radius * 0.626]);
+		return { center, end };
+	});
 
 	const fragmentShader = `#version 300 es
 		precision highp float;
 		uniform vec2 uResolution;
 		uniform float uSlice;
 		uniform float uYaw;
+		uniform float uPitch;
 		uniform vec3 uBackground;
 		uniform vec3 uGrid;
 		uniform vec3 uInk;
@@ -58,16 +149,17 @@
 				solid(p+e.yyx,cap)-solid(p-e.yyx,cap)
 			));
 		}
-		vec3 shade(vec3 p,vec3 n,vec3 base) {
+		vec3 shade(vec3 p,vec3 n,vec3 base,vec3 eye) {
 			vec3 light=normalize(vec3(-0.6,0.85,0.45));
 			float diffuse=0.34+0.66*max(dot(n,light),0.0);
-			float rim=pow(1.0-max(dot(n,normalize(vec3(0.3,0.2,1.0))),0.0),2.0);
+			float rim=pow(1.0-max(dot(n,normalize(eye-p)),0.0),2.0);
 			return base*diffuse+0.16*rim*uTeal;
 		}
 		void main() {
 			vec2 uv=(gl_FragCoord.xy-0.5*uResolution)/uResolution.y;
 			vec3 target=vec3(2.0,0.0,0.0);
-			vec3 ro=target+vec3(cos(uYaw)*6.4,3.25,sin(uYaw)*6.4);
+			vec3 orbit=vec3(cos(uPitch)*cos(uYaw),sin(uPitch),cos(uPitch)*sin(uYaw));
+			vec3 ro=target+orbit*7.2;
 			vec3 forward=normalize(target-ro);
 			vec3 right=normalize(cross(forward,vec3(0.0,1.0,0.0)));
 			vec3 up=cross(right,forward);
@@ -82,8 +174,8 @@
 				float cap=1.0-smoothstep(0.012,0.055,abs(p.x-uSlice));
 				float sectionLine=1.0-smoothstep(0.035,0.075,abs(fract(p.x*2.0)-0.5));
 				vec3 base=mix(uBlue,uViolet,cap);
-				base=mix(base,uTeal,0.13*sectionLine*(1.0-cap));
-				color=shade(p,n,base);
+				base=mix(base,uTeal,0.12*sectionLine*(1.0-cap));
+				color=shade(p,n,base,ro);
 				float edge=pow(1.0-abs(dot(n,rd)),2.4);
 				color=mix(color,uInk,0.22*edge);
 			} else {
@@ -92,7 +184,7 @@
 					vec3 p=ro+rd*ghost;
 					vec3 n=normalAt(p,4.0);
 					float silhouette=pow(1.0-abs(dot(n,rd)),2.0);
-					color=mix(color,uBlue,0.055+0.22*silhouette);
+					color=mix(color,uBlue,0.045+0.19*silhouette);
 				}
 			}
 			outColor=vec4(color,1.0);
@@ -106,7 +198,8 @@
 			gl.uniform3fv(renderer?.uniform(name) ?? null, cssColorToRgb(value));
 		renderer.draw((gl) => {
 			gl.uniform1f(renderer?.uniform('uSlice') ?? null, x);
-			gl.uniform1f(renderer?.uniform('uYaw') ?? null, (viewAngle * Math.PI) / 180);
+			gl.uniform1f(renderer?.uniform('uYaw') ?? null, yaw);
+			gl.uniform1f(renderer?.uniform('uPitch') ?? null, pitch);
 			color(gl, 'uBackground', theme.background);
 			color(gl, 'uGrid', theme.grid);
 			color(gl, 'uInk', theme.ink);
@@ -134,48 +227,111 @@
 			scheduler = undefined;
 		};
 	}
+
+	function startDrag(event: PointerEvent) {
+		if (event.button !== 0) return;
+		dragPointer = event.pointerId;
+		dragX = event.clientX;
+		dragY = event.clientY;
+		dragging = true;
+		(event.currentTarget as HTMLCanvasElement).setPointerCapture(event.pointerId);
+	}
+
+	function moveDrag(event: PointerEvent) {
+		if (event.pointerId !== dragPointer) return;
+		const dx = event.clientX - dragX;
+		const dy = event.clientY - dragY;
+		dragX = event.clientX;
+		dragY = event.clientY;
+		yaw -= dx * 0.008;
+		pitch = Math.max(-0.2, Math.min(1.15, pitch + dy * 0.006));
+		redraw();
+	}
+
+	function endDrag(event: PointerEvent) {
+		if (event.pointerId !== dragPointer) return;
+		dragPointer = -1;
+		dragging = false;
+	}
 </script>
 
 <div class="volume-lab">
 	<DemoHeader title="Explore: one moving disk builds a volume" />
-	<div class="stage">
-		<canvas
-			{@attach attachCanvas}
-			aria-label="A rotatable three-dimensional solid of revolution clipped at x equals {x.toFixed(
-				2
-			)}"
-		></canvas>
-		<div class="stage-label">
-			<span>accumulated solid · 0 ≤ t ≤ {x.toFixed(2)}</span><strong>disk area · πx</strong>
-		</div>
-		<div class="stage-key">
-			<span><i class="solid-key"></i>accumulated volume</span>
-			<span><i class="disk-key"></i>moving disk</span>
-			<span><i class="ghost-key"></i>remaining solid</span>
-		</div>
+	<div class="construction">
+		<section class="profile-panel" aria-label="The generating curve y equals square root of x">
+			<header><span>1 · the blueprint</span><strong>y = ±√x</strong></header>
+			<svg
+				viewBox="0 0 {profileWidth} {profileHeight}"
+				role="img"
+				aria-label="Side profile of the solid"
+			>
+				<line class="axis" x1={plotLeft - 12} y1={plotMid} x2={plotRight + 10} y2={plotMid} />
+				<path class="accumulated" d={accumulatedPath()} />
+				<path class="curve upper" d={curvePath(1)} />
+				<path class="curve lower" d={curvePath(-1)} />
+				<line
+					class="slice-diameter"
+					x1={profileX(x)}
+					y1={profileY(radius)}
+					x2={profileX(x)}
+					y2={profileY(-radius)}
+				/>
+				<line class="radius" x1={profileX(x)} y1={plotMid} x2={profileX(x)} y2={profileY(radius)} />
+				<circle class="center" cx={profileX(x)} cy={plotMid} r="3.5" />
+				<text class="curve-label" x="246" y="35">y = √x</text>
+				<text class="radius-label" x={profileX(x) - 8} y={(plotMid + profileY(radius)) / 2}
+					>r = √x</text
+				>
+				<text class="tick" x={plotLeft} y={plotMid + 20}>0</text>
+				<text class="tick active" x={profileX(x)} y={plotMid + 20}>x</text>
+				<text class="tick end" x={plotRight} y={plotMid + 20}>4</text>
+			</svg>
+			<p>Rotate this profile around the horizontal axis.</p>
+		</section>
+
+		<section class="solid-panel" aria-label="The solid generated by rotating the profile">
+			<header><span>2 · the solid</span><strong>drag to rotate</strong></header>
+			<div class:dragging class="canvas-wrap">
+				<canvas
+					{@attach attachCanvas}
+					onpointerdown={startDrag}
+					onpointermove={moveDrag}
+					onpointerup={endDrag}
+					onpointercancel={endDrag}
+					aria-label="A directly rotatable three-dimensional solid clipped at x equals {x.toFixed(
+						2
+					)}"
+				></canvas>
+				<svg class="radius-overlay" viewBox="0 0 {overlayWidth} {overlayHeight}" aria-hidden="true">
+					<line
+						x1={projectedRadius.center.x}
+						y1={projectedRadius.center.y}
+						x2={projectedRadius.end.x}
+						y2={projectedRadius.end.y}
+					/>
+					<circle cx={projectedRadius.center.x} cy={projectedRadius.center.y} r="7" />
+					<text x={projectedRadius.end.x + 15} y={projectedRadius.end.y - 12}>r = √x</text>
+				</svg>
+				<div class="solid-key" aria-hidden="true">
+					<span><i class="built"></i>volume built</span>
+					<span><i class="disk"></i>moving disk</span>
+				</div>
+			</div>
+			<p>The violet face is the same radius, swept into a disk.</p>
+		</section>
 	</div>
-	<div class="controls">
+
+	<div class="single-control">
 		<SliderField
 			id="volume-slice-x"
-			label="Slice position x"
-			hint="Move the circular cross-section through y = √x"
+			label="Move the disk through the solid"
+			hint="Only the slice position is a slider; rotate the solid itself by dragging it"
 			min={0.25}
 			max={4}
 			step={0.01}
 			decimals={2}
 			tone="violet"
 			bind:value={x}
-			oninput={redraw}
-		/>
-		<SliderField
-			id="volume-view-angle"
-			label="View angle"
-			min={20}
-			max={160}
-			step={1}
-			decimals={0}
-			tone="blue"
-			bind:value={viewAngle}
 			oninput={redraw}
 		/>
 	</div>
@@ -199,67 +355,173 @@
 		width: 100%;
 		box-sizing: border-box;
 	}
-	.stage {
-		position: relative;
+	.construction {
+		display: grid;
+		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+		gap: 0.7rem;
+	}
+	.profile-panel,
+	.solid-panel {
+		min-width: 0;
 		overflow: hidden;
 		border: 1px solid var(--color-border-light);
-		border-radius: 18px;
+		border-radius: 16px;
 		background: var(--plot-background);
+	}
+	header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		padding: 0.72rem 0.8rem 0;
+		color: var(--color-ink-faint);
+		font: 750 0.61rem/1.2 var(--font-sans);
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
+	}
+	header strong {
+		color: var(--plot-violet);
+		font-weight: 800;
+	}
+	.profile-panel svg {
+		display: block;
+		width: 100%;
+		aspect-ratio: 360 / 260;
+	}
+	.axis {
+		stroke: var(--plot-muted);
+		stroke-width: 1.2;
+	}
+	.accumulated {
+		fill: color-mix(in srgb, var(--plot-blue) 16%, transparent);
+	}
+	.curve {
+		fill: none;
+		stroke: var(--plot-blue);
+		stroke-width: 3;
+		stroke-linecap: round;
+	}
+	.lower {
+		opacity: 0.72;
+	}
+	.slice-diameter {
+		stroke: color-mix(in srgb, var(--plot-violet) 45%, transparent);
+		stroke-width: 1.4;
+		stroke-dasharray: 3 4;
+	}
+	.radius {
+		stroke: var(--plot-violet);
+		stroke-width: 3;
+		stroke-linecap: round;
+	}
+	.center {
+		fill: var(--plot-violet);
+		stroke: var(--plot-background);
+		stroke-width: 2;
+	}
+	.profile-panel text {
+		font-family: var(--font-sans);
+		paint-order: stroke;
+		stroke: var(--plot-background);
+		stroke-width: 4px;
+		stroke-linejoin: round;
+	}
+	.curve-label {
+		fill: var(--plot-blue);
+		font-size: 13px;
+		font-weight: 750;
+	}
+	.radius-label {
+		fill: var(--plot-violet);
+		font-size: 12px;
+		font-weight: 800;
+		text-anchor: end;
+		dominant-baseline: middle;
+	}
+	.tick {
+		fill: var(--plot-muted);
+		font-size: 11px;
+		font-weight: 700;
+		text-anchor: middle;
+	}
+	.tick.active {
+		fill: var(--plot-violet);
+	}
+	.tick.end {
+		text-anchor: end;
+	}
+	.profile-panel p,
+	.solid-panel p {
+		margin: -0.15rem 0.8rem 0.75rem;
+		color: var(--color-ink-light);
+		font: 650 0.67rem/1.35 var(--font-sans);
+	}
+	.canvas-wrap {
+		position: relative;
+		cursor: grab;
+	}
+	.canvas-wrap.dragging {
+		cursor: grabbing;
 	}
 	canvas {
 		display: block;
 		width: 100%;
-		aspect-ratio: 16/9;
+		aspect-ratio: 360 / 260;
+		touch-action: none;
 	}
-	.stage-label {
+	.radius-overlay {
 		position: absolute;
-		inset: 0.8rem 0.9rem auto;
-		display: flex;
-		justify-content: space-between;
-		gap: 1rem;
-		color: var(--color-ink-light);
-		font: 750 0.67rem/1.2 var(--font-sans);
-		letter-spacing: 0.07em;
-		text-transform: uppercase;
+		inset: 0;
+		width: 100%;
+		height: 100%;
 		pointer-events: none;
 	}
-	.stage-label strong {
-		color: var(--plot-violet);
+	.radius-overlay line {
+		stroke: var(--plot-violet);
+		stroke-width: 7;
+		stroke-linecap: round;
 	}
-	.stage-key {
+	.radius-overlay circle {
+		fill: var(--plot-violet);
+		stroke: var(--plot-background);
+		stroke-width: 4;
+	}
+	.radius-overlay text {
+		fill: var(--plot-violet);
+		font: 800 24px/1 var(--font-sans);
+		paint-order: stroke;
+		stroke: var(--plot-background);
+		stroke-width: 8px;
+		stroke-linejoin: round;
+	}
+	.solid-key {
 		position: absolute;
-		inset: auto 0.9rem 0.75rem;
+		inset: auto 0.65rem 0.45rem;
 		display: flex;
 		justify-content: center;
-		gap: 0.9rem;
-		color: var(--color-ink-light);
-		font: 700 0.61rem/1.2 var(--font-sans);
+		gap: 0.8rem;
+		color: var(--color-ink-faint);
+		font: 700 0.55rem/1.2 var(--font-sans);
 		pointer-events: none;
 	}
-	.stage-key span {
+	.solid-key span {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.3rem;
+		gap: 0.25rem;
 	}
-	.stage-key i {
-		width: 0.75rem;
+	.solid-key i {
+		width: 0.7rem;
 		height: 0.18rem;
 		border-radius: 999px;
 	}
-	.solid-key {
+	.solid-key .built {
 		background: var(--plot-blue);
 	}
-	.disk-key {
+	.solid-key .disk {
 		background: var(--plot-violet);
 	}
-	.ghost-key {
-		border: 1px solid color-mix(in srgb, var(--plot-blue) 45%, transparent);
-	}
-	.controls {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 1rem;
-		padding: 0.85rem 0.15rem 0.25rem;
+	.single-control {
+		padding: 0.85rem 0.15rem 0.2rem;
 	}
 	.readout {
 		display: grid;
@@ -283,17 +545,13 @@
 		letter-spacing: 0.07em;
 		text-transform: uppercase;
 	}
-	@media (max-width: 620px) {
-		.stage-label {
-			font-size: 0.57rem;
-		}
-		.stage-key {
-			gap: 0.55rem;
-			font-size: 0.55rem;
-		}
-		.controls {
+	@media (max-width: 680px) {
+		.construction {
 			grid-template-columns: 1fr;
-			gap: 0.55rem;
+		}
+		.profile-panel svg,
+		canvas {
+			aspect-ratio: 16 / 10;
 		}
 		.readout {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
