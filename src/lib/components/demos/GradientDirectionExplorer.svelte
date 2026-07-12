@@ -236,8 +236,8 @@
 			<GradientSurface3D bind:this={surface3D} x={x0} y={y0} directionAngle={angle} />
 			<div class="surface-key">
 				<span><i class="patch-key"></i>tangent plane</span>
-				<span><i class="slice-key"></i>vertical slice</span>
-				<span><i class="curve-key"></i>cross-section</span>
+				<span><i class="curve-key"></i>level circle</span>
+				<span><i class="tangent-key"></i>chosen tangent</span>
 			</div>
 		</section>
 	</div>
@@ -469,13 +469,12 @@
 		border: 1px solid var(--color-d);
 	}
 
-	.slice-key {
-		background: color-mix(in srgb, var(--plot-curve) 10%, transparent);
-		border: 1px solid var(--plot-curve);
-	}
-
 	.curve-key {
 		border-top: 3px solid var(--plot-curve);
+	}
+
+	.tangent-key {
+		border-top: 3px solid var(--plot-tangent);
 	}
 
 	@media (max-width: 700px) {

@@ -164,16 +164,17 @@
 			</p>
 			<p>
 				Use the explorer below. Keep the point fixed and rotate the blue direction. The left view
-				looks down on the level curves; the right view lifts the same data onto the surface. Watch
-				the vertical blue plane cut out a curve on the bowl. At which angle is that cross-section
-				steepest at the marked point? At which angles is its tangent horizontal?
+				looks down on the level curves; the right view lifts the selected level circle onto the
+				paraboloid. The surface is drawn with only two perpendicular curve families: circular level
+				curves and radial meridians. The rose line points in the chosen direction inside the tangent
+				plane. At which angle is that line steepest? At which angles is it horizontal?
 			</p>
 		</div>
 
 		<div use:reveal>
 			<Figure
 				number="9.1"
-				caption="Two views of f(x,y) = x² + y². The contour map shows direction in the input plane. The 3D view shows the corresponding vertical cross-section, together with the tangent plane and the tangent line whose slope is the directional derivative."
+				caption="Two views of f(x,y) = x² + y². The contour map shows direction in the input plane. The 3D view lifts the selected circular level set onto the paraboloid and shows the tangent plane and chosen tangent direction."
 			>
 				<GradientDirectionExplorer />
 			</Figure>
@@ -183,8 +184,8 @@
 			<p>
 				<strong>Takeaway.</strong> The directional derivative is largest when the chosen unit vector points
 				with the gradient, smallest when it points against the gradient, and zero when it is perpendicular
-				to the gradient. In the 3D view, these are exactly the steepest upward, steepest downward, and
-				horizontal tangent lines among all vertical cross-sections through the point.
+				to the gradient. In the 3D view, these become the steepest upward, steepest downward, and horizontal
+				directions in the tangent plane at the marked point.
 			</p>
 			<p>
 				The geometry follows from two short facts. First,

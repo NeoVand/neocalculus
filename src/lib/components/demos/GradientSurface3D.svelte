@@ -96,17 +96,20 @@
 				float opacity=0.38+0.17*rim;
 				color=mix(color,surfaceTint,opacity);
 				color=mix(color,uInk,0.055*rim);
-				vec2 cells=abs(fract((p.xy+0.25)/0.5)-0.5);
-				float gridMask=smoothstep(0.47,0.49,max(cells.x,cells.y));
-				float contour=lineMask(abs(fract(p.z/0.46)-0.5),0.035);
-				color=mix(color,uGrid,0.52*gridMask);
-				color=mix(color,uBlue,0.22*contour);
+				float radius=length(p.xy);
+				float angle=atan(p.y,p.x);
+				float ringDistance=abs(fract(radius/0.34+0.5)-0.5)*0.34;
+				float rings=lineMask(ringDistance,0.010);
+				float meridianDistance=abs(sin(6.0*angle))*radius;
+				float meridians=lineMask(meridianDistance,0.014);
+				float polarNet=max(rings,meridians);
+				color=mix(color,uGrid,0.44*polarNet);
+
+				float selectedRadius=length(uPoint);
+				float levelCircle=lineMask(abs(radius-selectedRadius),0.026);
+				color=mix(color,uBlue,0.9*levelCircle);
 
 				vec2 delta=p.xy-uPoint;
-				float along=dot(delta,uDirection);
-				float across=abs(dot(delta,vec2(-uDirection.y,uDirection.x)));
-				float crossSection=lineMask(across,0.025)*step(abs(along),1.1);
-				color=mix(color,uBlue,crossSection);
 				float pointMask=1.0-smoothstep(0.045,0.075,length(delta));
 				color=mix(color,uInk,pointMask);
 			}
@@ -126,18 +129,6 @@
 					color=mix(color,uViolet,0.34);
 					color=mix(color,uRose,tangentLine);
 					nearest=tangentT;
-				}
-			}
-
-			vec2 sliceNormal=vec2(-uDirection.y,uDirection.x);
-			float sliceDenom=dot(sliceNormal,rd.xy);
-			if(abs(sliceDenom)>0.0001) {
-				float sliceT=dot(sliceNormal,uPoint-ro.xy)/sliceDenom;
-				vec3 q=ro+rd*sliceT;
-				float along=dot(q.xy-uPoint,uDirection);
-				float bowlHeight=HEIGHT_SCALE*dot(q.xy,q.xy);
-				if(sliceT>0.0&&sliceT<nearest&&abs(along)<1.1&&q.z>bowlHeight-0.48&&q.z<bowlHeight+0.62) {
-					color=mix(color,uBlue,0.18);
 				}
 			}
 
@@ -237,7 +228,7 @@
 	onlostpointercapture={loseCapture}
 	data-yaw={yaw.toFixed(4)}
 	data-pitch={pitch.toFixed(4)}
-	aria-label="A directly rotatable three-dimensional paraboloid with a tangent plane, vertical slice, and tangent line"
+	aria-label="A directly rotatable paraboloid with circular level curves, radial meridians, a tangent plane, and a chosen tangent direction"
 ></canvas>
 
 <style>
