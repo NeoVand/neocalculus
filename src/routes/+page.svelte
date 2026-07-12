@@ -204,7 +204,12 @@
 		chapterNumber="10"
 		title="Complex Analysis: Calculus in the Plane"
 		preview="Complex functions reshape the plane; complex derivatives and contour integrals reveal a rigid geometry."
-		anchors={['complex-mapping-lab', 'complex-derivative-picture', 'complex-contour-lab']}
+		anchors={[
+			'complex-mapping-lab',
+			'domain-coloring-lab',
+			'complex-derivative-picture',
+			'complex-contour-lab'
+		]}
 		load={() => import('$lib/chapters/Ch10ComplexAnalysis.svelte')}
 	/>
 	<LazyChapter

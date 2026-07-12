@@ -8,6 +8,7 @@
 	import ComplexMappingLab from '$lib/components/demos/ComplexMappingLab.svelte';
 	import ComplexContourLab from '$lib/components/demos/ComplexContourLab.svelte';
 	import ConformalDerivativeLab from '$lib/components/demos/ConformalDerivativeLab.svelte';
+	import DomainColoringLab from '$lib/components/demos/DomainColoringLab.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
 </script>
@@ -76,6 +77,31 @@
 		</div>
 
 		<div class="neo-prose" use:reveal>
+			<h3>Color can carry the missing two dimensions</h3>
+			<p>
+				A transformed grid shows what happens to selected lines. <strong>Domain coloring</strong>
+				answers a different question: what is <Katex math={r`f(z)`} /> at every visible input point? We
+				give each output direction a hue and use brightness bands for output magnitude. The resulting
+				picture lives in the input plane, but every pixel reports information about the output plane.
+			</p>
+			<p>
+				Around a zero, every output direction appears in sequence as the colors converge into a dark
+				point. Around a pole, the colors run in the opposite order and the magnitude grows without
+				bound. Count how many times the color wheel turns around a small loop: that integer will
+				return later as a winding number.
+			</p>
+		</div>
+
+		<div id="domain-coloring-lab" use:reveal>
+			<Figure
+				number="10.2"
+				caption="An enhanced phase portrait of a complex function. Hue records arg f(z), while logarithmic brightness bands record |f(z)|. Zeros draw all hues inward; poles send magnitude outward and reverse the color order."
+			>
+				<DomainColoringLab />
+			</Figure>
+		</div>
+
+		<div class="neo-prose" use:reveal>
 			<h3>One derivative must work in every direction</h3>
 			<p>
 				For an ordinary real function, a small input change approaches zero from the left or the
@@ -97,7 +123,7 @@
 
 		<div id="complex-derivative-picture" use:reveal>
 			<Figure
-				number="10.2"
+				number="10.3"
 				caption="Needham’s amplitwist: at a holomorphic point with nonzero derivative, a sufficiently small neighborhood undergoes one amplification and one twist. Shrink ε to watch two directional quotients converge; compare reflection and unequal stretching, where they never agree."
 			>
 				<ConformalDerivativeLab />
@@ -190,7 +216,7 @@
 
 		<div id="complex-contour-lab" use:reveal>
 			<Figure
-				number="10.3"
+				number="10.4"
 				caption="A contour integral as vector accumulation. The integral of z around a closed circle cancels. The integral of 1/(z−a) is 2πi when the pole a lies inside the circle and 0 when it lies outside."
 				><ComplexContourLab /></Figure
 			>
