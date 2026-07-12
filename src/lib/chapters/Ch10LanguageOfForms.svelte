@@ -9,6 +9,7 @@
 	import StokesVisualizer from '$lib/components/demos/StokesVisualizer.svelte';
 	import StokesFamilyExplorer from '$lib/components/demos/StokesFamilyExplorer.svelte';
 	import TopologyLoopExplorer from '$lib/components/demos/TopologyLoopExplorer.svelte';
+	import CurlDivergenceLab from '$lib/components/demos/CurlDivergenceLab.svelte';
 	import { reveal } from '$lib/utils/scroll';
 
 	const r = String.raw;
@@ -154,6 +155,30 @@
 				encoded by the form’s action on first-order infinitesimal cells.
 			</p>
 
+			<h4>Put a local field under the microscope</h4>
+			<p>
+				A vector field has two different kinds of local behavior. <strong>Divergence</strong> asks whether
+				a tiny material region gains or loses area. <strong>Curl</strong> asks whether a tiny paddlewheel
+				tends to rotate. Move the paired probe below: its green ring breathes with divergence, while its
+				violet wheel turns with curl.
+			</p>
+			<p>
+				These readings do not describe every possible deformation. In the saddle field, a tiny circle
+				stretches into an ellipse even though both divergence and curl are zero. That is why the two
+				probes are illuminating without being the whole derivative.
+			</p>
+		</div>
+
+		<div id="curl-divergence-lab" use:reveal>
+			<Figure
+				number="10.2"
+				caption="Divergence and curl ask different local questions of the same field. The green material ring reveals first-order area change; the violet paddlewheel reveals local turning. Drag the probe or use the coordinate sliders, then compare pure rotation, pure expansion, saddle flow, and a field where both readings vary."
+			>
+				<CurlDivergenceLab />
+			</Figure>
+		</div>
+
+		<div class="neo-prose" use:reveal>
 			<h4>Example 2: differentiate a circulation form</h4>
 			<p>Let <Katex math={r`\omega=x\,dy-y\,dx`} />. Since <Katex math={r`P=-y`} /> and <Katex math={r`Q=x`} />,</p>
 		</div>
@@ -230,7 +255,7 @@
 
 		<div use:reveal>
 			<Figure
-				number="10.2"
+				number="10.3"
 				caption="Cell boundaries cancel in oppositely oriented pairs. This finite grid is a model of the cancellation mechanism; the theorem for smooth regions also requires the usual limiting and regularity arguments."
 			>
 				<StokesVisualizer />
@@ -254,7 +279,7 @@
 
 		<div use:reveal>
 			<Figure
-				number="10.3"
+				number="10.4"
 				caption="FTC, Green’s theorem, the classical Stokes theorem, and the divergence theorem differ in dimension and interpretation, but share the form ∫M dω = ∫∂M ω."
 			>
 				<StokesFamilyExplorer />
@@ -295,7 +320,7 @@
 
 		<div use:reveal>
 			<Figure
-				number="10.4"
+				number="10.5"
 				caption="A closed form need not be globally exact on a domain with a hole. The angular form has zero exterior derivative away from the origin but constant circulation 2π around every circle that encloses it."
 			>
 				<TopologyLoopExplorer />
@@ -380,7 +405,7 @@
 			<Exercise number={7}>
 				<p>
 					<strong>Explore.</strong>
-					Show directly that the angular form in Figure 10.4 has
+					Show directly that the angular form in Figure 10.5 has
 					<Katex math={r`d\omega=0`} /> away from the origin.
 				</p>
 			</Exercise>
