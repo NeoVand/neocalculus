@@ -10,6 +10,7 @@
 	import PendulumPhaseLab from '$lib/components/demos/PendulumPhaseLab.svelte';
 	import DrivenResonanceLab from '$lib/components/demos/DrivenResonanceLab.svelte';
 	import CoupledOscillatorsLab from '$lib/components/demos/CoupledOscillatorsLab.svelte';
+	import HeatWaveShaderLab from '$lib/components/demos/HeatWaveShaderLab.svelte';
 	import { reveal } from '$lib/utils/scroll';
 
 	const r = String.raw;
@@ -399,6 +400,26 @@
 				<Katex math="A" /> and <Katex math="B" />.
 			</p>
 		</DigDeeper>
+
+		<div class="neo-prose" use:reveal>
+			<h3>The same shape can obey two very different laws</h3>
+			<p>
+				A temperature profile and a vibrating string can begin with exactly the same shape. The heat
+				equation damps each sine mode, with short wavelengths disappearing fastest. The wave
+				equation preserves those modes and changes only their phases. This contrast is the beginning
+				of partial differential equations: local laws can smooth a shape away or carry it through
+				time.
+			</p>
+		</div>
+
+		<div id="heat-wave-lab" use:reveal>
+			<Figure
+				number="7.5"
+				caption="The same two-mode initial shape evolves under two laws. Diffusion rapidly erases the short-wavelength component and then slowly flattens the remaining mode; wave motion preserves both amplitudes while their phases continue to change."
+			>
+				<HeatWaveShaderLab />
+			</Figure>
+		</div>
 
 		<div class="neo-prose exercises-section" use:reveal>
 			<h3>Exercises</h3>
