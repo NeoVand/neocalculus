@@ -9,6 +9,7 @@
 	import DifferentialEquationExplorer from '$lib/components/demos/DifferentialEquationExplorer.svelte';
 	import PendulumPhaseLab from '$lib/components/demos/PendulumPhaseLab.svelte';
 	import DrivenResonanceLab from '$lib/components/demos/DrivenResonanceLab.svelte';
+	import CoupledOscillatorsLab from '$lib/components/demos/CoupledOscillatorsLab.svelte';
 	import { reveal } from '$lib/utils/scroll';
 
 	const r = String.raw;
@@ -362,6 +363,30 @@
 				caption="A driven oscillator seen physically, through time, and across frequency. Near the natural frequency, each push reinforces the motion; damping lowers and broadens the resonance peak."
 			>
 				<DrivenResonanceLab />
+			</Figure>
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<h3>Normal modes: find the simple motions hiding inside</h3>
+			<p>
+				Connect two oscillators and neither mass follows a single sinusoid in general. Yet two
+				special patterns remain perfectly simple: the masses can move together, or they can move
+				oppositely. These are the system’s <strong>normal modes</strong>.
+			</p>
+			<p>
+				For equal masses and equal outer springs, the coordinates
+				<Katex math={r`q_+=(x_1+x_2)/\sqrt2`} /> and <Katex math={r`q_-=(x_1-x_2)/\sqrt2`} />
+				separate the shared motion from the opposing motion. Each new coordinate obeys its own ordinary
+				oscillator equation. A complicated-looking exchange of energy is only those two rhythms superposed.
+			</p>
+		</div>
+
+		<div id="coupled-oscillators-lab" use:reveal>
+			<Figure
+				number="7.4"
+				caption="Two coupled masses decompose into a symmetric mode q₊ and an antisymmetric mode q₋. Starting only one mass excites both modes; their changing relative phase makes energy appear to migrate back and forth."
+			>
+				<CoupledOscillatorsLab />
 			</Figure>
 		</div>
 
