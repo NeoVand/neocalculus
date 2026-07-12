@@ -8,6 +8,7 @@
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import DifferentialEquationExplorer from '$lib/components/demos/DifferentialEquationExplorer.svelte';
 	import PendulumPhaseLab from '$lib/components/demos/PendulumPhaseLab.svelte';
+	import DrivenResonanceLab from '$lib/components/demos/DrivenResonanceLab.svelte';
 	import { reveal } from '$lib/utils/scroll';
 
 	const r = String.raw;
@@ -19,7 +20,9 @@
 			<span class="chapter-number">Chapter 7</span>
 			<h2 class="chapter-title">Differential Equations and Physics Modeling</h2>
 			<div class="chapter-epigraph">
-				<blockquote>“If you know how a system is changing now, what can you say about its future?”</blockquote>
+				<blockquote>
+					“If you know how a system is changing now, what can you say about its future?”
+				</blockquote>
 				<p class="epigraph-attr">The guiding question of a differential equation</p>
 			</div>
 			<hr class="chapter-divider" />
@@ -27,8 +30,8 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				A cup of coffee cools quickly when it is much warmer than the room and slowly when the
-				two temperatures are close. A population may grow faster when more individuals are already
+				A cup of coffee cools quickly when it is much warmer than the room and slowly when the two
+				temperatures are close. A population may grow faster when more individuals are already
 				present. A falling object gains downward velocity as time passes. In each case, a rule about
 				<strong>change at one moment</strong> can determine an entire history.
 			</p>
@@ -42,8 +45,8 @@
 		<Callout type="definition" title="Differential Equation">
 			<p>
 				A <strong>differential equation</strong> is an equation in which an unknown function appears
-				together with its derivatives. For example, <Katex math={r`y'=3y`} /> says that the rate of
-				change of <Katex math="y" /> is three times its current value.
+				together with its derivatives. For example, <Katex math={r`y'=3y`} /> says that the rate of change
+				of <Katex math="y" /> is three times its current value.
 			</p>
 		</Callout>
 
@@ -51,13 +54,13 @@
 			<h3>A law is not yet a history</h3>
 			<p>
 				The equation <Katex math={r`y'=3y`} /> has many solutions. Both
-				<Katex math={r`y=e^{3t}`} /> and <Katex math={r`y=7e^{3t}`} /> obey it, as does the zero
-				function. The differential equation describes a <em>family</em> of possible histories.
+				<Katex math={r`y=e^{3t}`} /> and <Katex math={r`y=7e^{3t}`} /> obey it, as does the zero function.
+				The differential equation describes a <em>family</em> of possible histories.
 			</p>
 			<p>
-				To choose one member of the family, we usually give an <strong>initial condition</strong>, such
-				as <Katex math={r`y(0)=7`} />. The initial condition tells us where the history begins; the
-				differential equation tells us how it must continue.
+				To choose one member of the family, we usually give an <strong>initial condition</strong>,
+				such as <Katex math={r`y(0)=7`} />. The initial condition tells us where the history begins;
+				the differential equation tells us how it must continue.
 			</p>
 			<p>
 				In the first-order infinitesimal language of this book, a law
@@ -83,9 +86,9 @@
 
 			<h3>A rate proportional to the amount</h3>
 			<p>
-				Our first model is <Katex math={r`y'=ky`} />, where <Katex math="k" /> is a constant. The
-				units of <Katex math="k" /> must be inverse time: multiplying <Katex math="k" /> by an
-				amount must produce an amount per unit time.
+				Our first model is <Katex math={r`y'=ky`} />, where <Katex math="k" /> is a constant. The units
+				of <Katex math="k" /> must be inverse time: multiplying <Katex math="k" /> by an amount must produce
+				an amount per unit time.
 			</p>
 			<ul>
 				<li>If <Katex math="k>0" />, positive values grow.</li>
@@ -93,9 +96,9 @@
 				<li>If <Katex math="k=0" />, the value remains constant.</li>
 			</ul>
 			<p>
-				Use the two sliders below. First change <Katex math="k" /> and watch the small direction
-				marks. Then change <Katex math={r`y_0`} />. What changes in the field itself, and what only
-				changes the selected curve?
+				Use the two sliders below. First change <Katex math="k" /> and watch the small direction marks.
+				Then change <Katex math={r`y_0`} />. What changes in the field itself, and what only changes
+				the selected curve?
 			</p>
 		</div>
 
@@ -111,15 +114,15 @@
 		<div class="neo-prose" use:reveal>
 			<p>
 				<strong>Takeaway.</strong> Changing <Katex math="k" /> changes the law, so it changes the whole
-				slope field. Changing <Katex math={r`y_0`} /> leaves the law alone and selects a different
-				solution from the same family.
+				slope field. Changing <Katex math={r`y_0`} /> leaves the law alone and selects a different solution
+				from the same family.
 			</p>
 
 			<h3>Solve without treating derivatives as fractions</h3>
 			<p>
 				You may have seen the symbols in <Katex math={r`y'=ky`} /> rearranged as though
-				<Katex math={r`dy/dt`} /> were an ordinary fraction. That mnemonic can produce the right
-				answer, but we do not need it. The chain rule gives a precise route.
+				<Katex math={r`dy/dt`} /> were an ordinary fraction. That mnemonic can produce the right answer,
+				but we do not need it. The chain rule gives a precise route.
 			</p>
 			<p>
 				On an interval where <Katex math="y" /> is not zero,
@@ -129,7 +132,9 @@
 		<div class="derivation" use:reveal>
 			<div class="derivation-title">Solve <Katex math={r`y'=ky`} /></div>
 			<div class="step">
-				<div class="step-math"><Katex math={r`\frac{d}{dt}\ln|y(t)|=\frac{y'(t)}{y(t)}=k`} display /></div>
+				<div class="step-math">
+					<Katex math={r`\frac{d}{dt}\ln|y(t)|=\frac{y'(t)}{y(t)}=k`} display />
+				</div>
 				<div class="step-note">chain rule, then use the equation</div>
 			</div>
 			<div class="step">
@@ -191,8 +196,8 @@
 			<p>
 				The sign is worth reading before solving. If <Katex math={r`T>T_a`} />, then
 				<Katex math={r`T'<0`} /> and the object cools. If <Katex math={r`T<T_a`} />, then
-				<Katex math={r`T'>0`} /> and the object warms. In both cases the law pushes the temperature
-				toward the surroundings.
+				<Katex math={r`T'>0`} /> and the object warms. In both cases the law pushes the temperature toward
+				the surroundings.
 			</p>
 			<p>
 				Let <Katex math={r`u=T-T_a`} /> be the temperature difference. Since
@@ -244,11 +249,15 @@
 		<div class="derivation" use:reveal>
 			<div class="derivation-title">Motion with constant acceleration</div>
 			<div class="step">
-				<div class="step-math"><Katex math={r`v'=a\quad\Longrightarrow\quad v(t)=v_0+at`} display /></div>
+				<div class="step-math">
+					<Katex math={r`v'=a\quad\Longrightarrow\quad v(t)=v_0+at`} display />
+				</div>
 				<div class="step-note">accumulate acceleration</div>
 			</div>
 			<div class="step step-result">
-				<div class="step-math"><Katex math={r`x'=v_0+at\quad\Longrightarrow\quad x(t)=x_0+v_0t+\tfrac12at^2`} display /></div>
+				<div class="step-math">
+					<Katex math={r`x'=v_0+at\quad\Longrightarrow\quad x(t)=x_0+v_0t+\tfrac12at^2`} display />
+				</div>
 				<div class="step-note">accumulate velocity</div>
 			</div>
 		</div>
@@ -278,7 +287,9 @@
 			</div>
 			<div class="step step-result">
 				<div class="step-math"><Katex math={r`x(t)=5t(4-t)=0`} display /></div>
-				<div class="step-note">after launch, the ball returns at <Katex math={r`t=4`} /> seconds</div>
+				<div class="step-note">
+					after launch, the ball returns at <Katex math={r`t=4`} /> seconds
+				</div>
 			</div>
 		</div>
 
@@ -297,8 +308,8 @@
 			<p>
 				A pendulum needs two numbers to determine what happens next: its angle and its angular
 				velocity. Knowing the angle alone does not tell us whether the bob is moving left, moving
-				right, or momentarily at rest. Introduce <Katex math="\omega=\theta'" /> and the single
-				second-order law becomes two linked first-order laws:
+				right, or momentarily at rest. Introduce <Katex math="\omega=\theta'" /> and the single second-order
+				law becomes two linked first-order laws:
 			</p>
 		</div>
 
@@ -325,12 +336,41 @@
 			</Figure>
 		</div>
 
+		<div class="neo-prose" use:reveal>
+			<h3>Resonance: when repeated nudges cooperate</h3>
+			<p>
+				A swing barely moves if you push at arbitrary moments. Push once during every return,
+				however, and small transfers of energy accumulate. The same timing governs vibrating
+				bridges, musical instruments, radio circuits, and atoms absorbing light.
+			</p>
+			<p>
+				For a damped spring driven by a periodic force, a convenient dimensionless model is
+				<Katex math={r`x''+2\zeta x'+x=F\cos(\Omega t)`} />. The natural angular frequency has been
+				scaled to <Katex math={r`\omega_0=1`} />. The parameter <Katex math={r`\Omega`} /> is the rhythm
+				of the external push, while <Katex math={r`\zeta`} /> measures energy lost to damping.
+			</p>
+			<p>
+				After the initial transients fade, the response is another sinusoid. Its amplitude and delay
+				are not arbitrary: both are determined by the drive frequency. Sweep through
+				<Katex math={r`\Omega=1`} /> slowly and watch all three views agree.
+			</p>
+		</div>
+
+		<div id="resonance-lab" use:reveal>
+			<Figure
+				number="7.3"
+				caption="A driven oscillator seen physically, through time, and across frequency. Near the natural frequency, each push reinforces the motion; damping lowers and broadens the resonance peak."
+			>
+				<DrivenResonanceLab />
+			</Figure>
+		</div>
+
 		<DigDeeper title="Oscillation from a restoring force">
 			<p>
 				A mass on an ideal spring can satisfy <Katex math={r`x''=-\omega^2x`} />. The negative sign
 				means acceleration points back toward equilibrium. Differentiate twice to verify that
-				<Katex math={r`x(t)=A\cos(\omega t)+B\sin(\omega t)`} /> solves the equation. Two initial
-				conditions—usually position and velocity at one time—determine the two constants
+				<Katex math={r`x(t)=A\cos(\omega t)+B\sin(\omega t)`} /> solves the equation. Two initial conditions—usually
+				position and velocity at one time—determine the two constants
 				<Katex math="A" /> and <Katex math="B" />.
 			</p>
 		</DigDeeper>
@@ -345,8 +385,8 @@
 			<Exercise number={1}>
 				<p>
 					For <Katex math={r`y'=4-y`} /> with <Katex math={r`y(0)=1`} />, identify the local law and
-					the initial condition. Without solving, determine whether <Katex math="y" /> initially
-					increases or decreases.
+					the initial condition. Without solving, determine whether <Katex math="y" /> initially increases
+					or decreases.
 				</p>
 				{#snippet solution()}
 					<p>
@@ -359,8 +399,8 @@
 
 			<Exercise number={2}>
 				<p>
-					Verify that <Katex math={r`y(t)=3e^{-2t}`} /> solves <Katex math={r`y'=-2y`} /> and
-					satisfies <Katex math={r`y(0)=3`} />.
+					Verify that <Katex math={r`y(t)=3e^{-2t}`} /> solves <Katex math={r`y'=-2y`} /> and satisfies
+					<Katex math={r`y(0)=3`} />.
 				</p>
 				{#snippet solution()}
 					<p>
@@ -381,8 +421,8 @@
 				<p>
 					Soup begins at <Katex math={r`80^\circ\mathrm C`} /> in a
 					<Katex math={r`20^\circ\mathrm C`} /> room and follows Newton’s law with
-					<Katex math={r`k=0.05\ \text{min}^{-1}`} />. Write <Katex math="T(t)" /> and find the
-					temperature after 20 minutes.
+					<Katex math={r`k=0.05\ \text{min}^{-1}`} />. Write <Katex math="T(t)" /> and find the temperature
+					after 20 minutes.
 				</p>
 				{#snippet solution()}
 					<p>
@@ -395,8 +435,9 @@
 			<Exercise number={5}>
 				<p>
 					A car has constant acceleration <Katex math={r`3\ \mathrm{m/s^2}`} />, initial velocity
-					<Katex math={r`5\ \mathrm{m/s}`} />, and initial position <Katex math={r`x(0)=2\ \mathrm m`} />.
-					Find <Katex math="v(t)" /> and <Katex math="x(t)" />.
+					<Katex math={r`5\ \mathrm{m/s}`} />, and initial position <Katex
+						math={r`x(0)=2\ \mathrm m`}
+					/>. Find <Katex math="v(t)" /> and <Katex math="x(t)" />.
 				</p>
 				{#snippet solution()}
 					<p>
@@ -429,8 +470,8 @@
 				{#snippet solution()}
 					<p>
 						From <Katex math={r`N(t)=N_0e^{-\lambda t}`} /> and
-						<Katex math={r`N(H)=N_0/2`} />, we get <Katex math={r`e^{-\lambda H}=1/2`} />.
-						Taking logarithms gives <Katex math={r`-\lambda H=-\ln 2`} />, hence
+						<Katex math={r`N(H)=N_0/2`} />, we get <Katex math={r`e^{-\lambda H}=1/2`} />. Taking
+						logarithms gives <Katex math={r`-\lambda H=-\ln 2`} />, hence
 						<Katex math={r`\lambda=\ln 2/H`} />.
 					</p>
 				{/snippet}
@@ -453,11 +494,23 @@
 		<ChapterSummary>
 			<ul>
 				<li>A differential equation gives a local rule; an initial condition selects a history.</li>
-				<li><Katex math={r`y'=ky`} /> with <Katex math={r`y(0)=y_0`} /> has solution <Katex math={r`y=y_0e^{kt}`} />.</li>
-				<li>Separable-looking equations can be solved with the chain rule and substitution; no division by <Katex math="dt" /> is required.</li>
-				<li>Newton cooling applies proportional decay to the difference from ambient temperature.</li>
+				<li>
+					<Katex math={r`y'=ky`} /> with <Katex math={r`y(0)=y_0`} /> has solution <Katex
+						math={r`y=y_0e^{kt}`}
+					/>.
+				</li>
+				<li>
+					Separable-looking equations can be solved with the chain rule and substitution; no
+					division by <Katex math="dt" /> is required.
+				</li>
+				<li>
+					Newton cooling applies proportional decay to the difference from ambient temperature.
+				</li>
 				<li>Acceleration accumulates into velocity, and velocity accumulates into position.</li>
-				<li>A model should be checked against its equation, initial data, units, signs, and physical scope.</li>
+				<li>
+					A model should be checked against its equation, initial data, units, signs, and physical
+					scope.
+				</li>
 			</ul>
 		</ChapterSummary>
 
