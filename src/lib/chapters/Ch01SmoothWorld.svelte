@@ -110,7 +110,7 @@
 		</div>
 	</div>
 
-	<div class="content-width" use:reveal={{ delay: 80 }}>
+	<div id="curve-microscope" class="content-width" use:reveal={{ delay: 80 }}>
 		<PerfectZoom />
 	</div>
 
@@ -253,15 +253,14 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				A derivative at one input is a number: the slope there. But let the input move, and
-				each point supplies its own slope. Those slope values together form a new function,
-				<Katex math="f'" />. Watch the point travel along each curve below. The purple tangent
-				turns as the local slope changes; the function that records all those slopes emerges on
-				the right.
+				A derivative at one input is a number: the slope there. But let the input move, and each
+				point supplies its own slope. Those slope values together form a new function,
+				<Katex math="f'" />. Watch the point travel along each curve below. The purple tangent turns
+				as the local slope changes; the function that records all those slopes emerges on the right.
 			</p>
 			<p>
-				The trigonometric outputs are a preview. In Chapter 2, we will derive them instead of
-				asking you to take them on faith.
+				The trigonometric outputs are a preview. In Chapter 2, we will derive them instead of asking
+				you to take them on faith.
 			</p>
 		</div>
 
