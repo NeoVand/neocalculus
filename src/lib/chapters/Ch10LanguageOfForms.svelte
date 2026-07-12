@@ -159,8 +159,8 @@
 			<p>
 				A vector field has two different kinds of local behavior. <strong>Divergence</strong> asks whether
 				a tiny material region gains or loses area. <strong>Curl</strong> asks whether a tiny paddlewheel
-				tends to rotate. Move the paired probe below: its green ring breathes with divergence, while its
-				violet wheel turns with curl.
+				tends to rotate. Move the paired probe below: its concentric green rings stream outward or inward
+				with divergence, while its violet wheel turns with curl.
 			</p>
 			<p>
 				These readings do not describe every possible deformation. In the saddle field, a tiny circle
@@ -172,7 +172,7 @@
 		<div id="curl-divergence-lab" use:reveal>
 			<Figure
 				number="10.2"
-				caption="Divergence and curl ask different local questions of the same field. The green material ring reveals first-order area change; the violet paddlewheel reveals local turning. Drag the probe or use the coordinate sliders, then compare pure rotation, pure expansion, saddle flow, and a field where both readings vary."
+				caption="Divergence and curl ask different local questions of the same field. Concentric green wavefronts reveal the direction and strength of first-order area change; the violet paddlewheel reveals the direction and strength of local turning. Drag the probe or use the coordinate sliders, then compare pure rotation, pure expansion, saddle flow, and a field where both readings vary."
 			>
 				<CurlDivergenceLab />
 			</Figure>

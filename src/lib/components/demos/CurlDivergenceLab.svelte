@@ -25,14 +25,14 @@
 		{
 			key: 'mixed',
 			name: 'Sources + swirls',
-			formula: 'F = (0.28x² − 0.50y, 0.50x + 0.18x² + 0.28y²)',
+			formula: 'F = (0.28x² − 0.50y, 0.15x + 0.30x² + 0.28y²)',
 			note: 'Both readings vary as the probe moves.',
 			vector: (x, y) => ({
 				x: 0.28 * x * x - 0.5 * y,
-				y: 0.5 * x + 0.18 * x * x + 0.28 * y * y
+				y: 0.15 * x + 0.3 * x * x + 0.28 * y * y
 			}),
 			divergence: (x, y) => 0.56 * (x + y),
-			curl: (x) => 1 + 0.36 * x
+			curl: (x) => 0.65 + 0.6 * x
 		},
 		{
 			key: 'rotation',
@@ -67,13 +67,15 @@
 	let probeX = $state(0.55);
 	let probeY = $state(-0.25);
 	let wheelAngle = $state(0);
-	let pulse = $state(0.5);
+	let flowPhase = $state(0.18);
 	let dragging = false;
+	let lastPointerX = 0;
+	let lastPointerY = 0;
 
 	const selected = $derived(fieldSpecs.find((field) => field.key === selectedKey) ?? fieldSpecs[0]);
 	const divergenceValue = $derived(selected.divergence(probeX, probeY));
 	const curlValue = $derived(selected.curl(probeX, probeY));
-	const ringRadius = $derived(35 + 8 * Math.tanh(divergenceValue) * pulse);
+	const divergenceStrength = $derived(Math.min(1, Math.abs(divergenceValue) / 1.35));
 
 	function sx(x: number) {
 		return plot.left + ((x - xMin) / (xMax - xMin)) * (plot.right - plot.left);
@@ -110,19 +112,17 @@
 		);
 	});
 
-	const radialArrows = $derived.by(() => {
+	const flowRings = $derived.by(() => {
 		if (Math.abs(divergenceValue) < 0.04) return [];
 		const outward = divergenceValue > 0;
-		return [0, 90, 180, 270].map((angle) => {
-			const radians = (angle * Math.PI) / 180;
-			const inner = outward ? 41 : 54;
-			const outer = outward ? 54 : 41;
+		return [0, 1, 2].map((index) => {
+			const phase = (flowPhase + index / 3) % 1;
+			const inner = 28;
+			const outer = 58;
 			return {
-				angle,
-				x1: Math.cos(radians) * inner,
-				y1: Math.sin(radians) * inner,
-				x2: Math.cos(radians) * outer,
-				y2: Math.sin(radians) * outer
+				index,
+				radius: outward ? inner + (outer - inner) * phase : outer - (outer - inner) * phase,
+				opacity: (0.2 + 0.7 * divergenceStrength) * Math.sin(Math.PI * phase)
 			};
 		});
 	});
@@ -130,34 +130,35 @@
 	function selectField(key: FieldKey) {
 		selectedKey = key;
 		wheelAngle = 0;
-	}
-
-	function pointerToField(event: PointerEvent) {
-		const target = event.currentTarget as SVGCircleElement;
-		const svg = target.ownerSVGElement;
-		if (!svg) return;
-		const rect = svg.getBoundingClientRect();
-		const px = ((event.clientX - rect.left) / rect.width) * width;
-		const py = ((event.clientY - rect.top) / rect.height) * height;
-		probeX = Math.max(
-			xMin,
-			Math.min(xMax, xMin + ((px - plot.left) / (plot.right - plot.left)) * (xMax - xMin))
-		);
-		probeY = Math.max(
-			yMin,
-			Math.min(yMax, yMax - ((py - plot.top) / (plot.bottom - plot.top)) * (yMax - yMin))
-		);
+		flowPhase = 0.18;
 	}
 
 	function startDrag(event: PointerEvent) {
 		const target = event.currentTarget as SVGCircleElement;
 		target.setPointerCapture(event.pointerId);
+		lastPointerX = event.clientX;
+		lastPointerY = event.clientY;
 		dragging = true;
-		pointerToField(event);
 	}
 
 	function continueDrag(event: PointerEvent) {
-		if (dragging) pointerToField(event);
+		if (!dragging) return;
+		const target = event.currentTarget as SVGCircleElement;
+		const svg = target.ownerSVGElement;
+		if (!svg) return;
+		const rect = svg.getBoundingClientRect();
+		const plotWidth = ((plot.right - plot.left) / width) * rect.width;
+		const plotHeight = ((plot.bottom - plot.top) / height) * rect.height;
+		probeX = Math.max(
+			xMin,
+			Math.min(xMax, probeX + ((event.clientX - lastPointerX) / plotWidth) * (xMax - xMin))
+		);
+		probeY = Math.max(
+			yMin,
+			Math.min(yMax, probeY - ((event.clientY - lastPointerY) / plotHeight) * (yMax - yMin))
+		);
+		lastPointerX = event.clientX;
+		lastPointerY = event.clientY;
 	}
 
 	function stopDrag(event: PointerEvent) {
@@ -196,7 +197,7 @@
 	onMount(() => {
 		const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		if (reducedMotion) {
-			pulse = 1;
+			flowPhase = 0.48;
 			return;
 		}
 
@@ -205,8 +206,9 @@
 		const animate = (now: number) => {
 			const elapsed = Math.min(40, now - previous);
 			previous = now;
-			wheelAngle = (wheelAngle + curlValue * elapsed * 0.04) % 360;
-			pulse = (1 - Math.cos(now * 0.0032)) / 2;
+			wheelAngle = (wheelAngle - curlValue * elapsed * 0.055) % 360;
+			const flowSpeed = 0.00022 + 0.00062 * divergenceStrength;
+			flowPhase = (flowPhase + elapsed * flowSpeed) % 1;
 			frame = requestAnimationFrame(animate);
 		};
 		frame = requestAnimationFrame(animate);
@@ -220,7 +222,9 @@
 			<span class="eyebrow">A field under the microscope</span>
 			<h4>Two local questions, one moving probe</h4>
 		</div>
-		<p>Drag the circular probe. Its ring tests expansion; its paddlewheel tests turning.</p>
+		<p>
+			Drag the circular probe. Its concentric rings reveal flow; its paddlewheel reveals turning.
+		</p>
 	</div>
 
 	<div class="preset-row" aria-label="Vector field examples">
@@ -248,17 +252,6 @@
 					markerUnits="userSpaceOnUse"
 				>
 					<path d="M 0 0 L 7 3.5 L 0 7 Z" />
-				</marker>
-				<marker
-					id="probe-arrow"
-					markerWidth="6"
-					markerHeight="6"
-					refX="5"
-					refY="3"
-					orient="auto"
-					markerUnits="userSpaceOnUse"
-				>
-					<path d="M 0 0 L 6 3 L 0 6 Z" />
 				</marker>
 				<linearGradient id="stage-wash" x1="0" y1="0" x2="1" y2="1">
 					<stop offset="0" stop-color="var(--plot-blue)" stop-opacity="0.06" />
@@ -320,17 +313,8 @@
 			<g transform="translate({sx(probeX)} {sy(probeY)})">
 				<circle class="probe-mask" r="61" />
 				<circle class="rest-ring" r="35" />
-				<circle class="breathing-ring" r={ringRadius} />
-
-				{#each radialArrows as arrow (arrow.angle)}
-					<line
-						class="radial-arrow"
-						x1={arrow.x1}
-						y1={arrow.y1}
-						x2={arrow.x2}
-						y2={arrow.y2}
-						marker-end="url(#probe-arrow)"
-					/>
+				{#each flowRings as ring (ring.index)}
+					<circle class="flow-ring" r={ring.radius} opacity={ring.opacity} />
 				{/each}
 
 				<g class="wheel" transform="rotate({wheelAngle})">
@@ -532,10 +516,6 @@
 		fill: var(--plot-blue);
 	}
 
-	#probe-arrow path {
-		fill: var(--plot-teal);
-	}
-
 	.field-arrow {
 		stroke: var(--plot-blue);
 		stroke-width: 1.55;
@@ -558,17 +538,10 @@
 		vector-effect: non-scaling-stroke;
 	}
 
-	.breathing-ring {
-		fill: color-mix(in srgb, var(--plot-teal) 7%, transparent);
-		stroke: var(--plot-teal);
-		stroke-width: 2.2;
-		vector-effect: non-scaling-stroke;
-	}
-
-	.radial-arrow {
+	.flow-ring {
+		fill: none;
 		stroke: var(--plot-teal);
 		stroke-width: 1.8;
-		stroke-linecap: round;
 		vector-effect: non-scaling-stroke;
 	}
 
@@ -594,6 +567,7 @@
 	.probe-handle {
 		fill: transparent;
 		stroke: transparent;
+		outline: none;
 		touch-action: none;
 		cursor: grab;
 	}
