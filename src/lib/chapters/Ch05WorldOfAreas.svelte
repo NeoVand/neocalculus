@@ -7,6 +7,7 @@
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import InfinitesimalStrip from '$lib/components/demos/InfinitesimalStrip.svelte';
 	import IntegralMachine from '$lib/components/demos/IntegralMachine.svelte';
+	import FreehandCalculusGrapher from '$lib/components/demos/FreehandCalculusGrapher.svelte';
 	import { reveal } from '$lib/utils/scroll';
 
 	const r = String.raw;
@@ -211,6 +212,25 @@
 				<Katex math={r`\int_a^b f(x)\,dx=F(b)-F(a)`} />.
 			</p>
 		</Callout>
+
+		<div class="neo-prose" use:reveal>
+			<h3>Draw the reversal for yourself</h3>
+			<p>
+				The theorem is easier to trust when all three curves stay in view. Draw any smooth-looking
+				function below. The violet curve records its slopes, while the green curve records the
+				signed area gathered from the left edge. Move the shared probe and compare the height of
+				<Katex math="f" /> with the slope of the accumulation curve.
+			</p>
+		</div>
+
+		<div id="freehand-calculus-grapher" use:reveal>
+			<Figure
+				number="5.3"
+				caption="One hand-drawn function produces two calculus companions. The violet graph is f′; the green graph is the running accumulation A(x). At the shared probe, the blue tangent to A has slope f(x)—the Fundamental Theorem made visible."
+			>
+				<FreehandCalculusGrapher />
+			</Figure>
+		</div>
 
 		<div class="neo-prose" use:reveal>
 			<h4>Return to the moving vehicle</h4>
