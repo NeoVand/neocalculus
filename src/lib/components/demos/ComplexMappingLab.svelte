@@ -1,30 +1,31 @@
 <script lang="ts">
 	import SliderField from './SliderField.svelte';
-	type FunctionName = 'square' | 'exponential' | 'reciprocal' | 'sine';
+	type FunctionName = 'square' | 'exponential' | 'reciprocal' | 'sine' | 'cayley';
 	type Complex = { re: number; im: number };
 	const width = 760,
 		height = 365,
-		left = { cx: 190, cy: 185, s: 68 },
-		right = { cx: 570, cy: 185, s: 40 };
+		left = { cx: 190, cy: 185, s: 86 },
+		right = { cx: 570, cy: 185, s: 25 };
 	let fn = $state<FunctionName>('square'),
 		x = $state(0.72),
 		y = $state(0.46);
 	const z = $derived({ re: x, im: y }),
 		w = $derived(apply(z));
-	function apply(p: Complex): Complex {
-		if (fn === 'square') return { re: (p.re * p.re - p.im * p.im) / 2, im: p.re * p.im };
+	function divide(a: Complex, b: Complex): Complex | null {
+		const d = b.re * b.re + b.im * b.im;
+		if (d < 1e-8) return null;
+		return { re: (a.re * b.re + a.im * b.im) / d, im: (a.im * b.re - a.re * b.im) / d };
+	}
+	function apply(p: Complex): Complex | null {
+		if (fn === 'square') return { re: p.re * p.re - p.im * p.im, im: 2 * p.re * p.im };
 		if (fn === 'exponential') {
-			const m = Math.exp(p.re) / 2;
+			const m = Math.exp(p.re);
 			return { re: m * Math.cos(p.im), im: m * Math.sin(p.im) };
 		}
-		if (fn === 'reciprocal') {
-			const d = p.re * p.re + p.im * p.im + 0.035;
-			return { re: p.re / d, im: -p.im / d };
-		}
-		return {
-			re: (Math.sin(p.re) * Math.cosh(p.im)) / 1.8,
-			im: (Math.cos(p.re) * Math.sinh(p.im)) / 1.8
-		};
+		if (fn === 'reciprocal') return divide({ re: 1, im: 0 }, p);
+		if (fn === 'sine')
+			return { re: Math.sin(p.re) * Math.cosh(p.im), im: Math.cos(p.re) * Math.sinh(p.im) };
+		return divide({ re: p.re, im: p.im - 1 }, { re: p.re, im: p.im + 1 });
 	}
 	const label = $derived(
 		fn === 'square'
@@ -33,7 +34,9 @@
 				? 'f(z)=eᶻ'
 				: fn === 'reciprocal'
 					? 'f(z)=1/z'
-					: 'f(z)=sin z'
+					: fn === 'sine'
+						? 'f(z)=sin z'
+						: 'f(z)=(z−i)/(z+i)'
 	);
 	function sx(panel: typeof left, value: number) {
 		return panel.cx + panel.s * value;
@@ -45,10 +48,10 @@
 		let path = '';
 		let drawing = false;
 		for (let i = 0; i <= 90; i += 1) {
-			const t = -2.15 + (4.3 * i) / 90;
+			const t = -1.65 + (3.3 * i) / 90;
 			const p = apply(vertical ? { re: value, im: t } : { re: t, im: value });
-			const visible = Math.abs(p.re) <= 2.55 && Math.abs(p.im) <= 2.55;
-			if (!visible) {
+			const visible = p && Math.abs(p.re) <= 5.5 && Math.abs(p.im) <= 5.5;
+			if (!p || !visible) {
 				drawing = false;
 				continue;
 			}
@@ -57,7 +60,23 @@
 		}
 		return path;
 	}
-	const gridValues = [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2];
+	const gridValues = [-1.5, -1, -0.5, 0, 0.5, 1, 1.5];
+	function choose(next: FunctionName) {
+		fn = next;
+		if (
+			(next === 'reciprocal' && Math.hypot(x, y) < 0.18) ||
+			(next === 'cayley' && Math.hypot(x, y + 1) < 0.18)
+		) {
+			x = 0.72;
+			y = 0.46;
+		}
+	}
+	const outputVisible = $derived(w && Math.abs(w.re) <= 5.5 && Math.abs(w.im) <= 5.5);
+	const outputText = $derived(
+		!w
+			? 'undefined at the pole'
+			: `${w.re.toFixed(2)} ${w.im < 0 ? '−' : '+'} ${Math.abs(w.im).toFixed(2)}i`
+	);
 </script>
 
 <div class="mapping-lab">
@@ -72,12 +91,13 @@
 		</p>
 	</div>
 	<div class="functions" aria-label="Complex function">
-		<button class:active={fn === 'square'} onclick={() => (fn = 'square')}>f(z) = z²</button><button
-			class:active={fn === 'exponential'}
-			onclick={() => (fn = 'exponential')}>f(z) = eᶻ</button
-		><button class:active={fn === 'reciprocal'} onclick={() => (fn = 'reciprocal')}
+		<button class:active={fn === 'square'} onclick={() => choose('square')}>f(z) = z²</button
+		><button class:active={fn === 'exponential'} onclick={() => choose('exponential')}
+			>f(z) = eᶻ</button
+		><button class:active={fn === 'reciprocal'} onclick={() => choose('reciprocal')}
 			>f(z) = 1/z</button
-		><button class:active={fn === 'sine'} onclick={() => (fn = 'sine')}>f(z) = sin z</button>
+		><button class:active={fn === 'sine'} onclick={() => choose('sine')}>f(z) = sin z</button
+		><button class:active={fn === 'cayley'} onclick={() => choose('cayley')}>Cayley map</button>
 	</div>
 	<div class="stage">
 		<svg
@@ -108,13 +128,13 @@
 					class:major={value === 0}
 					x1={sx(left, value)}
 					x2={sx(left, value)}
-					y1={sy(left, 2.15)}
-					y2={sy(left, -2.15)}
+					y1={sy(left, 1.65)}
+					y2={sy(left, -1.65)}
 				/><line
 					class="input-grid horizontal"
 					class:major={value === 0}
-					x1={sx(left, -2.15)}
-					x2={sx(left, 2.15)}
+					x1={sx(left, -1.65)}
+					x2={sx(left, 1.65)}
 					y1={sy(left, value)}
 					y2={sy(left, value)}
 				/><path
@@ -131,12 +151,12 @@
 				cx={sx(left, x)}
 				cy={sy(left, y)}
 				r="5"
-			/><circle class="output-halo" cx={sx(right, w.re)} cy={sy(right, w.im)} r="11" /><circle
-				class="output-point"
-				cx={sx(right, w.re)}
-				cy={sy(right, w.im)}
-				r="5"
-			/>
+			/>{#if w && outputVisible}<circle
+					class="output-halo"
+					cx={sx(right, w.re)}
+					cy={sy(right, w.im)}
+					r="11"
+				/><circle class="output-point" cx={sx(right, w.re)} cy={sy(right, w.im)} r="5" />{/if}
 			<path class="mapping-arrow" d="M363 183H397" marker-end="url(#map-arrow)" /><text
 				class="formula"
 				x="380"
@@ -156,22 +176,22 @@
 	</div>
 	<div class="readout">
 		<span>z = {x.toFixed(2)} {y < 0 ? '−' : '+'} {Math.abs(y).toFixed(2)}i</span><span
-			>f(z) = {w.re.toFixed(2)} {w.im < 0 ? '−' : '+'} {Math.abs(w.im).toFixed(2)}i</span
+			>f(z) = {outputText}{w && !outputVisible ? ' · outside this window' : ''}</span
 		>
 	</div>
 	<div class="controls">
 		<SliderField
 			label="Real part x"
-			min={-1.8}
-			max={1.8}
+			min={-1.5}
+			max={1.5}
 			step={0.02}
 			decimals={2}
 			tone="blue"
 			bind:value={x}
 		/><SliderField
 			label="Imaginary part y"
-			min={-1.8}
-			max={1.8}
+			min={-1.5}
+			max={1.5}
 			step={0.02}
 			decimals={2}
 			tone="amber"
@@ -213,7 +233,7 @@
 	}
 	.functions {
 		display: grid;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
+		grid-template-columns: repeat(5, minmax(0, 1fr));
 		gap: 0.45rem;
 		margin-bottom: 0.7rem;
 	}

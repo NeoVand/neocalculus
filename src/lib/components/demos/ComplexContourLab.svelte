@@ -6,33 +6,37 @@
 	const width = 760,
 		height = 350,
 		left = { cx: 190, cy: 186, s: 82 },
-		right = { cx: 570, cy: 186, s: 18 };
+		right = { cx: 570, cy: 186, s: 9.2 };
 	let kind = $state<Kind>('reciprocal'),
 		radius = $state(1.25),
 		pole = $state(0.45),
+		winding = $state(1),
 		progress = $state(0),
 		running = $state(true);
 	const add = (a: C, b: C) => ({ re: a.re + b.re, im: a.im + b.im }),
 		mul = (a: C, b: C) => ({ re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re });
-	function value(z: C): C {
+	function value(z: C): C | null {
 		if (kind === 'identity') return z;
 		const shift = kind === 'shifted' ? pole : 0,
 			d = (z.re - shift) ** 2 + z.im ** 2;
+		if (d < 1e-8) return null;
 		return { re: (z.re - shift) / d, im: -z.im / d };
 	}
+	const poleOnContour = $derived(kind === 'shifted' && Math.abs(Math.abs(pole) - radius) < 0.026);
 	const samples = $derived.by(() => {
 		const points: { z: C; sum: C }[] = [];
 		let sum: C = { re: 0, im: 0 };
 		const n = 240;
 		for (let i = 0; i <= n; i += 1) {
-			const t = (2 * Math.PI * i) / n,
+			const t = (2 * Math.PI * winding * i) / n,
 				z = { re: radius * Math.cos(t), im: radius * Math.sin(t) };
 			if (i > 0) {
-				const t0 = (2 * Math.PI * (i - 1)) / n,
+				const t0 = (2 * Math.PI * winding * (i - 1)) / n,
 					z0 = { re: radius * Math.cos(t0), im: radius * Math.sin(t0) },
 					dz = { re: z.re - z0.re, im: z.im - z0.im },
 					mid = { re: (z.re + z0.re) / 2, im: (z.im + z0.im) / 2 };
-				sum = add(sum, mul(value(mid), dz));
+				const f = value(mid);
+				if (f && !poleOnContour) sum = add(sum, mul(f, dz));
 			}
 			points.push({ z, sum });
 		}
@@ -63,18 +67,25 @@
 	);
 	const contribution = $derived.by(() => {
 		const z = current.z,
-			f = value(z),
+			f = value(z) ?? { re: 0, im: 0 },
 			tangent = { re: -z.im, im: z.re },
 			v = mul(f, tangent),
 			m = Math.hypot(v.re, v.im) || 1;
 		return { re: v.re / m, im: v.im / m };
 	});
 	const inside = $derived(kind !== 'shifted' || Math.abs(pole) < radius);
+	const arrowFrom = $derived(winding < 0 ? 1 : 0.55),
+		arrowTo = $derived(winding < 0 ? 0.55 : 1);
 	function choose(next: Kind) {
 		kind = next;
 		progress = 0;
 		running = true;
 	}
+	const totalText = $derived(
+		poleOnContour
+			? 'undefined · pole on C'
+			: `${total.re.toFixed(2)} ${total.im < 0 ? '−' : '+'} ${Math.abs(total.im).toFixed(2)}i`
+	);
 	onMount(() => {
 		if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
 			running = false;
@@ -162,7 +173,7 @@
 			/>
 			<path class="contour" d={contourPath} /><path
 				class="direction"
-				d={`M ${sx(left, radius * Math.cos(0.55))} ${sy(left, radius * Math.sin(0.55))} A ${radius * left.s} ${radius * left.s} 0 0 0 ${sx(left, radius * Math.cos(1.0))} ${sy(left, radius * Math.sin(1.0))}`}
+				d={`M ${sx(left, radius * Math.cos(arrowFrom))} ${sy(left, radius * Math.sin(arrowFrom))} A ${radius * left.s} ${radius * left.s} 0 0 ${winding < 0 ? 1 : 0} ${sx(left, radius * Math.cos(arrowTo))} ${sy(left, radius * Math.sin(arrowTo))}`}
 				marker-end="url(#contour-arrow)"
 			/>
 			{#if kind !== 'identity'}<circle
@@ -207,11 +218,13 @@
 				y="78">Im</text
 			>
 			<text class="verdict" x="570" y="302" text-anchor="middle"
-				>{kind === 'identity'
-					? 'cancellation returns the sum to 0'
-					: inside
-						? 'one enclosed pole → 2πi'
-						: 'no enclosed pole → 0'}</text
+				>{poleOnContour
+					? 'pole on C → integral undefined'
+					: kind === 'identity'
+						? 'cancellation returns the sum to 0'
+						: inside
+							? `${winding} winding${Math.abs(winding) === 1 ? '' : 's'} → ${winding === 1 ? '2πi' : `${winding} · 2πi`}`
+							: 'no enclosed pole → 0'}</text
 			>
 		</svg>
 	</div>
@@ -220,13 +233,20 @@
 			>partial sum = {current.sum.re.toFixed(2)}
 			{current.sum.im < 0 ? '−' : '+'}
 			{Math.abs(current.sum.im).toFixed(2)}i</span
-		><span
-			>full loop ≈ {total.re.toFixed(2)}
-			{total.im < 0 ? '−' : '+'}
-			{Math.abs(total.im).toFixed(2)}i</span
-		><button onclick={() => (running = !running)}>{running ? 'Pause' : 'Continue'}</button>
+		><span>full loop ≈ {totalText}</span><button onclick={() => (running = !running)}
+			>{running ? 'Pause' : 'Continue'}</button
+		>
 	</div>
 	<div class="controls">
+		<SliderField
+			label="Winding number n"
+			min={-2}
+			max={2}
+			step={1}
+			decimals={0}
+			tone="blue"
+			bind:value={winding}
+		/>
 		<SliderField
 			label="Contour radius R"
 			min={0.55}
@@ -235,15 +255,15 @@
 			decimals={2}
 			tone="violet"
 			bind:value={radius}
-		/><SliderField
-			label="Pole position a"
-			min={-1.8}
-			max={1.8}
-			step={0.02}
-			decimals={2}
-			tone="amber"
-			bind:value={pole}
-		/>
+		/>{#if kind === 'shifted'}<SliderField
+				label="Pole position a"
+				min={-1.8}
+				max={1.8}
+				step={0.02}
+				decimals={2}
+				tone="amber"
+				bind:value={pole}
+			/>{/if}
 	</div>
 </div>
 
