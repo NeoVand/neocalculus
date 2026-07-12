@@ -3,10 +3,9 @@
 	import DemoHeader from '$lib/components/demos/DemoHeader.svelte';
 	import SliderField from '$lib/components/demos/SliderField.svelte';
 
-	type FunctionKey = 'scale' | 'square' | 'sine';
+	type FunctionKey = 'scale' | 'compress' | 'square' | 'sine' | 'reciprocal' | 'root';
 	type FunctionSpec = {
 		key: FunctionKey;
-		name: string;
 		apply: (value: number) => number;
 		derivative: (value: number) => number;
 		expressionText: (variable: string) => string;
@@ -18,7 +17,6 @@
 	const functions: Record<FunctionKey, FunctionSpec> = {
 		scale: {
 			key: 'scale',
-			name: 'Scale by 2',
 			apply: (value) => 2 * value,
 			derivative: () => 2,
 			expressionText: (variable) => `2${variable}`,
@@ -26,9 +24,17 @@
 			derivativeText: () => '2',
 			derivativeMath: () => '2'
 		},
+		compress: {
+			key: 'compress',
+			apply: (value) => value / 2,
+			derivative: () => 0.5,
+			expressionText: (variable) => `${variable}/2`,
+			expressionMath: (variable) => `\\frac{${variable}}{2}`,
+			derivativeText: () => '1/2',
+			derivativeMath: () => String.raw`\frac12`
+		},
 		square: {
 			key: 'square',
-			name: 'Square',
 			apply: (value) => value * value,
 			derivative: (value) => 2 * value,
 			expressionText: (variable) => `${variable}²`,
@@ -38,13 +44,30 @@
 		},
 		sine: {
 			key: 'sine',
-			name: 'Sine',
 			apply: Math.sin,
 			derivative: Math.cos,
 			expressionText: (variable) => `sin ${variable}`,
 			expressionMath: (variable) => `\\sin(${variable})`,
 			derivativeText: (variable) => `cos ${variable}`,
 			derivativeMath: (variable) => `\\cos(${variable})`
+		},
+		reciprocal: {
+			key: 'reciprocal',
+			apply: (value) => 1 / (1 + value),
+			derivative: (value) => -1 / (1 + value) ** 2,
+			expressionText: (variable) => `1/(1+${variable})`,
+			expressionMath: (variable) => `\\frac{1}{1+${variable}}`,
+			derivativeText: (variable) => `−1/(1+${variable})²`,
+			derivativeMath: (variable) => `-\\frac{1}{(1+${variable})^2}`
+		},
+		root: {
+			key: 'root',
+			apply: (value) => Math.sqrt(1 + value) - 1,
+			derivative: (value) => 1 / (2 * Math.sqrt(1 + value)),
+			expressionText: (variable) => `√(1+${variable})−1`,
+			expressionMath: (variable) => `\\sqrt{1+${variable}}-1`,
+			derivativeText: (variable) => `1/(2√(1+${variable}))`,
+			derivativeMath: (variable) => `\\frac{1}{2\\sqrt{1+${variable}}}`
 		}
 	};
 
@@ -135,10 +158,10 @@
 
 	<div class="function-composer" aria-label="Choose the two functions in the composition">
 		<div class="composer-stage">
-			<label for="chain-inner-function">Inner function</label>
+			<label for="chain-inner-function">Inner function g</label>
 			<select id="chain-inner-function" bind:value={innerKey}>
 				{#each functionChoices as choice (choice.key)}
-					<option value={choice.key}>{choice.name}</option>
+					<option value={choice.key}>g(x) = {choice.expressionText('x')}</option>
 				{/each}
 			</select>
 		</div>
@@ -156,17 +179,17 @@
 		</button>
 
 		<div class="composer-stage">
-			<label for="chain-outer-function">Outer function</label>
+			<label for="chain-outer-function">Outer function f</label>
 			<select id="chain-outer-function" bind:value={outerKey}>
 				{#each functionChoices as choice (choice.key)}
-					<option value={choice.key}>{choice.name}</option>
+					<option value={choice.key}>f(u) = {choice.expressionText('u')}</option>
 				{/each}
 			</select>
 		</div>
 
 		<div class="composition-readout">
 			<span>composition</span>
-			<Katex math={`y=${compositionMath}`} />
+			<Katex math={`f(g(x))=${compositionMath}`} />
 		</div>
 	</div>
 
