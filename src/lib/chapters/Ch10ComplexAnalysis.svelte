@@ -9,6 +9,7 @@
 	import ComplexContourLab from '$lib/components/demos/ComplexContourLab.svelte';
 	import ConformalDerivativeLab from '$lib/components/demos/ConformalDerivativeLab.svelte';
 	import DomainColoringLab from '$lib/components/demos/DomainColoringLab.svelte';
+	import ArgumentPrincipleLab from '$lib/components/demos/ArgumentPrincipleLab.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
 </script>
@@ -74,6 +75,24 @@
 				caption="A complex function is a map from one plane to another. Squaring doubles angles, the exponential turns horizontal translation into radial scaling and vertical translation into rotation, and the reciprocal turns lines and circles into lines or circles."
 				><ComplexMappingLab /></Figure
 			>
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<h3>Möbius maps: the geometry of division</h3>
+			<p>
+				The most important rational maps of degree one are <Katex
+					math={r`T(z)=\frac{az+b}{cz+d},\qquad ad-bc\ne0`}
+				/>. They are built from translations, rotations and dilations, and the inversion <Katex
+					math={r`z\mapsto1/z`}
+				/>. Their remarkable signature is that every line or circle becomes another line or
+				circle—if we agree that a line is a circle passing through the point at infinity.
+			</p>
+			<p>
+				Choose the Cayley map in Figure 10.1. The real axis becomes the unit circle, the upper
+				half-plane becomes the unit disk, and complicated boundary geometry becomes round. This is
+				why Möbius maps are not algebraic curiosities: they are coordinate changes chosen to make a
+				problem’s geometry simpler.
+			</p>
 		</div>
 
 		<div class="neo-prose" use:reveal>
@@ -155,6 +174,14 @@
 				/>. Here <Katex math={r`u_x=1`} /> but <Katex math={r`v_y=-1`} />. Conjugation reflects the
 				plane; a reflection cannot be made from a rotation and a positive uniform scaling.
 			</p>
+			<p>
+				In real coordinates, multiplication by <Katex math={r`f'(z)=a+ib`} /> has Jacobian
+				<Katex math={r`\begin{pmatrix}a&-b\\b&a\end{pmatrix}`} />. Its columns are perpendicular and
+				equally long, and its determinant is <Katex math={r`a^2+b^2=|f'(z)|^2`} />. Thus a
+				holomorphic map preserves angles wherever <Katex math={r`f'(z)\ne0`} />, while multiplying
+				tiny areas by
+				<Katex math={r`|f'(z)|^2`} />.
+			</p>
 		</div>
 
 		<Callout type="key-idea" title="Holomorphic">
@@ -165,6 +192,30 @@
 				property.
 			</p>
 		</Callout>
+
+		<div class="neo-prose" use:reveal>
+			<h3>Holomorphic functions hide two harmonic functions</h3>
+			<p>
+				Differentiate the Cauchy–Riemann equations once more. When the second derivatives are
+				continuous, both components satisfy Laplace’s equation:
+			</p>
+		</div>
+		<div class="key-equation" use:reveal>
+			<Katex math={r`\Delta u=u_{xx}+u_{yy}=0,\qquad \Delta v=v_{xx}+v_{yy}=0`} display />
+		</div>
+		<div class="neo-prose" use:reveal>
+			<p>
+				Such functions are <strong>harmonic</strong>. They describe steady temperature,
+				electrostatic potential, and ideal fluid flow. The curves <Katex
+					math={r`u=\text{constant}`}
+				/> and <Katex math={r`v=\text{constant}`} /> cross at right angles because <Katex
+					math={r`\nabla v`}
+				/> is a quarter-turn of <Katex math={r`\nabla u`} />. Thus the level curves of <Katex
+					math="u"
+				/> and <Katex math="v" /> form their own orthogonal bent grid: equipotential curves crossing flow
+				lines.
+			</p>
+		</div>
 
 		<div class="neo-prose" use:reveal>
 			<h3>Power series become the native language</h3>
@@ -182,6 +233,14 @@
 					math={r`\sin z`}
 				/>, and <Katex math={r`\cos z`} /> work for complex inputs. Euler’s identity follows immediately
 				by separating even and odd powers:
+			</p>
+			<p>
+				There is also a geometric limit on every Taylor series: its disk of convergence reaches
+				exactly as far as the nearest singularity in the complex plane. A real formula can therefore
+				fail to converge for a reason that is invisible on the real line. For example, the series
+				for
+				<Katex math={r`1/(1+x^2)`} /> about <Katex math="0" /> stops at radius <Katex math="1" />
+				because the complex poles <Katex math={r`\pm i`} /> are one unit away.
 			</p>
 		</div>
 		<div class="key-equation" use:reveal>
@@ -223,6 +282,30 @@
 		</div>
 
 		<div class="neo-prose" use:reveal>
+			<h3>Cauchy’s theorem: deform the path, preserve the answer</h3>
+			<p>
+				If <Katex math="f" /> is holomorphic throughout a simply connected region, then its integral around
+				every closed contour in that region is zero. Consequently, two paths with the same endpoints give
+				the same integral whenever one can be smoothly deformed into the other without crossing a singularity.
+				The shape of the path is flexible; the holes it encloses are not.
+			</p>
+			<p>
+				Cauchy’s integral formula goes further. Values on a boundary determine every value inside:
+			</p>
+		</div>
+		<div class="key-equation" use:reveal>
+			<Katex math={r`f(z_0)=\frac{1}{2\pi i}\oint_C\frac{f(z)}{z-z_0}\,dz`} display />
+		</div>
+		<div class="neo-prose" use:reveal>
+			<p>
+				The kernel <Katex math={r`1/(z-z_0)`} /> makes one turn around its pole and extracts the interior
+				value. Differentiating the formula produces every higher derivative. This single identity is the
+				source of complex analysis’s rigidity: a holomorphic function cannot choose its interior behavior
+				independently of its boundary.
+			</p>
+		</div>
+
+		<div class="neo-prose" use:reveal>
 			<h3>Singularities leave a measurable trace</h3>
 			<p>
 				The function <Katex math={r`1/z`} /> is holomorphic everywhere except the origin. No antiderivative
@@ -230,6 +313,7 @@
 				once counterclockwise around the origin gives
 			</p>
 		</div>
+
 		<div class="key-equation" use:reveal>
 			<Katex math={r`\oint_C \frac{dz}{z}=2\pi i`} display />
 		</div>
@@ -241,6 +325,29 @@
 				residues, counted with winding number. This converts many difficult real integrals into geometric
 				bookkeeping—but a full proof belongs to a dedicated analysis course.
 			</p>
+		</div>
+
+		<div class="neo-prose" use:reveal>
+			<h3>The boundary can count zeros and poles</h3>
+			<p>
+				Suppose <Katex math="f" /> has no zeros or poles on <Katex math="C" />. As <Katex
+					math="z"
+				/>
+				travels around <Katex math="C" />, the image <Katex math={r`f(z)`} /> traces a closed curve. Each
+				enclosed zero makes that image curve turn once counterclockwise around the origin; each enclosed
+				pole contributes one clockwise turn, with multiplicities counted.
+			</p>
+		</div>
+		<div class="key-equation" use:reveal>
+			<Katex math={r`\frac{1}{2\pi i}\oint_C\frac{f'(z)}{f(z)}\,dz=N-P`} display />
+		</div>
+		<div id="argument-principle-lab" use:reveal>
+			<Figure
+				number="10.5"
+				caption="The argument principle turns an interior counting problem into boundary motion. The synchronized points show how one trip around C becomes N−P trips of f(C) around the origin. Move C across a zero to watch the count change."
+			>
+				<ArgumentPrincipleLab />
+			</Figure>
 		</div>
 
 		<div class="neo-prose exercises-section" use:reveal>
@@ -282,6 +389,34 @@
 						/>, so <Katex math={r`dz/z=i\,dt`} /> and the integral is <Katex math={r`2\pi i`} />.
 					</p>{/snippet}</Exercise
 			>
+			<Exercise number={5}
+				><p>
+					Assume <Katex math={r`f=u+iv`} /> is holomorphic and has continuous second derivatives. Use
+					the Cauchy–Riemann equations to show that <Katex math={r`\Delta u=0`} />.
+				</p>
+				{#snippet solution()}<p>
+						Differentiate <Katex math={r`u_x=v_y`} /> with respect to <Katex math="x" /> and <Katex
+							math={r`u_y=-v_x`}
+						/> with respect to <Katex math="y" />. Then <Katex math={r`u_{xx}=v_{yx}`} /> and <Katex
+							math={r`u_{yy}=-v_{xy}`}
+						/>. Equality of mixed partials gives <Katex math={r`u_{xx}+u_{yy}=0`} />.
+					</p>{/snippet}</Exercise
+			>
+			<Exercise number={6}
+				><p>
+					Let <Katex math={r`f(z)=(z^2-1)/(z-0.35)`} />. Predict the winding number of <Katex
+						math={r`f(C)`}
+					/> about <Katex math="0" /> when <Katex math="C" /> is the circle <Katex
+						math={r`|z|=0.8`}
+					/>, and again when <Katex math={r`|z|=1.2`} />.
+				</p>
+				{#snippet solution()}<p>
+						At radius <Katex math="0.8" />, the pole at <Katex math="0.35" /> is enclosed but the zeros
+						<Katex math={r`\pm1`} /> are not, so <Katex math={r`N-P=-1`} />. At radius <Katex
+							math="1.2"
+						/>, both zeros and the pole are enclosed, so <Katex math={r`N-P=2-1=1`} />.
+					</p>{/snippet}</Exercise
+			>
 		</div>
 
 		<ChapterSummary
@@ -295,10 +430,15 @@
 				<li>
 					Holomorphic functions are locally power series and possess derivatives of every order.
 				</li>
+				<li>The real and imaginary parts of a holomorphic function are harmonic conjugates.</li>
 				<li>
 					Contour integrals add <Katex math={r`f(z)dz`} /> along directed paths; enclosed singularities
 					can make closed-loop integrals nonzero.
 				</li>
+				<li>
+					Cauchy’s formula lets boundary values determine every interior value and derivative.
+				</li>
+				<li>The argument principle counts enclosed zeros minus poles by a winding number.</li>
 			</ul></ChapterSummary
 		>
 		<LookingAhead

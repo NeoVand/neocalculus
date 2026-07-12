@@ -208,7 +208,8 @@
 			'complex-mapping-lab',
 			'domain-coloring-lab',
 			'complex-derivative-picture',
-			'complex-contour-lab'
+			'complex-contour-lab',
+			'argument-principle-lab'
 		]}
 		load={() => import('$lib/chapters/Ch10ComplexAnalysis.svelte')}
 	/>
