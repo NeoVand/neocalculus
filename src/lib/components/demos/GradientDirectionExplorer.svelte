@@ -4,14 +4,7 @@
 	import DemoHeader from '$lib/components/demos/DemoHeader.svelte';
 	import EquationPanel from '$lib/components/demos/EquationPanel.svelte';
 	import SliderField from '$lib/components/demos/SliderField.svelte';
-	import { getPlotTheme, THEME_CHANGE_EVENT } from '$lib/utils/theme';
-	import {
-		createFullscreenShader,
-		createRenderScheduler,
-		cssColorToRgb,
-		type FullscreenShader,
-		type RenderScheduler
-	} from '$lib/utils/webgl';
+	import GradientSurface3D from '$lib/components/demos/GradientSurface3D.svelte';
 
 	const width = 500;
 	const height = 500;
@@ -26,13 +19,11 @@
 	let x0 = $state(1.1);
 	let y0 = $state(0.8);
 	let angle = $state(30);
-	let viewYaw = $state(0.82);
-	let viewPitch = $state(0.48);
-	let rotating = $state(false);
-	let lastPointerX = 0;
-	let lastPointerY = 0;
-	let surfaceRenderer: FullscreenShader | undefined;
-	let surfaceScheduler: RenderScheduler | undefined;
+	let surface3D: GradientSurface3D | undefined;
+
+	function redrawSurface() {
+		requestAnimationFrame(() => surface3D?.redraw());
+	}
 
 	const radians = $derived((angle * Math.PI) / 180);
 	const vx = $derived(Math.cos(radians));
@@ -68,181 +59,6 @@
 		margin.top + plotHeight - ((y - domainMin) / (domainMax - domainMin)) * plotHeight;
 	const scaleX = plotWidth / (domainMax - domainMin);
 	const scaleY = plotHeight / (domainMax - domainMin);
-
-	const surfaceFragmentShader = `#version 300 es
-		precision highp float;
-		uniform vec2 uResolution;
-		uniform vec2 uPoint;
-		uniform vec2 uDirection;
-		uniform vec2 uView;
-		uniform vec3 uBackground;
-		uniform vec3 uGrid;
-		uniform vec3 uInk;
-		uniform vec3 uBlue;
-		uniform vec3 uViolet;
-		uniform vec3 uRose;
-		uniform vec3 uTeal;
-		out vec4 outColor;
-
-		const float HEIGHT_SCALE=0.58;
-
-		float bowlHit(vec3 ro,vec3 rd) {
-			float a=HEIGHT_SCALE*dot(rd.xy,rd.xy);
-			float b=2.0*HEIGHT_SCALE*dot(ro.xy,rd.xy)-rd.z;
-			float c=HEIGHT_SCALE*dot(ro.xy,ro.xy)-ro.z;
-			float discriminant=b*b-4.0*a*c;
-			if(discriminant<0.0) return 1e4;
-			float root=sqrt(discriminant);
-			float t1=(-b-root)/(2.0*a);
-			float t2=(-b+root)/(2.0*a);
-			float t=t1>0.0?t1:t2;
-			if(t<=0.0||length((ro+rd*t).xy)>2.45) return 1e4;
-			return t;
-		}
-
-		float lineMask(float distance,float width) {
-			return 1.0-smoothstep(width,width+fwidth(distance)*1.5,distance);
-		}
-
-		void main() {
-			vec2 uv=(gl_FragCoord.xy-0.5*uResolution)/uResolution.y;
-			float yaw=uView.x;
-			float pitch=uView.y;
-			vec3 target=vec3(0.0,0.0,1.35);
-			vec3 orbit=vec3(cos(pitch)*cos(yaw),cos(pitch)*sin(yaw),sin(pitch));
-			vec3 ro=target+orbit*7.2;
-			vec3 forward=normalize(target-ro);
-			vec3 right=normalize(cross(forward,vec3(0.0,0.0,1.0)));
-			vec3 up=cross(right,forward);
-			vec3 rd=normalize(forward+0.8*uv.x*right+0.8*uv.y*up);
-			vec3 color=mix(uGrid,uBackground,0.86+0.12*smoothstep(0.8,0.15,length(uv)));
-			float nearest=1e4;
-
-			float surfaceT=bowlHit(ro,rd);
-			if(surfaceT<1e3) {
-				nearest=surfaceT;
-				vec3 p=ro+rd*surfaceT;
-				vec3 normal=normalize(vec3(-2.0*HEIGHT_SCALE*p.x,-2.0*HEIGHT_SCALE*p.y,1.0));
-				vec3 light=normalize(vec3(-0.5,0.7,0.9));
-				float diffuse=0.38+0.62*max(dot(normal,light),0.0);
-				float rim=pow(1.0-max(dot(normal,normalize(ro-p)),0.0),2.0);
-				color=uTeal*(0.12+0.15*diffuse)+uBackground*(0.67-0.12*diffuse)+uBlue*0.08*rim;
-				vec2 cells=abs(fract((p.xy+0.25)/0.5)-0.5);
-				float gridMask=smoothstep(0.47,0.49,max(cells.x,cells.y));
-				float contour=lineMask(abs(fract(p.z/0.46)-0.5),0.035);
-				color=mix(color,uGrid,0.52*gridMask);
-				color=mix(color,uBlue,0.22*contour);
-
-				vec2 delta=p.xy-uPoint;
-				float along=dot(delta,uDirection);
-				float across=abs(dot(delta,vec2(-uDirection.y,uDirection.x)));
-				float crossSection=lineMask(across,0.025)*step(abs(along),1.1);
-				color=mix(color,uBlue,crossSection);
-				float pointMask=1.0-smoothstep(0.045,0.075,length(delta));
-				color=mix(color,uInk,pointMask);
-			}
-
-			vec3 basePoint=vec3(uPoint,HEIGHT_SCALE*dot(uPoint,uPoint));
-			vec2 gradient=2.0*HEIGHT_SCALE*uPoint;
-			vec3 tangentNormal=normalize(vec3(-gradient,1.0));
-			float tangentDenom=dot(tangentNormal,rd);
-			if(abs(tangentDenom)>0.0001) {
-				float tangentT=dot(tangentNormal,basePoint-ro)/tangentDenom;
-				vec3 q=ro+rd*tangentT;
-				vec2 local=q.xy-uPoint;
-				if(tangentT>0.0&&tangentT<nearest&&max(abs(local.x),abs(local.y))<0.62) {
-					float tangentAlong=dot(local,uDirection);
-					float tangentAcross=abs(dot(local,vec2(-uDirection.y,uDirection.x)));
-					float tangentLine=lineMask(tangentAcross,0.025)*step(abs(tangentAlong),0.78);
-					color=mix(color,uViolet,0.34);
-					color=mix(color,uRose,tangentLine);
-					nearest=tangentT;
-				}
-			}
-
-			vec2 sliceNormal=vec2(-uDirection.y,uDirection.x);
-			float sliceDenom=dot(sliceNormal,rd.xy);
-			if(abs(sliceDenom)>0.0001) {
-				float sliceT=dot(sliceNormal,uPoint-ro.xy)/sliceDenom;
-				vec3 q=ro+rd*sliceT;
-				float along=dot(q.xy-uPoint,uDirection);
-				float bowlHeight=HEIGHT_SCALE*dot(q.xy,q.xy);
-				if(sliceT>0.0&&sliceT<nearest&&abs(along)<1.1&&q.z>bowlHeight-0.48&&q.z<bowlHeight+0.62) {
-					color=mix(color,uBlue,0.18);
-				}
-			}
-
-			outColor=vec4(color,1.0);
-		}
-	`;
-
-	function drawSurface() {
-		if (!surfaceRenderer) return;
-		const theme = getPlotTheme();
-		const color = (gl: WebGL2RenderingContext, name: string, value: string) =>
-			gl.uniform3fv(surfaceRenderer?.uniform(name) ?? null, cssColorToRgb(value));
-		surfaceRenderer.draw((gl) => {
-			gl.uniform2f(surfaceRenderer?.uniform('uPoint') ?? null, x0, y0);
-			gl.uniform2f(surfaceRenderer?.uniform('uDirection') ?? null, vx, vy);
-			gl.uniform2f(surfaceRenderer?.uniform('uView') ?? null, viewYaw, viewPitch);
-			color(gl, 'uBackground', theme.background);
-			color(gl, 'uGrid', theme.grid);
-			color(gl, 'uInk', theme.ink);
-			color(gl, 'uBlue', theme.blue);
-			color(gl, 'uViolet', theme.violet);
-			color(gl, 'uRose', theme.rose);
-			color(gl, 'uTeal', theme.teal);
-		});
-	}
-
-	function redrawSurface() {
-		surfaceScheduler?.request();
-	}
-
-	function attachSurface(node: HTMLCanvasElement) {
-		const created = createFullscreenShader(node, surfaceFragmentShader, { pixelRatioCap: 1.8 });
-		if (!created) return;
-		surfaceRenderer = created;
-		surfaceScheduler = createRenderScheduler(node, drawSurface);
-		window.addEventListener(THEME_CHANGE_EVENT, redrawSurface);
-		return () => {
-			window.removeEventListener(THEME_CHANGE_EVENT, redrawSurface);
-			surfaceScheduler?.destroy();
-			created.destroy();
-			if (surfaceRenderer === created) surfaceRenderer = undefined;
-			surfaceScheduler = undefined;
-		};
-	}
-
-	function beginRotation(event: PointerEvent) {
-		rotating = true;
-		lastPointerX = event.clientX;
-		lastPointerY = event.clientY;
-		redrawSurface();
-		(event.currentTarget as HTMLButtonElement).setPointerCapture(event.pointerId);
-	}
-
-	function rotateView(event: PointerEvent) {
-		if (!rotating) return;
-		viewYaw -= (event.clientX - lastPointerX) * 0.008;
-		viewPitch = Math.min(1.15, Math.max(0.12, viewPitch + (event.clientY - lastPointerY) * 0.006));
-		lastPointerX = event.clientX;
-		lastPointerY = event.clientY;
-	}
-
-	function endRotation() {
-		rotating = false;
-	}
-
-	function rotateWithKeyboard(event: KeyboardEvent) {
-		if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
-		event.preventDefault();
-		if (event.key === 'ArrowLeft') viewYaw -= 0.08;
-		if (event.key === 'ArrowRight') viewYaw += 0.08;
-		if (event.key === 'ArrowUp') viewPitch = Math.min(1.15, viewPitch + 0.05);
-		if (event.key === 'ArrowDown') viewPitch = Math.max(0.12, viewPitch - 0.05);
-		redrawSurface();
-	}
 </script>
 
 <div class="gradient-explorer">
@@ -417,23 +233,7 @@
 
 		<section class="plot-panel surface-panel" aria-labelledby="surface-title">
 			<div class="plot-title" id="surface-title">Surface · drag to rotate</div>
-			<button
-				type="button"
-				class:rotating
-				class="surface-viewport"
-				aria-label="Rotate the three-dimensional paraboloid. Drag, or use the arrow keys."
-				onpointerdown={beginRotation}
-				onpointermove={rotateView}
-				onpointerup={endRotation}
-				onpointercancel={endRotation}
-				onkeydown={rotateWithKeyboard}
-			>
-				<canvas
-					class="surface-canvas"
-					{@attach attachSurface}
-					aria-label="A GPU-rendered paraboloid with a tangent plane, a vertical directional slice, and their tangent line"
-				></canvas>
-			</button>
+			<GradientSurface3D bind:this={surface3D} x={x0} y={y0} directionAngle={angle} />
 			<div class="surface-key">
 				<span><i class="patch-key"></i>tangent plane</span>
 				<span><i class="slice-key"></i>vertical slice</span>
@@ -572,26 +372,6 @@
 		background: var(--color-surface);
 	}
 
-	.surface-viewport {
-		display: block;
-		width: 100%;
-		padding: 0;
-		border: 0;
-		background: transparent;
-		color: inherit;
-		cursor: grab;
-		touch-action: none;
-	}
-
-	.surface-viewport.rotating {
-		cursor: grabbing;
-	}
-
-	.surface-viewport:focus-visible {
-		outline: 2px solid var(--color-d);
-		outline-offset: 2px;
-	}
-
 	.plot-title {
 		margin: 0.1rem 0 0.35rem;
 		font-size: 0.73rem;
@@ -660,13 +440,6 @@
 		fill: var(--color-ink);
 		stroke: var(--plot-outline);
 		stroke-width: 2;
-	}
-
-	.surface-canvas {
-		display: block;
-		width: 100%;
-		aspect-ratio: 460 / 350;
-		border-radius: 0.45rem;
 	}
 
 	.surface-key {
