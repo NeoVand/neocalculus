@@ -1,6 +1,10 @@
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
+	import { onMount } from 'svelte';
 	import type { Component } from 'svelte';
+	import {
+		CHAPTER_NAVIGATE_EVENT,
+		type ChapterNavigateDetail
+	} from '$lib/utils/chapter-navigation';
 
 	type ChapterModule = {
 		default: Component;
@@ -20,36 +24,10 @@
 	let started = $state(false);
 	let modulePromise = $state<Promise<ChapterModule> | null>(null);
 
-	function scrollToHashTarget() {
-		if (typeof window === 'undefined') return;
-		const hash = window.location.hash;
-		if (!hash.startsWith('#')) return;
-
-		const targetId = decodeURIComponent(hash.slice(1));
-		if (!targetId) return;
-		// Only the chapter named by the hash may correct its own placeholder position.
-		// Without this guard, every later lazy chapter load re-scrolls to an older selected chapter.
-		if (targetId !== id && !anchors.includes(targetId)) return;
-
-		const target = document.getElementById(targetId);
-		if (target) {
-			target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-		}
-	}
-
-	async function scheduleHashScroll() {
-		if (typeof window === 'undefined') return;
-		await tick();
-		scrollToHashTarget();
-	}
-
 	function beginLoad(force = false) {
 		if (started && !force) return;
 		started = true;
-		modulePromise = load().then((module) => {
-			void scheduleHashScroll();
-			return module;
-		});
+		modulePromise = load();
 	}
 
 	onMount(() => {
@@ -80,17 +58,26 @@
 			stopWatching();
 		};
 
+		const handleChapterNavigate = (event: Event) => {
+			const targetId = (event as CustomEvent<ChapterNavigateDetail>).detail.id;
+			if (targetId !== id && !anchors.includes(targetId)) return;
+			beginLoad();
+			stopWatching();
+		};
+
 		function stopWatching() {
 			observer.disconnect();
 			window.removeEventListener('scroll', checkPosition);
 			window.removeEventListener('resize', checkPosition);
 			window.removeEventListener('hashchange', checkPosition);
+			window.removeEventListener(CHAPTER_NAVIGATE_EVENT, handleChapterNavigate);
 		}
 
 		observer.observe(target);
 		window.addEventListener('scroll', checkPosition, { passive: true });
 		window.addEventListener('resize', checkPosition);
 		window.addEventListener('hashchange', checkPosition);
+		window.addEventListener(CHAPTER_NAVIGATE_EVENT, handleChapterNavigate);
 		checkPosition();
 
 		return stopWatching;

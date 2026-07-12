@@ -6,6 +6,10 @@
 	import LazyChapter from '$lib/components/LazyChapter.svelte';
 	import Katex from '$lib/components/Katex.svelte';
 	import WormholeReturn from '$lib/components/WormholeReturn.svelte';
+	import {
+		CHAPTER_NAVIGATE_EVENT,
+		type ChapterNavigateDetail
+	} from '$lib/utils/chapter-navigation';
 	import { reveal } from '$lib/utils/scroll';
 
 	const chapters = [
@@ -79,35 +83,83 @@
 
 	onMount(() => {
 		let frameId = 0;
+		let alignmentActive = false;
 
-		const restoreHashTarget = () => {
+		const stopAlignment = () => {
+			alignmentActive = false;
 			cancelAnimationFrame(frameId);
-
-			const targetId = decodeURIComponent(window.location.hash.slice(1));
-			if (!targetId) return;
-
-			// A reload with an unchanged hash can restore a stale scroll offset instead of the anchor.
-			// Correct it once after layout settles, then leave ordinary reader scrolling untouched.
-			frameId = requestAnimationFrame(() => {
-				frameId = requestAnimationFrame(() => {
-					const target = document.getElementById(targetId);
-					if (!target) return;
-
-					const root = document.documentElement;
-					const previousScrollBehavior = root.style.scrollBehavior;
-					root.style.scrollBehavior = 'auto';
-					target.scrollIntoView({ block: 'start' });
-					root.style.scrollBehavior = previousScrollBehavior;
-				});
-			});
 		};
 
-		restoreHashTarget();
-		window.addEventListener('hashchange', restoreHashTarget);
+		const targetScrollTop = (target: HTMLElement) => {
+			const scrollMargin = Number.parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+			return target.getBoundingClientRect().top + window.scrollY - scrollMargin;
+		};
+
+		const jumpImmediately = (top: number) => {
+			const root = document.documentElement;
+			const previousScrollBehavior = root.style.scrollBehavior;
+			root.style.scrollBehavior = 'auto';
+			window.scrollTo({ top, left: window.scrollX, behavior: 'auto' });
+			root.style.scrollBehavior = previousScrollBehavior;
+		};
+
+		const alignTarget = (targetId: string, duration = 2600) => {
+			stopAlignment();
+			if (!targetId) return;
+
+			alignmentActive = true;
+			const started = performance.now();
+			let lastDesired: number | null = null;
+
+			const align = () => {
+				if (!alignmentActive) return;
+				const target = document.getElementById(targetId);
+				if (target) {
+					const desired = targetScrollTop(target);
+					const layoutShifted = lastDesired === null || Math.abs(desired - lastDesired) > 2;
+
+					// If layout is stable but the viewport moved, the reader deliberately scrolled.
+					if (!layoutShifted && Math.abs(window.scrollY - desired) > 2) {
+						stopAlignment();
+						return;
+					}
+
+					if (Math.abs(window.scrollY - desired) > 2) jumpImmediately(desired);
+					lastDesired = desired;
+				}
+
+				if (performance.now() - started < duration) {
+					frameId = requestAnimationFrame(align);
+				} else {
+					alignmentActive = false;
+				}
+			};
+
+			align();
+		};
+
+		const alignHashTarget = () => {
+			const targetId = decodeURIComponent(window.location.hash.slice(1));
+			alignTarget(targetId);
+		};
+
+		const handleChapterNavigate = (event: Event) => {
+			const { id } = (event as CustomEvent<ChapterNavigateDetail>).detail;
+			alignTarget(id);
+		};
+
+		alignHashTarget();
+		window.addEventListener('hashchange', alignHashTarget);
+		window.addEventListener(CHAPTER_NAVIGATE_EVENT, handleChapterNavigate);
+		window.addEventListener('wheel', stopAlignment, { passive: true });
+		window.addEventListener('touchmove', stopAlignment, { passive: true });
 
 		return () => {
-			cancelAnimationFrame(frameId);
-			window.removeEventListener('hashchange', restoreHashTarget);
+			stopAlignment();
+			window.removeEventListener('hashchange', alignHashTarget);
+			window.removeEventListener(CHAPTER_NAVIGATE_EVENT, handleChapterNavigate);
+			window.removeEventListener('wheel', stopAlignment);
+			window.removeEventListener('touchmove', stopAlignment);
 		};
 	});
 </script>

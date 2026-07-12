@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { pushState } from '$app/navigation';
+	import {
+		CHAPTER_NAVIGATE_EVENT,
+		type ChapterNavigateDetail
+	} from '$lib/utils/chapter-navigation';
 
 	export type TocChapter = {
 		id: string;
@@ -22,6 +26,7 @@
 	let isOpen = $state(false);
 	let railCollapsed = $state(false);
 	let activeId = $state('');
+	let navigationActive = false;
 
 	let activeIndex = $derived.by(() => {
 		const currentId = activeId || chapters[0]?.id || '';
@@ -50,7 +55,9 @@
 			pushState(hash, {});
 		}
 
-		target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		window.dispatchEvent(
+			new CustomEvent<ChapterNavigateDetail>(CHAPTER_NAVIGATE_EVENT, { detail: { id } })
+		);
 	}
 
 	function toggleRailCollapsed() {
@@ -78,7 +85,7 @@
 				isPastHero = true;
 			}
 
-			if (chapters.length === 0) return;
+			if (chapters.length === 0 || navigationActive) return;
 
 			const anchorLine = Math.min(window.innerHeight * 0.35, 260);
 			let currentId = activeId || chapters[0].id;
@@ -112,12 +119,28 @@
 			scheduleUpdate();
 		};
 
+		const handleChapterNavigate = (event: Event) => {
+			const { id } = (event as CustomEvent<ChapterNavigateDetail>).detail;
+			if (!chapters.some((chapter) => chapter.id === id)) return;
+			activeId = id;
+			navigationActive = true;
+		};
+
+		const releaseNavigation = () => {
+			if (!navigationActive) return;
+			navigationActive = false;
+			scheduleUpdate();
+		};
+
 		scheduleUpdate();
 		handleHashChange();
 
 		window.addEventListener('scroll', scheduleUpdate, { passive: true });
 		window.addEventListener('resize', scheduleUpdate);
 		window.addEventListener('hashchange', handleHashChange);
+		window.addEventListener(CHAPTER_NAVIGATE_EVENT, handleChapterNavigate);
+		window.addEventListener('wheel', releaseNavigation, { passive: true });
+		window.addEventListener('touchmove', releaseNavigation, { passive: true });
 
 		const mutationObserver = new MutationObserver(scheduleUpdate);
 		mutationObserver.observe(document.body, { childList: true, subtree: true });
@@ -126,6 +149,9 @@
 			window.removeEventListener('scroll', scheduleUpdate);
 			window.removeEventListener('resize', scheduleUpdate);
 			window.removeEventListener('hashchange', handleHashChange);
+			window.removeEventListener(CHAPTER_NAVIGATE_EVENT, handleChapterNavigate);
+			window.removeEventListener('wheel', releaseNavigation);
+			window.removeEventListener('touchmove', releaseNavigation);
 			mutationObserver.disconnect();
 		};
 	});
