@@ -1,52 +1,92 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import SliderField from './SliderField.svelte';
 	type Kind = 'identity' | 'polynomial' | 'rational' | 'exponential' | 'sine' | 'constellation';
-	type C = { re: number; im: number };
+	type SpecialPoint = { re: number; im: number; type: 'zero' | 'pole' };
 	let kind = $state<Kind>('polynomial'),
 		extent = $state(2.6),
 		enhanced = $state(true);
-	let canvas: HTMLCanvasElement | undefined;
-	const mul = (a: C, b: C): C => ({ re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re });
-	const add = (a: C, b: C): C => ({ re: a.re + b.re, im: a.im + b.im });
-	const divide = (a: C, b: C): C => {
-		const d = b.re * b.re + b.im * b.im;
-		return { re: (a.re * b.re + a.im * b.im) / d, im: (a.im * b.re - a.re * b.im) / d };
+	let renderFrame: (() => void) | undefined,
+		pendingFrame = 0;
+	const kindIndex: Record<Kind, number> = {
+		identity: 0,
+		polynomial: 1,
+		rational: 2,
+		exponential: 3,
+		sine: 4,
+		constellation: 5
 	};
-	function f(z: C): C {
-		if (kind === 'identity') return z;
-		if (kind === 'polynomial') return add(mul(z, z), { re: -1, im: 0 });
-		if (kind === 'rational') return divide({ re: 1, im: 0 }, add(mul(z, z), { re: 1, im: 0 }));
-		if (kind === 'exponential') {
-			const m = Math.exp(z.re);
-			return { re: m * Math.cos(z.im), im: m * Math.sin(z.im) };
+	const vertexShader = `#version 300 es
+		in vec2 aPosition;
+		void main() { gl_Position = vec4(aPosition, 0.0, 1.0); }
+	`;
+	const fragmentShader = `#version 300 es
+		precision highp float;
+		uniform vec2 uResolution;
+		uniform float uExtent;
+		uniform int uKind;
+		uniform int uEnhanced;
+		out vec4 outColor;
+		const float TAU = 6.283185307179586;
+
+		vec2 cmul(vec2 a, vec2 b) {
+			return vec2(a.x*b.x-a.y*b.y, a.x*b.y+a.y*b.x);
 		}
-		if (kind === 'sine')
-			return { re: Math.sin(z.re) * Math.cosh(z.im), im: Math.cos(z.re) * Math.sinh(z.im) };
-		const z2 = mul(z, z),
-			z3 = mul(z2, z);
-		return divide(add(z3, { re: -1, im: 0 }), add(z2, { re: 0.35, im: 0 }));
-	}
-	function hsv(h: number, s: number, v: number) {
-		const i = Math.floor(h * 6),
-			f = h * 6 - i,
-			p = v * (1 - s),
-			q = v * (1 - f * s),
-			t = v * (1 - (1 - f) * s);
-		const sector = i % 6;
-		const rgb =
-			sector === 0
-				? [v, t, p]
-				: sector === 1
-					? [q, v, p]
-					: sector === 2
-						? [p, v, t]
-						: sector === 3
-							? [p, q, v]
-							: sector === 4
-								? [t, p, v]
-								: [v, p, q];
-		return rgb.map((n) => Math.round(255 * n));
-	}
+		vec2 cdiv(vec2 a, vec2 b) {
+			float d = max(dot(b,b), 1e-18);
+			return vec2(a.x*b.x+a.y*b.y, a.y*b.x-a.x*b.y)/d;
+		}
+		vec2 complexValue(vec2 z) {
+			vec2 z2 = cmul(z,z);
+			if (uKind == 0) return z;
+			if (uKind == 1) return z2-vec2(1.0,0.0);
+			if (uKind == 2) return cdiv(vec2(1.0,0.0),z2+vec2(1.0,0.0));
+			if (uKind == 3) {
+				float m = exp(z.x);
+				return m*vec2(cos(z.y),sin(z.y));
+			}
+			if (uKind == 4) {
+				float sh = 0.5*(exp(z.y)-exp(-z.y));
+				float ch = 0.5*(exp(z.y)+exp(-z.y));
+				return vec2(sin(z.x)*ch,cos(z.x)*sh);
+			}
+			vec2 z3 = cmul(z2,z);
+			return cdiv(z3-vec2(1.0,0.0),z2+vec2(0.35,0.0));
+		}
+		vec3 hsv2rgb(vec3 c) {
+			vec3 p = abs(fract(c.xxx+vec3(0.0,2.0/3.0,1.0/3.0))*6.0-3.0);
+			return c.z*mix(vec3(1.0),clamp(p-1.0,0.0,1.0),c.y);
+		}
+		void main() {
+			vec2 centered = gl_FragCoord.xy/uResolution-0.5;
+			vec2 z = vec2(centered.x*2.0*uExtent*(uResolution.x/uResolution.y), centered.y*2.0*uExtent);
+			vec2 w = complexValue(z);
+			float magnitude = length(w);
+			float phase = atan(w.y,w.x)/TAU;
+			float hue = fract(phase+1.0);
+			float saturation = 0.78;
+			float value = 0.68+0.28*(1.0-exp(-0.5*min(magnitude,40.0)));
+
+			if (uEnhanced == 1) {
+				float logMagnitude = log2(max(magnitude,1e-9));
+				float modulusDistance = abs(fract(logMagnitude)-0.5);
+				float modulusPixels = modulusDistance/max(fwidth(logMagnitude),1e-5);
+				float modulusLine = 1.0-smoothstep(0.65,1.45,modulusPixels);
+				float phaseCoordinate = phase*12.0;
+				float phaseDistance = abs(fract(phaseCoordinate)-0.5);
+				float phasePixels = phaseDistance/max(fwidth(phaseCoordinate),1e-5);
+				float phaseLine = 1.0-smoothstep(0.65,1.35,phasePixels);
+				float octaveShading = 0.965+0.035*cos(TAU*fract(logMagnitude));
+				value *= octaveShading*(1.0-0.34*modulusLine)*(1.0-0.18*phaseLine);
+				saturation = 0.84;
+			}
+			value *= mix(0.12,1.0,smoothstep(0.0,0.04,magnitude));
+			float pole = smoothstep(65.0,120.0,magnitude);
+			saturation = mix(saturation,0.18,pole);
+			value = mix(value,0.98,pole);
+			outColor = vec4(hsv2rgb(vec3(hue,saturation,value)),1.0);
+		}
+	`;
 	const label = $derived(
 		kind === 'identity'
 			? 'f(z)=z'
@@ -60,7 +100,7 @@
 							? 'f(z)=sin z'
 							: 'f(z)=(z³−1)/(z²+0.35)'
 	);
-	function specialPoints() {
+	function specialPoints(): SpecialPoint[] {
 		if (kind === 'identity') return [{ re: 0, im: 0, type: 'zero' }];
 		if (kind === 'polynomial')
 			return [
@@ -83,72 +123,26 @@
 			];
 		return [];
 	}
-	function draw() {
-		if (!canvas) return;
-		const ctx = canvas.getContext('2d');
-		if (!ctx) return;
-		const W = canvas.width,
-			H = canvas.height,
-			data = ctx.createImageData(W, H);
-		for (let py = 0; py < H; py += 1) {
-			const im = extent - (2 * extent * py) / (H - 1);
-			for (let px = 0; px < W; px += 1) {
-				const re = -extent + (2 * extent * px) / (W - 1),
-					w = f({ re, im }),
-					mag = Math.hypot(w.re, w.im),
-					arg = Math.atan2(w.im, w.re),
-					h = (arg / (Math.PI * 2) + 1) % 1;
-				let saturation = 0.76,
-					value = 0.9;
-				if (enhanced) {
-					const log = Math.log2(Math.max(mag, 1e-12)),
-						modDistance = Math.abs(log - Math.floor(log) - 0.5),
-						phaseDistance = Math.abs(((h * 12) % 1) - 0.5);
-					const modulusInk = Math.exp(-70 * modDistance * modDistance),
-						phaseInk = Math.exp(-90 * phaseDistance * phaseDistance);
-					value =
-						(0.6 + 0.32 * (1 - Math.exp(-0.55 * mag))) *
-						(1 - 0.24 * modulusInk) *
-						(1 - 0.16 * phaseInk);
-					saturation = 0.82;
-				} else value = 0.68 + 0.27 * (1 - Math.exp(-0.45 * mag));
-				if (mag < 0.025) value = Math.min(value, 0.12 + mag * 3);
-				if (mag > 80) {
-					saturation *= 0.25;
-					value = 0.98;
-				}
-				const [red, green, blue] = hsv(h, saturation, value),
-					index = 4 * (py * W + px);
-				data.data[index] = red;
-				data.data[index + 1] = green;
-				data.data[index + 2] = blue;
-				data.data[index + 3] = 255;
-			}
+	const markers = $derived(specialPoints());
+	const markerScale = $derived(170 / extent);
+	function compile(gl: WebGL2RenderingContext, type: number, source: string) {
+		const shader = gl.createShader(type);
+		if (!shader) throw new Error('Unable to create phase portrait shader');
+		gl.shaderSource(shader, source);
+		gl.compileShader(shader);
+		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+			const message = gl.getShaderInfoLog(shader) ?? 'Unknown shader compilation error';
+			gl.deleteShader(shader);
+			throw new Error(message);
 		}
-		ctx.putImageData(data, 0, 0);
-		const styles = getComputedStyle(canvas),
-			ink = styles.getPropertyValue('--plot-ink').trim() || '#fff';
-		ctx.lineWidth = 2;
-		for (const point of specialPoints()) {
-			if (Math.abs(point.re) > extent || Math.abs(point.im) > extent) continue;
-			const px = ((point.re + extent) / (2 * extent)) * W,
-				py = ((extent - point.im) / (2 * extent)) * H;
-			ctx.beginPath();
-			ctx.arc(px, py, point.type === 'pole' ? 7 : 5, 0, Math.PI * 2);
-			ctx.strokeStyle = ink;
-			ctx.stroke();
-			if (point.type === 'pole') {
-				ctx.beginPath();
-				ctx.moveTo(px - 4, py - 4);
-				ctx.lineTo(px + 4, py + 4);
-				ctx.moveTo(px + 4, py - 4);
-				ctx.lineTo(px - 4, py + 4);
-				ctx.stroke();
-			}
-		}
+		return shader;
 	}
 	function scheduleDraw() {
-		requestAnimationFrame(draw);
+		if (pendingFrame) return;
+		pendingFrame = requestAnimationFrame(() => {
+			pendingFrame = 0;
+			renderFrame?.();
+		});
 	}
 	function choose(next: Kind) {
 		kind = next;
@@ -159,10 +153,60 @@
 		scheduleDraw();
 	}
 	function attachCanvas(node: HTMLCanvasElement) {
-		canvas = node;
-		draw();
+		const gl = node.getContext('webgl2', {
+			antialias: false,
+			alpha: false,
+			powerPreference: 'high-performance'
+		});
+		if (!gl) return;
+		const vertex = compile(gl, gl.VERTEX_SHADER, vertexShader),
+			fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentShader),
+			program = gl.createProgram();
+		if (!program) throw new Error('Unable to create phase portrait program');
+		gl.attachShader(program, vertex);
+		gl.attachShader(program, fragment);
+		gl.linkProgram(program);
+		if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+			throw new Error(gl.getProgramInfoLog(program) ?? 'Unable to link phase portrait program');
+		gl.useProgram(program);
+		const buffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+		const position = gl.getAttribLocation(program, 'aPosition');
+		gl.enableVertexAttribArray(position);
+		gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+		const resolutionLocation = gl.getUniformLocation(program, 'uResolution'),
+			extentLocation = gl.getUniformLocation(program, 'uExtent'),
+			kindLocation = gl.getUniformLocation(program, 'uKind'),
+			enhancedLocation = gl.getUniformLocation(program, 'uEnhanced');
+		const render = () => {
+			const ratio = Math.min(window.devicePixelRatio || 1, 2.5),
+				width = Math.max(1, Math.round(node.clientWidth * ratio)),
+				height = Math.max(1, Math.round(node.clientHeight * ratio));
+			if (node.width !== width || node.height !== height) {
+				node.width = width;
+				node.height = height;
+			}
+			gl.viewport(0, 0, width, height);
+			gl.uniform2f(resolutionLocation, width, height);
+			gl.uniform1f(extentLocation, extent);
+			gl.uniform1i(kindLocation, kindIndex[kind]);
+			gl.uniform1i(enhancedLocation, enhanced ? 1 : 0);
+			gl.drawArrays(gl.TRIANGLES, 0, 3);
+		};
+		renderFrame = render;
+		const observer = new ResizeObserver(scheduleDraw);
+		observer.observe(node);
+		untrack(render);
 		return () => {
-			if (canvas === node) canvas = undefined;
+			observer.disconnect();
+			if (pendingFrame) cancelAnimationFrame(pendingFrame);
+			pendingFrame = 0;
+			if (renderFrame === render) renderFrame = undefined;
+			gl.deleteBuffer(buffer);
+			gl.deleteProgram(program);
+			gl.deleteShader(vertex);
+			gl.deleteShader(fragment);
 		};
 	}
 </script>
@@ -197,6 +241,22 @@
 			height="340"
 			aria-label="Domain coloring phase portrait for {label}"
 		></canvas>
+		<svg class="markers" viewBox="0 0 560 340" aria-hidden="true">
+			{#each markers as point (`${point.type}-${point.re}-${point.im}`)}
+				{@const x = 280 + markerScale * point.re}
+				{@const y = 170 - markerScale * point.im}
+				{#if x > 9 && x < 551 && y > 9 && y < 331}
+					<circle class="marker-halo" cx={x} cy={y} r={point.type === 'pole' ? 8 : 7} />
+					<circle class="marker-ring" cx={x} cy={y} r={point.type === 'pole' ? 6 : 5} />
+					{#if point.type === 'pole'}
+						<path
+							class="marker-cross"
+							d={`M ${x - 4} ${y - 4} L ${x + 4} ${y + 4} M ${x + 4} ${y - 4} L ${x - 4} ${y + 4}`}
+						/>
+					{/if}
+				{/if}
+			{/each}
+		</svg>
 		<div class="overlay"><span>Im z</span><span>{label}</span><span>Re z</span></div>
 	</div>
 	<div class="legend">
@@ -209,13 +269,13 @@
 		<div class="bands"></div>
 		<div>
 			<strong>bands = |f(z)|</strong><span
-				>dark rings are equally spaced on a logarithmic magnitude scale</span
+				>crisp curves mark equal steps on a logarithmic magnitude scale</span
 			>
 		</div>
 	</div>
 	<div class="controls">
 		<SliderField
-			label="Window · ±R"
+			label="View scale · R"
 			min={1.4}
 			max={5}
 			step={0.1}
@@ -297,6 +357,31 @@
 		width: 100%;
 		height: auto;
 		aspect-ratio: 28/17;
+	}
+	.markers {
+		position: absolute;
+		inset: 0;
+		display: block;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+	}
+	.marker-halo,
+	.marker-ring {
+		fill: none;
+	}
+	.marker-halo {
+		stroke: rgba(0, 0, 0, 0.52);
+		stroke-width: 4;
+	}
+	.marker-ring,
+	.marker-cross {
+		stroke: white;
+		stroke-width: 2;
+		stroke-linecap: round;
+	}
+	.marker-cross {
+		fill: none;
 	}
 	.overlay {
 		position: absolute;
