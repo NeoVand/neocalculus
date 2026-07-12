@@ -4,6 +4,14 @@
 	import DemoHeader from '$lib/components/demos/DemoHeader.svelte';
 	import EquationPanel from '$lib/components/demos/EquationPanel.svelte';
 	import SliderField from '$lib/components/demos/SliderField.svelte';
+	import { getPlotTheme, THEME_CHANGE_EVENT } from '$lib/utils/theme';
+	import {
+		createFullscreenShader,
+		createRenderScheduler,
+		cssColorToRgb,
+		type FullscreenShader,
+		type RenderScheduler
+	} from '$lib/utils/webgl';
 
 	const width = 500;
 	const height = 500;
@@ -18,11 +26,13 @@
 	let x0 = $state(1.1);
 	let y0 = $state(0.8);
 	let angle = $state(30);
-	let viewYaw = $state(-42);
-	let viewPitch = $state(28);
+	let viewYaw = $state(0.82);
+	let viewPitch = $state(0.48);
 	let rotating = $state(false);
 	let lastPointerX = 0;
 	let lastPointerY = 0;
+	let surfaceRenderer: FullscreenShader | undefined;
+	let surfaceScheduler: RenderScheduler | undefined;
 
 	const radians = $derived((angle * Math.PI) / 180);
 	const vx = $derived(Math.cos(radians));
@@ -34,7 +44,9 @@
 	const gradUnitY = $derived(gradMagnitude === 0 ? 0 : gradY / gradMagnitude);
 	const directionalDerivative = $derived(gradX * vx + gradY * vy);
 	const alignment = $derived(gradMagnitude === 0 ? 0 : directionalDerivative / gradMagnitude);
-	const alignmentAngle = $derived((Math.acos(Math.min(1, Math.max(-1, alignment))) * 180) / Math.PI);
+	const alignmentAngle = $derived(
+		(Math.acos(Math.min(1, Math.max(-1, alignment))) * 180) / Math.PI
+	);
 	const signedAlignmentAngle = $derived(
 		(gradUnitX * vy - gradUnitY * vx < 0 ? -1 : 1) * alignmentAngle
 	);
@@ -52,99 +64,168 @@
 	);
 
 	const sx = (x: number) => plotLeft + ((x - domainMin) / (domainMax - domainMin)) * plotWidth;
-	const sy = (y: number) => margin.top + plotHeight - ((y - domainMin) / (domainMax - domainMin)) * plotHeight;
+	const sy = (y: number) =>
+		margin.top + plotHeight - ((y - domainMin) / (domainMax - domainMin)) * plotHeight;
 	const scaleX = plotWidth / (domainMax - domainMin);
 	const scaleY = plotHeight / (domainMax - domainMin);
 
-	const surfaceDomain = 1.8;
-	const surfaceGrid = [-1.8, -1.2, -0.6, 0, 0.6, 1.2, 1.8];
-	const sliceHalf = 0.72;
-	const patchHalf = 0.5;
-	const surface = (x: number, y: number) => x * x + y * y;
-	const project3 = (x: number, y: number, z: number) => {
-		const yaw = (viewYaw * Math.PI) / 180;
-		const pitch = (viewPitch * Math.PI) / 180;
-		const horizontal = x * Math.cos(yaw) - y * Math.sin(yaw);
-		const depth = x * Math.sin(yaw) + y * Math.cos(yaw);
-		return {
-			x: 260 + horizontal * 82,
-			y: 326 + depth * Math.sin(pitch) * 68 - z * Math.cos(pitch) * 33,
-			depth
-		};
-	};
-	const pointString = (points: { x: number; y: number }[]) =>
-		points.map((point) => `${point.x},${point.y}`).join(' ');
-	const pathString = (points: { x: number; y: number }[]) =>
-		points.map((point, index) => `${index === 0 ? 'M' : 'L'}${point.x},${point.y}`).join(' ');
-	const surfaceLine = (axis: 'x' | 'y', fixed: number) =>
-		pathString(
-			Array.from({ length: 41 }, (_, index) => {
-				const moving = -surfaceDomain + (index / 40) * 2 * surfaceDomain;
-				const x = axis === 'x' ? fixed : moving;
-				const y = axis === 'y' ? fixed : moving;
-				return project3(x, y, surface(x, y));
-			})
-		);
+	const surfaceFragmentShader = `#version 300 es
+		precision highp float;
+		uniform vec2 uResolution;
+		uniform vec2 uPoint;
+		uniform vec2 uDirection;
+		uniform vec2 uView;
+		uniform vec3 uBackground;
+		uniform vec3 uGrid;
+		uniform vec3 uInk;
+		uniform vec3 uBlue;
+		uniform vec3 uViolet;
+		uniform vec3 uRose;
+		uniform vec3 uTeal;
+		out vec4 outColor;
 
-	const surfacePoint = $derived(project3(x0, y0, surface(x0, y0)));
-	const sliceCurve = $derived(
-		pathString(
-			Array.from({ length: 41 }, (_, index) => {
-				const t = -sliceHalf + (index / 40) * 2 * sliceHalf;
-				const x = x0 + t * vx;
-				const y = y0 + t * vy;
-				return project3(x, y, surface(x, y));
-			})
-		)
-	);
-	const slicePlane = $derived.by(() => {
-		const xMinus = x0 - sliceHalf * vx;
-		const yMinus = y0 - sliceHalf * vy;
-		const xPlus = x0 + sliceHalf * vx;
-		const yPlus = y0 + sliceHalf * vy;
-		const top = Math.max(surface(xMinus, yMinus), surface(xPlus, yPlus), surface(x0, y0)) + 0.55;
-		return pointString([
-			project3(xMinus, yMinus, 0),
-			project3(xPlus, yPlus, 0),
-			project3(xPlus, yPlus, top),
-			project3(xMinus, yMinus, top)
-		]);
-	});
-	const tangentSlice = $derived(
-		pathString(
-			[-sliceHalf, sliceHalf].map((t) =>
-				project3(
-					x0 + t * vx,
-					y0 + t * vy,
-					surface(x0, y0) + directionalDerivative * t
-				)
-			)
-		)
-	);
-	const tangentPlane = $derived(
-		pointString(
-			[
-				[-patchHalf, -patchHalf],
-				[patchHalf, -patchHalf],
-				[patchHalf, patchHalf],
-				[-patchHalf, patchHalf]
-			].map(([a, b]) =>
-				project3(x0 + a, y0 + b, surface(x0, y0) + gradX * a + gradY * b)
-			)
-		)
-	);
+		const float HEIGHT_SCALE=0.58;
+
+		float bowlHit(vec3 ro,vec3 rd) {
+			float a=HEIGHT_SCALE*dot(rd.xy,rd.xy);
+			float b=2.0*HEIGHT_SCALE*dot(ro.xy,rd.xy)-rd.z;
+			float c=HEIGHT_SCALE*dot(ro.xy,ro.xy)-ro.z;
+			float discriminant=b*b-4.0*a*c;
+			if(discriminant<0.0) return 1e4;
+			float root=sqrt(discriminant);
+			float t1=(-b-root)/(2.0*a);
+			float t2=(-b+root)/(2.0*a);
+			float t=t1>0.0?t1:t2;
+			if(t<=0.0||length((ro+rd*t).xy)>2.45) return 1e4;
+			return t;
+		}
+
+		float lineMask(float distance,float width) {
+			return 1.0-smoothstep(width,width+fwidth(distance)*1.5,distance);
+		}
+
+		void main() {
+			vec2 uv=(gl_FragCoord.xy-0.5*uResolution)/uResolution.y;
+			float yaw=uView.x;
+			float pitch=uView.y;
+			vec3 target=vec3(0.0,0.0,1.35);
+			vec3 orbit=vec3(cos(pitch)*cos(yaw),cos(pitch)*sin(yaw),sin(pitch));
+			vec3 ro=target+orbit*7.2;
+			vec3 forward=normalize(target-ro);
+			vec3 right=normalize(cross(forward,vec3(0.0,0.0,1.0)));
+			vec3 up=cross(right,forward);
+			vec3 rd=normalize(forward+0.8*uv.x*right+0.8*uv.y*up);
+			vec3 color=mix(uGrid,uBackground,0.86+0.12*smoothstep(0.8,0.15,length(uv)));
+			float nearest=1e4;
+
+			float surfaceT=bowlHit(ro,rd);
+			if(surfaceT<1e3) {
+				nearest=surfaceT;
+				vec3 p=ro+rd*surfaceT;
+				vec3 normal=normalize(vec3(-2.0*HEIGHT_SCALE*p.x,-2.0*HEIGHT_SCALE*p.y,1.0));
+				vec3 light=normalize(vec3(-0.5,0.7,0.9));
+				float diffuse=0.38+0.62*max(dot(normal,light),0.0);
+				float rim=pow(1.0-max(dot(normal,normalize(ro-p)),0.0),2.0);
+				color=uTeal*(0.12+0.15*diffuse)+uBackground*(0.67-0.12*diffuse)+uBlue*0.08*rim;
+				vec2 cells=abs(fract((p.xy+0.25)/0.5)-0.5);
+				float gridMask=smoothstep(0.47,0.49,max(cells.x,cells.y));
+				float contour=lineMask(abs(fract(p.z/0.46)-0.5),0.035);
+				color=mix(color,uGrid,0.52*gridMask);
+				color=mix(color,uBlue,0.22*contour);
+
+				vec2 delta=p.xy-uPoint;
+				float along=dot(delta,uDirection);
+				float across=abs(dot(delta,vec2(-uDirection.y,uDirection.x)));
+				float crossSection=lineMask(across,0.025)*step(abs(along),1.1);
+				color=mix(color,uBlue,crossSection);
+				float pointMask=1.0-smoothstep(0.045,0.075,length(delta));
+				color=mix(color,uInk,pointMask);
+			}
+
+			vec3 basePoint=vec3(uPoint,HEIGHT_SCALE*dot(uPoint,uPoint));
+			vec2 gradient=2.0*HEIGHT_SCALE*uPoint;
+			vec3 tangentNormal=normalize(vec3(-gradient,1.0));
+			float tangentDenom=dot(tangentNormal,rd);
+			if(abs(tangentDenom)>0.0001) {
+				float tangentT=dot(tangentNormal,basePoint-ro)/tangentDenom;
+				vec3 q=ro+rd*tangentT;
+				vec2 local=q.xy-uPoint;
+				if(tangentT>0.0&&tangentT<nearest&&max(abs(local.x),abs(local.y))<0.62) {
+					float tangentAlong=dot(local,uDirection);
+					float tangentAcross=abs(dot(local,vec2(-uDirection.y,uDirection.x)));
+					float tangentLine=lineMask(tangentAcross,0.025)*step(abs(tangentAlong),0.78);
+					color=mix(color,uViolet,0.34);
+					color=mix(color,uRose,tangentLine);
+					nearest=tangentT;
+				}
+			}
+
+			vec2 sliceNormal=vec2(-uDirection.y,uDirection.x);
+			float sliceDenom=dot(sliceNormal,rd.xy);
+			if(abs(sliceDenom)>0.0001) {
+				float sliceT=dot(sliceNormal,uPoint-ro.xy)/sliceDenom;
+				vec3 q=ro+rd*sliceT;
+				float along=dot(q.xy-uPoint,uDirection);
+				float bowlHeight=HEIGHT_SCALE*dot(q.xy,q.xy);
+				if(sliceT>0.0&&sliceT<nearest&&abs(along)<1.1&&q.z>bowlHeight-0.48&&q.z<bowlHeight+0.62) {
+					color=mix(color,uBlue,0.18);
+				}
+			}
+
+			outColor=vec4(color,1.0);
+		}
+	`;
+
+	function drawSurface() {
+		if (!surfaceRenderer) return;
+		const theme = getPlotTheme();
+		const color = (gl: WebGL2RenderingContext, name: string, value: string) =>
+			gl.uniform3fv(surfaceRenderer?.uniform(name) ?? null, cssColorToRgb(value));
+		surfaceRenderer.draw((gl) => {
+			gl.uniform2f(surfaceRenderer?.uniform('uPoint') ?? null, x0, y0);
+			gl.uniform2f(surfaceRenderer?.uniform('uDirection') ?? null, vx, vy);
+			gl.uniform2f(surfaceRenderer?.uniform('uView') ?? null, viewYaw, viewPitch);
+			color(gl, 'uBackground', theme.background);
+			color(gl, 'uGrid', theme.grid);
+			color(gl, 'uInk', theme.ink);
+			color(gl, 'uBlue', theme.blue);
+			color(gl, 'uViolet', theme.violet);
+			color(gl, 'uRose', theme.rose);
+			color(gl, 'uTeal', theme.teal);
+		});
+	}
+
+	function redrawSurface() {
+		surfaceScheduler?.request();
+	}
+
+	function attachSurface(node: HTMLCanvasElement) {
+		const created = createFullscreenShader(node, surfaceFragmentShader, { pixelRatioCap: 1.8 });
+		if (!created) return;
+		surfaceRenderer = created;
+		surfaceScheduler = createRenderScheduler(node, drawSurface);
+		window.addEventListener(THEME_CHANGE_EVENT, redrawSurface);
+		return () => {
+			window.removeEventListener(THEME_CHANGE_EVENT, redrawSurface);
+			surfaceScheduler?.destroy();
+			created.destroy();
+			if (surfaceRenderer === created) surfaceRenderer = undefined;
+			surfaceScheduler = undefined;
+		};
+	}
 
 	function beginRotation(event: PointerEvent) {
 		rotating = true;
 		lastPointerX = event.clientX;
 		lastPointerY = event.clientY;
+		redrawSurface();
 		(event.currentTarget as HTMLButtonElement).setPointerCapture(event.pointerId);
 	}
 
 	function rotateView(event: PointerEvent) {
 		if (!rotating) return;
-		viewYaw += (event.clientX - lastPointerX) * 0.45;
-		viewPitch = Math.min(52, Math.max(14, viewPitch - (event.clientY - lastPointerY) * 0.3));
+		viewYaw -= (event.clientX - lastPointerX) * 0.008;
+		viewPitch = Math.min(1.15, Math.max(0.12, viewPitch + (event.clientY - lastPointerY) * 0.006));
 		lastPointerX = event.clientX;
 		lastPointerY = event.clientY;
 	}
@@ -156,10 +237,11 @@
 	function rotateWithKeyboard(event: KeyboardEvent) {
 		if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
 		event.preventDefault();
-		if (event.key === 'ArrowLeft') viewYaw -= 5;
-		if (event.key === 'ArrowRight') viewYaw += 5;
-		if (event.key === 'ArrowUp') viewPitch = Math.min(52, viewPitch + 3);
-		if (event.key === 'ArrowDown') viewPitch = Math.max(14, viewPitch - 3);
+		if (event.key === 'ArrowLeft') viewYaw -= 0.08;
+		if (event.key === 'ArrowRight') viewYaw += 0.08;
+		if (event.key === 'ArrowUp') viewPitch = Math.min(1.15, viewPitch + 0.05);
+		if (event.key === 'ArrowDown') viewPitch = Math.max(0.12, viewPitch - 0.05);
+		redrawSurface();
 	}
 </script>
 
@@ -176,6 +258,7 @@
 				decimals={1}
 				bind:value={x0}
 				tone="violet"
+				oninput={redrawSurface}
 			/>
 			<SliderField
 				label="Point coordinate y₀"
@@ -185,6 +268,7 @@
 				decimals={1}
 				bind:value={y0}
 				tone="teal"
+				oninput={redrawSurface}
 			/>
 			<SliderField
 				label="Direction angle θ"
@@ -195,6 +279,7 @@
 				bind:value={angle}
 				hint="Rotate the blue unit vector while the point stays fixed."
 				tone="blue"
+				oninput={redrawSurface}
 			/>
 		</DemoCard>
 
@@ -204,20 +289,23 @@
 				display
 			/>
 			<p class="reading">
-				Moving in the blue direction, <Katex math="f" /> <strong>{behavior}</strong> at the
-				selected point.
+				Moving in the blue direction, <Katex math="f" /> <strong>{behavior}</strong> at the selected point.
 			</p>
 		</EquationPanel>
 	</div>
 
 	<div class="legend" aria-label="Plot legend">
-		<span><i class="swatch contour"></i>level curves of <Katex math={String.raw`f=x^2+y^2`} /></span>
+		<span><i class="swatch contour"></i>level curves of <Katex math={String.raw`f=x^2+y^2`} /></span
+		>
 		<span><i class="swatch gradient"></i>gradient</span>
 		<span><i class="swatch direction"></i>chosen direction</span>
 	</div>
 	<div class="alignment-readout" aria-live="polite">
 		<svg class="angle-glyph" viewBox="0 0 84 58" aria-hidden="true">
-			<path class="angle-arc" d={`M 61 42 A 19 19 0 0 ${Math.abs(signedAlignmentAngle) > 180 ? 1 : 0} ${42 + 19 * Math.cos((signedAlignmentAngle * Math.PI) / 180)} ${42 - 19 * Math.sin((signedAlignmentAngle * Math.PI) / 180)}`} />
+			<path
+				class="angle-arc"
+				d={`M 61 42 A 19 19 0 0 ${Math.abs(signedAlignmentAngle) > 180 ? 1 : 0} ${42 + 19 * Math.cos((signedAlignmentAngle * Math.PI) / 180)} ${42 - 19 * Math.sin((signedAlignmentAngle * Math.PI) / 180)}`}
+			/>
 			<line class="gradient-ray" x1="42" y1="42" x2="74" y2="42" />
 			<line class="direction-ray" x1="42" y1="42" x2={alignmentRay.x} y2={alignmentRay.y} />
 			<circle cx="42" cy="42" r="2.5" />
@@ -236,68 +324,94 @@
 				role="img"
 				aria-label="Circular level curves with the gradient and a chosen direction at a selected point"
 			>
-			<defs>
-				<clipPath id="gradient-direction-clip">
-					<rect x={plotLeft} y={margin.top} width={plotWidth} height={plotHeight} />
-				</clipPath>
-				<marker id="gradient-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-					<path d="M0,0 L8,4 L0,8 Z" fill="var(--color-d)" />
-				</marker>
-				<marker id="direction-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-					<path d="M0,0 L8,4 L0,8 Z" fill="var(--plot-curve)" />
-				</marker>
-			</defs>
+				<defs>
+					<clipPath id="gradient-direction-clip">
+						<rect x={plotLeft} y={margin.top} width={plotWidth} height={plotHeight} />
+					</clipPath>
+					<marker
+						id="gradient-arrow"
+						markerWidth="8"
+						markerHeight="8"
+						refX="7"
+						refY="4"
+						orient="auto"
+					>
+						<path d="M0,0 L8,4 L0,8 Z" fill="var(--color-d)" />
+					</marker>
+					<marker
+						id="direction-arrow"
+						markerWidth="8"
+						markerHeight="8"
+						refX="7"
+						refY="4"
+						orient="auto"
+					>
+						<path d="M0,0 L8,4 L0,8 Z" fill="var(--plot-curve)" />
+					</marker>
+				</defs>
 
-			{#each [-3, -2, -1, 0, 1, 2, 3] as value (value)}
-				<line class="grid" x1={sx(value)} y1={margin.top} x2={sx(value)} y2={margin.top + plotHeight} />
-				<line class="grid" x1={plotLeft} y1={sy(value)} x2={plotLeft + plotWidth} y2={sy(value)} />
-				<text class="tick" x={sx(value)} y={height - 21} text-anchor="middle">{value}</text>
-				{#if value !== 0}
-					<text class="tick" x={plotLeft - 12} y={sy(value) + 4} text-anchor="end">{value}</text>
-				{/if}
-			{/each}
+				{#each [-3, -2, -1, 0, 1, 2, 3] as value (value)}
+					<line
+						class="grid"
+						x1={sx(value)}
+						y1={margin.top}
+						x2={sx(value)}
+						y2={margin.top + plotHeight}
+					/>
+					<line
+						class="grid"
+						x1={plotLeft}
+						y1={sy(value)}
+						x2={plotLeft + plotWidth}
+						y2={sy(value)}
+					/>
+					<text class="tick" x={sx(value)} y={height - 21} text-anchor="middle">{value}</text>
+					{#if value !== 0}
+						<text class="tick" x={plotLeft - 12} y={sy(value) + 4} text-anchor="end">{value}</text>
+					{/if}
+				{/each}
 
-			<line class="axis" x1={plotLeft} y1={sy(0)} x2={plotLeft + plotWidth} y2={sy(0)} />
-			<line class="axis" x1={sx(0)} y1={margin.top} x2={sx(0)} y2={margin.top + plotHeight} />
-			<text class="axis-label" x={plotLeft + plotWidth + 16} y={sy(0) + 5}>x</text>
-			<text class="axis-label" x={plotLeft - 4} y={15}>y</text>
+				<line class="axis" x1={plotLeft} y1={sy(0)} x2={plotLeft + plotWidth} y2={sy(0)} />
+				<line class="axis" x1={sx(0)} y1={margin.top} x2={sx(0)} y2={margin.top + plotHeight} />
+				<text class="axis-label" x={plotLeft + plotWidth + 16} y={sy(0) + 5}>x</text>
+				<text class="axis-label" x={plotLeft - 4} y={15}>y</text>
 
-			<g clip-path="url(#gradient-direction-clip)">
-				{#each [0.75, 1.5, 2.25] as radius (radius)}
+				<g clip-path="url(#gradient-direction-clip)">
+					{#each [0.75, 1.5, 2.25] as radius (radius)}
+						<ellipse
+							class="contour-line"
+							cx={sx(0)}
+							cy={sy(0)}
+							rx={radius * scaleX}
+							ry={radius * scaleY}
+						/>
+					{/each}
 					<ellipse
-						class="contour-line"
+						class="selected-contour"
 						cx={sx(0)}
 						cy={sy(0)}
-						rx={radius * scaleX}
-						ry={radius * scaleY}
+						rx={selectedRadius * scaleX}
+						ry={selectedRadius * scaleY}
 					/>
-				{/each}
-				<ellipse
-					class="selected-contour"
-					cx={sx(0)}
-					cy={sy(0)}
-					rx={selectedRadius * scaleX}
-					ry={selectedRadius * scaleY}
-				/>
 
-				<line
-					class="gradient-vector"
-					x1={sx(x0)}
-					y1={sy(y0)}
-					x2={sx(x0 + 1.15 * gradUnitX)}
-					y2={sy(y0 + 1.15 * gradUnitY)}
-					marker-end="url(#gradient-arrow)"
-				/>
-				<line
-					class="direction-vector"
-					x1={sx(x0)}
-					y1={sy(y0)}
-					x2={sx(x0 + 1.15 * vx)}
-					y2={sy(y0 + 1.15 * vy)}
-					marker-end="url(#direction-arrow)"
-				/>
-				<circle class="point" cx={sx(x0)} cy={sy(y0)} r="5" />
-			</g>
+					<line
+						class="gradient-vector"
+						x1={sx(x0)}
+						y1={sy(y0)}
+						x2={sx(x0 + 1.15 * gradUnitX)}
+						y2={sy(y0 + 1.15 * gradUnitY)}
+						marker-end="url(#gradient-arrow)"
+					/>
+					<line
+						class="direction-vector"
+						x1={sx(x0)}
+						y1={sy(y0)}
+						x2={sx(x0 + 1.15 * vx)}
+						y2={sy(y0 + 1.15 * vy)}
+						marker-end="url(#direction-arrow)"
+					/>
+					<circle class="point" cx={sx(x0)} cy={sy(y0)} r="5" />
+				</g>
 			</svg>
 		</section>
 
@@ -314,50 +428,11 @@
 				onpointercancel={endRotation}
 				onkeydown={rotateWithKeyboard}
 			>
-			<svg
-				class="surface-plot"
-				viewBox="30 48 460 350"
-				role="img"
-				aria-label="A rotatable three-dimensional paraboloid with a tangent plane and vertical directional slice"
-			>
-				<polygon class="slice-plane" points={slicePlane} />
-
-				{#each surfaceGrid as value (value)}
-					<path class="surface-grid-line x-line" d={surfaceLine('x', value)} />
-					<path class="surface-grid-line y-line" d={surfaceLine('y', value)} />
-				{/each}
-
-				<line
-					class="surface-axis"
-					x1={project3(-2, 0, 0).x}
-					y1={project3(-2, 0, 0).y}
-					x2={project3(2, 0, 0).x}
-					y2={project3(2, 0, 0).y}
-				/>
-				<line
-					class="surface-axis"
-					x1={project3(0, -2, 0).x}
-					y1={project3(0, -2, 0).y}
-					x2={project3(0, 2, 0).x}
-					y2={project3(0, 2, 0).y}
-				/>
-				<line
-					class="surface-axis"
-					x1={project3(0, 0, 0).x}
-					y1={project3(0, 0, 0).y}
-					x2={project3(0, 0, 5.8).x}
-					y2={project3(0, 0, 5.8).y}
-				/>
-
-				<polygon class="tangent-plane" points={tangentPlane} />
-				<path class="slice-curve" d={sliceCurve} />
-				<path class="slice-tangent" d={tangentSlice} />
-				<circle class="surface-point" cx={surfacePoint.x} cy={surfacePoint.y} r="5" />
-
-				<text class="surface-label" x={project3(2, 0, 0).x + 5} y={project3(2, 0, 0).y + 4}>x</text>
-				<text class="surface-label" x={project3(0, 2, 0).x - 12} y={project3(0, 2, 0).y + 4}>y</text>
-				<text class="surface-label" x={project3(0, 0, 5.8).x + 7} y={project3(0, 0, 5.8).y}>z</text>
-			</svg>
+				<canvas
+					class="surface-canvas"
+					{@attach attachSurface}
+					aria-label="A GPU-rendered paraboloid with a tangent plane, a vertical directional slice, and their tangent line"
+				></canvas>
 			</button>
 			<div class="surface-key">
 				<span><i class="patch-key"></i>tangent plane</span>
@@ -587,62 +662,11 @@
 		stroke-width: 2;
 	}
 
-	.surface-grid-line {
-		fill: none;
-		stroke-width: 1.25;
-	}
-
-	.surface-grid-line.x-line {
-		stroke: color-mix(in srgb, var(--plot-tangent) 52%, var(--plot-grid));
-	}
-
-	.surface-grid-line.y-line {
-		stroke: color-mix(in srgb, var(--plot-curve) 52%, var(--plot-grid));
-	}
-
-	.surface-axis {
-		stroke: var(--color-ink-faint);
-		stroke-width: 1.2;
-	}
-
-	.slice-plane {
-		fill: color-mix(in srgb, var(--plot-curve) 9%, transparent);
-		stroke: color-mix(in srgb, var(--plot-curve) 48%, transparent);
-		stroke-width: 1.2;
-	}
-
-	.tangent-plane {
-		fill: color-mix(in srgb, var(--plot-tangent) 18%, transparent);
-		stroke: color-mix(in srgb, var(--plot-tangent) 78%, transparent);
-		stroke-width: 1.5;
-	}
-
-	.slice-curve {
-		fill: none;
-		stroke: var(--plot-curve);
-		stroke-width: 3.3;
-		stroke-linecap: round;
-	}
-
-	.slice-tangent {
-		fill: none;
-		stroke: var(--color-d);
-		stroke-width: 2.6;
-		stroke-dasharray: 7 5;
-		stroke-linecap: round;
-	}
-
-	.surface-point {
-		fill: var(--color-ink);
-		stroke: var(--plot-outline);
-		stroke-width: 2;
-	}
-
-	.surface-label {
-		fill: var(--color-ink-faint);
-		font-family: var(--font-sans);
-		font-size: 15px;
-		font-style: italic;
+	.surface-canvas {
+		display: block;
+		width: 100%;
+		aspect-ratio: 460 / 350;
+		border-radius: 0.45rem;
 	}
 
 	.surface-key {
