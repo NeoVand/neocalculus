@@ -40,19 +40,29 @@
 		out vec4 outColor;
 
 		const float HEIGHT_SCALE=0.58;
+		const float BOWL_RADIUS=2.45;
+		const float MISS=1e4;
+
+		float validBowlRoot(vec3 ro,vec3 rd,float t) {
+			if(t<=0.0) return MISS;
+			vec3 hit=ro+rd*t;
+			return length(hit.xy)<=BOWL_RADIUS?t:MISS;
+		}
 
 		float bowlHit(vec3 ro,vec3 rd) {
 			float a=HEIGHT_SCALE*dot(rd.xy,rd.xy);
 			float b=2.0*HEIGHT_SCALE*dot(ro.xy,rd.xy)-rd.z;
 			float c=HEIGHT_SCALE*dot(ro.xy,ro.xy)-ro.z;
+			if(abs(a)<0.00001) {
+				if(abs(b)<0.00001) return MISS;
+				return validBowlRoot(ro,rd,-c/b);
+			}
 			float discriminant=b*b-4.0*a*c;
-			if(discriminant<0.0) return 1e4;
+			if(discriminant<0.0) return MISS;
 			float root=sqrt(discriminant);
 			float t1=(-b-root)/(2.0*a);
 			float t2=(-b+root)/(2.0*a);
-			float t=t1>0.0?t1:t2;
-			if(t<=0.0||length((ro+rd*t).xy)>2.45) return 1e4;
-			return t;
+			return min(validBowlRoot(ro,rd,t1),validBowlRoot(ro,rd,t2));
 		}
 
 		float lineMask(float distance,float width) {
