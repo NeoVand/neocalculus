@@ -7,6 +7,7 @@
 	import LookingAhead from '$lib/components/LookingAhead.svelte';
 	import ComplexMappingLab from '$lib/components/demos/ComplexMappingLab.svelte';
 	import ComplexContourLab from '$lib/components/demos/ComplexContourLab.svelte';
+	import ConformalDerivativeLab from '$lib/components/demos/ConformalDerivativeLab.svelte';
 	import { reveal } from '$lib/utils/scroll';
 	const r = String.raw;
 </script>
@@ -97,49 +98,9 @@
 		<div id="complex-derivative-picture" use:reveal>
 			<Figure
 				number="10.2"
-				caption="A nonzero complex derivative acts locally as one rotation and one uniform scaling. The horizontal and vertical test directions must agree on the same complex multiplier."
+				caption="Needham’s amplitwist: at a holomorphic point with nonzero derivative, a sufficiently small neighborhood undergoes one amplification and one twist. Shrink ε to watch two directional quotients converge; compare reflection and unequal stretching, where they never agree."
 			>
-				<div
-					class="derivative-picture"
-					role="img"
-					aria-label="A small orthogonal cross mapped to a rotated and uniformly scaled cross"
-				>
-					<div class="plane">
-						<span class="plane-label">near z</span><svg viewBox="0 0 260 210"
-							><circle class="micro" cx="130" cy="108" r="58" /><line
-								class="h blue"
-								x1="56"
-								x2="204"
-								y1="108"
-								y2="108"
-							/><line class="v amber" x1="130" x2="130" y1="34" y2="182" /><circle
-								class="origin"
-								cx="130"
-								cy="108"
-								r="5"
-							/><text x="192" y="98">h</text><text x="140" y="47">ih</text></svg
-						>
-					</div>
-					<div class="multiplier"><Katex math={r`\times\ f'(z)`} /><span>rotate + scale</span></div>
-					<div class="plane">
-						<span class="plane-label">near f(z)</span><svg viewBox="0 0 260 210"
-							><g transform="rotate(-32 130 108) scale(1.18) translate(-20 -16)"
-								><circle class="micro mapped" cx="130" cy="108" r="58" /><line
-									class="h blue"
-									x1="56"
-									x2="204"
-									y1="108"
-									y2="108"
-								/><line class="v amber" x1="130" x2="130" y1="34" y2="182" /><circle
-									class="origin"
-									cx="130"
-									cy="108"
-									r="5"
-								/></g
-							></svg
-						>
-					</div>
-				</div>
+				<ConformalDerivativeLab />
 			</Figure>
 		</div>
 
@@ -323,86 +284,3 @@
 		>
 	</div>
 </section>
-
-<style>
-	.derivative-picture {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-		align-items: center;
-		gap: 1rem;
-	}
-	.plane {
-		position: relative;
-		border: 1px solid var(--color-border-light);
-		border-radius: 16px;
-		background: var(--plot-background);
-		overflow: hidden;
-	}
-	.plane svg {
-		display: block;
-		width: 100%;
-		height: auto;
-	}
-	.plane-label {
-		position: absolute;
-		top: 0.75rem;
-		left: 0.9rem;
-		color: var(--plot-muted);
-		font: 800 0.68rem/1 var(--font-sans);
-		letter-spacing: 0.09em;
-		text-transform: uppercase;
-	}
-	.micro {
-		fill: color-mix(in srgb, var(--plot-violet) 5%, transparent);
-		stroke: var(--plot-violet);
-		stroke-width: 1.5;
-		stroke-dasharray: 4 5;
-	}
-	.micro.mapped {
-		stroke: var(--plot-teal);
-	}
-	.h,
-	.v {
-		stroke-width: 3;
-		stroke-linecap: round;
-	}
-	.blue {
-		stroke: var(--plot-blue);
-	}
-	.amber {
-		stroke: var(--plot-amber);
-	}
-	.origin {
-		fill: var(--color-ink);
-	}
-	.plane text {
-		fill: var(--plot-muted);
-		font: 700 12px var(--font-sans);
-	}
-	.multiplier {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 0.25rem;
-		color: var(--plot-violet);
-	}
-	.multiplier span {
-		color: var(--color-ink-light);
-		font: 700 0.68rem/1.2 var(--font-sans);
-		white-space: nowrap;
-	}
-	@media (max-width: 640px) {
-		.derivative-picture {
-			grid-template-columns: 1fr;
-			gap: 0.6rem;
-		}
-		.multiplier {
-			padding: 0.15rem;
-		}
-		.plane {
-			max-width: 19rem;
-			width: 100%;
-			margin: auto;
-		}
-	}
-</style>
