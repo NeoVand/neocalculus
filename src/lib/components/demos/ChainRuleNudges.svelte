@@ -3,26 +3,115 @@
 	import DemoHeader from '$lib/components/demos/DemoHeader.svelte';
 	import SliderField from '$lib/components/demos/SliderField.svelte';
 
+	type FunctionKey = 'scale' | 'square' | 'sine';
+	type FunctionSpec = {
+		key: FunctionKey;
+		name: string;
+		apply: (value: number) => number;
+		derivative: (value: number) => number;
+		expressionText: (variable: string) => string;
+		expressionMath: (variable: string) => string;
+		derivativeText: (variable: string) => string;
+		derivativeMath: (variable: string) => string;
+	};
+
+	const functions: Record<FunctionKey, FunctionSpec> = {
+		scale: {
+			key: 'scale',
+			name: 'Scale by 2',
+			apply: (value) => 2 * value,
+			derivative: () => 2,
+			expressionText: (variable) => `2${variable}`,
+			expressionMath: (variable) => `2${variable}`,
+			derivativeText: () => '2',
+			derivativeMath: () => '2'
+		},
+		square: {
+			key: 'square',
+			name: 'Square',
+			apply: (value) => value * value,
+			derivative: (value) => 2 * value,
+			expressionText: (variable) => `${variable}²`,
+			expressionMath: (variable) => `(${variable})^2`,
+			derivativeText: (variable) => `2${variable}`,
+			derivativeMath: (variable) => `2${variable}`
+		},
+		sine: {
+			key: 'sine',
+			name: 'Sine',
+			apply: Math.sin,
+			derivative: Math.cos,
+			expressionText: (variable) => `sin ${variable}`,
+			expressionMath: (variable) => `\\sin(${variable})`,
+			derivativeText: (variable) => `cos ${variable}`,
+			derivativeMath: (variable) => `\\cos(${variable})`
+		}
+	};
+
+	const functionChoices = Object.values(functions);
 	const d = 0.1;
+	const xMin = 0.3;
+	const xMax = 1.15;
 	const lineLeft = 126;
 	const lineRight = 824;
-	const domainMin = -0.15;
-	const domainMax = 1.75;
 	const laneX = 76;
 	const laneU = 188;
 	const laneY = 300;
-	const ticks = [0, 0.5, 1, 1.5];
 
 	let x = $state(0.76);
-	let u = $derived(x * x);
-	let y = $derived(Math.sin(u));
-	let innerSlope = $derived(2 * x);
-	let outerSlope = $derived(Math.cos(u));
+	let innerKey = $state<FunctionKey>('scale');
+	let outerKey = $state<FunctionKey>('square');
+	let innerFunction = $derived(functions[innerKey]);
+	let outerFunction = $derived(functions[outerKey]);
+	let u = $derived(innerFunction.apply(x));
+	let y = $derived(outerFunction.apply(u));
+	let innerSlope = $derived(innerFunction.derivative(x));
+	let outerSlope = $derived(outerFunction.derivative(u));
 	let du = $derived(innerSlope * d);
 	let dy = $derived(outerSlope * du);
+	let innerExpressionText = $derived(innerFunction.expressionText('x'));
+	let outerExpressionText = $derived(outerFunction.expressionText('u'));
+	let innerDerivativeText = $derived(innerFunction.derivativeText('x'));
+	let outerDerivativeText = $derived(outerFunction.derivativeText('u'));
+	let innerDerivativeMath = $derived(innerFunction.derivativeMath('x'));
+	let outerDerivativeMath = $derived(outerFunction.derivativeMath('u'));
+	let innerNudgeMath = $derived(`${innerDerivativeMath}\\,d`);
+	let outputNudgeMath = $derived(`(${outerDerivativeMath})(${innerDerivativeMath})\\,d`);
+	let compositionMath = $derived(outerFunction.expressionMath(innerFunction.expressionMath('x')));
+
+	function makeDomain(inner: FunctionSpec, outer: FunctionSpec) {
+		const values = [0];
+		for (let index = 0; index <= 80; index += 1) {
+			const input = xMin + ((xMax - xMin) * index) / 80;
+			const middle = inner.apply(input);
+			const innerChange = inner.derivative(input) * d;
+			const output = outer.apply(middle);
+			const outerChange = outer.derivative(middle) * innerChange;
+			values.push(input, input + d, middle, middle + innerChange, output, output + outerChange);
+		}
+		const minimum = Math.min(...values);
+		const maximum = Math.max(...values);
+		const span = Math.max(1.35, maximum - minimum);
+		return {
+			min: minimum - span * 0.09,
+			max: maximum + span * 0.13
+		};
+	}
+
+	let domain = $derived(makeDomain(innerFunction, outerFunction));
+	let tickStep = $derived(domain.max - domain.min > 2.8 ? 1 : 0.5);
+	let ticks = $derived(
+		Array.from({ length: Math.floor(domain.max / tickStep) + 1 }, (_, index) => index * tickStep)
+	);
 
 	function scale(value: number) {
-		return lineLeft + ((value - domainMin) / (domainMax - domainMin)) * (lineRight - lineLeft);
+		return lineLeft + ((value - domain.min) / (domain.max - domain.min)) * (lineRight - lineLeft);
+	}
+
+	function swapFunctions() {
+		const previousInner = innerKey;
+		innerKey = outerKey;
+		outerKey = previousInner;
 	}
 
 	let x0 = $derived(scale(x));
@@ -44,12 +133,49 @@
 <div id="chain-rule-nudges" class="chain-rule-nudges">
 	<DemoHeader title="Explore: follow one nudge through a composition" />
 
+	<div class="function-composer" aria-label="Choose the two functions in the composition">
+		<div class="composer-stage">
+			<label for="chain-inner-function">Inner function</label>
+			<select id="chain-inner-function" bind:value={innerKey}>
+				{#each functionChoices as choice (choice.key)}
+					<option value={choice.key}>{choice.name}</option>
+				{/each}
+			</select>
+		</div>
+
+		<button
+			class="swap-button"
+			type="button"
+			onclick={swapFunctions}
+			aria-label="Swap the inner and outer functions"
+			title="Swap the order"
+		>
+			<svg viewBox="0 0 24 24" aria-hidden="true">
+				<path d="M7 7h11m0 0-3-3m3 3-3 3M17 17H6m0 0 3 3m-3-3 3-3"></path>
+			</svg>
+		</button>
+
+		<div class="composer-stage">
+			<label for="chain-outer-function">Outer function</label>
+			<select id="chain-outer-function" bind:value={outerKey}>
+				{#each functionChoices as choice (choice.key)}
+					<option value={choice.key}>{choice.name}</option>
+				{/each}
+			</select>
+		</div>
+
+		<div class="composition-readout">
+			<span>composition</span>
+			<Katex math={`y=${compositionMath}`} />
+		</div>
+	</div>
+
 	<div class="visual-shell">
 		<svg
 			class="nudge-diagram"
 			viewBox="0 0 920 374"
 			role="img"
-			aria-label="Three linked number lines show an input nudge d becoming 2x d under the square function, then cos of u times 2x d under the sine function."
+			aria-label="Three linked number lines show one small input nudge passing through the selected inner and outer functions."
 		>
 			<defs>
 				<linearGradient id="chainInnerRibbon" x1="0" y1="0" x2="0" y2="1">
@@ -116,16 +242,16 @@
 			<text class="lane-kicker" x="34" y={laneX - 16}>INPUT</text>
 			<text class="lane-label" x="34" y={laneX + 8}>x</text>
 			<text class="lane-kicker" x="34" y={laneU - 16}>INNER</text>
-			<text class="lane-label" x="34" y={laneU + 8}>u = x²</text>
+			<text class="lane-label" x="34" y={laneU + 8}>u = {innerExpressionText}</text>
 			<text class="lane-kicker" x="34" y={laneY - 16}>OUTER</text>
-			<text class="lane-label" x="34" y={laneY + 8}>y = sin u</text>
+			<text class="lane-label" x="34" y={laneY + 8}>y = {outerExpressionText}</text>
 
 			<text class="nudge-name nudge-name-blue" x="884" y={laneX - 13} text-anchor="end">d</text>
 			<text class="nudge-name nudge-name-green" x="884" y={laneU - 13} text-anchor="end">
-				du = 2x·d
+				du = {innerDerivativeText}·d
 			</text>
 			<text class="nudge-name nudge-name-violet" x="884" y={laneY - 13} text-anchor="end">
-				dy = cos(u)·du
+				dy = {outerDerivativeText}·du
 			</text>
 
 			<g class="nudge nudge-input">
@@ -171,11 +297,13 @@
 			</g>
 
 			<g class="stage-label stage-label-inner">
-				<text x="846" y="131" text-anchor="end">stretch by 2x = {innerSlope.toFixed(2)}</text>
+				<text x="846" y="131" text-anchor="end">
+					stretch by {innerDerivativeText} = {innerSlope.toFixed(2)}
+				</text>
 			</g>
 			<g class="stage-label stage-label-outer">
 				<text x="846" y="243" text-anchor="end">
-					stretch by cos(u) = {outerSlope.toFixed(2)}
+					stretch by {outerDerivativeText} = {outerSlope.toFixed(2)}
 				</text>
 			</g>
 
@@ -194,22 +322,22 @@
 			<div class="flow-step flow-input"><Katex math="d" /></div>
 			<div class="flow-operator">
 				<span>inner stretch</span>
-				<Katex math={String.raw`\times,2x`} />
+				<Katex math={`\\times\\,${innerDerivativeMath}`} />
 			</div>
-			<div class="flow-step flow-inner"><Katex math={String.raw`2x\,d`} /></div>
+			<div class="flow-step flow-inner"><Katex math={innerNudgeMath} /></div>
 			<div class="flow-operator">
 				<span>outer stretch</span>
-				<Katex math={String.raw`\times,\cos(x^2)`} />
+				<Katex math={`\\times\\,${outerDerivativeMath}`} />
 			</div>
 			<div class="flow-step flow-output">
-				<Katex math={String.raw`\cos(x^2)\,2x\,d`} />
+				<Katex math={outputNudgeMath} />
 			</div>
 		</div>
 
 		<div class="live-conclusion">
 			<span>overall local stretch</span>
 			<Katex
-				math={String.raw`\dfrac{dy}{dx}=\cos(x^2)\cdot 2x\approx ${fullDerivative.toFixed(2)}`}
+				math={`\\dfrac{dy}{dx}=(${outerDerivativeMath})(${innerDerivativeMath})\\approx ${fullDerivative.toFixed(2)}`}
 			/>
 		</div>
 	</div>
@@ -217,8 +345,8 @@
 	<div class="control-row">
 		<SliderField
 			label="Move the starting input x"
-			min={0.3}
-			max={1.15}
+			min={xMin}
+			max={xMax}
 			step={0.01}
 			decimals={2}
 			tone="blue"
@@ -231,6 +359,99 @@
 <style>
 	.chain-rule-nudges {
 		width: 100%;
+	}
+
+	.function-composer {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) minmax(9.5rem, auto);
+		align-items: end;
+		gap: 0.7rem;
+		margin-bottom: 0.78rem;
+		padding: 0.15rem 0.12rem 0.72rem;
+		border-bottom: 1px solid var(--color-border-light);
+	}
+
+	.composer-stage {
+		display: grid;
+		gap: 0.3rem;
+		min-width: 0;
+	}
+
+	.composer-stage label,
+	.composition-readout span {
+		font-family: var(--font-sans);
+		font-size: 0.63rem;
+		font-weight: 700;
+		letter-spacing: 0.085em;
+		text-transform: uppercase;
+		color: var(--color-ink-faint);
+	}
+
+	.composer-stage select {
+		width: 100%;
+		min-height: 2.15rem;
+		padding: 0.34rem 1.8rem 0.34rem 0.62rem;
+		border: 1px solid var(--color-border);
+		border-radius: 9px;
+		background: var(--color-surface-raised);
+		color: var(--color-ink);
+		font-family: var(--font-sans);
+		font-size: 0.78rem;
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	.composer-stage select:focus-visible,
+	.swap-button:focus-visible {
+		outline: 2px solid var(--color-d);
+		outline-offset: 2px;
+	}
+
+	.swap-button {
+		display: grid;
+		place-items: center;
+		width: 2.15rem;
+		height: 2.15rem;
+		padding: 0;
+		border: 1px solid var(--color-border);
+		border-radius: 50%;
+		background: transparent;
+		color: var(--color-ink-light);
+		cursor: pointer;
+		transition:
+			color 160ms ease,
+			border-color 160ms ease,
+			background 160ms ease;
+	}
+
+	.swap-button:hover {
+		border-color: var(--color-d);
+		background: var(--color-d-soft);
+		color: var(--color-d);
+	}
+
+	.swap-button svg {
+		width: 1.05rem;
+		height: 1.05rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.7;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.composition-readout {
+		display: grid;
+		justify-items: end;
+		gap: 0.28rem;
+		min-width: 0;
+		padding-bottom: 0.34rem;
+		color: var(--color-d);
+		white-space: nowrap;
+	}
+
+	.composition-readout :global(.katex) {
+		font-size: 0.92em;
 	}
 
 	.visual-shell {
@@ -547,6 +768,17 @@
 	}
 
 	@media (max-width: 700px) {
+		.function-composer {
+			grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+			gap: 0.55rem;
+		}
+
+		.composition-readout {
+			grid-column: 1 / -1;
+			justify-items: center;
+			padding: 0.15rem 0 0;
+		}
+
 		.visual-shell {
 			border-radius: 13px;
 		}

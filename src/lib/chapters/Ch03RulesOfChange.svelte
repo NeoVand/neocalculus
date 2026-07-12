@@ -210,7 +210,7 @@
 		<div use:reveal>
 			<Figure
 				number="3.1"
-				caption="One first-order nudge passes through two local stretches. The inner function turns d into 2x d; the outer function then scales that result by cos(x²)."
+				caption="One first-order nudge passes through two local stretches. Change either function—or reverse their order—and compare how the intermediate and final nudges respond."
 			>
 				<ChainRuleNudges />
 			</Figure>
