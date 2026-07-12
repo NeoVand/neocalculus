@@ -103,7 +103,9 @@
 			.join(' ')
 	);
 	const currentIndex = $derived(Math.min(sampleCount, Math.floor(progress * sampleCount)));
-	const current = $derived(samples[currentIndex]);
+	const current = $derived(
+		samples[currentIndex] ?? samples[0] ?? { z: { re: 0, im: 0 }, w: { re: 0, im: 0 }, angle: 0 }
+	);
 	const functionLabel = $derived(
 		kind === 'quadratic'
 			? 'f(z) = z² − 1'

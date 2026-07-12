@@ -45,8 +45,10 @@
 	const currentIndex = $derived(
 			Math.min(samples.length - 1, Math.floor(progress * (samples.length - 1)))
 		),
-		current = $derived(samples[currentIndex]),
-		total = $derived(samples[samples.length - 1].sum);
+		current = $derived(
+			samples[currentIndex] ?? samples[0] ?? { z: { re: 0, im: 0 }, sum: { re: 0, im: 0 } }
+		),
+		total = $derived(samples[samples.length - 1]?.sum ?? { re: 0, im: 0 });
 	const sx = (p: typeof left, v: number) => p.cx + p.s * v,
 		sy = (p: typeof left, v: number) => p.cy - p.s * v;
 	const contourPath = $derived(
