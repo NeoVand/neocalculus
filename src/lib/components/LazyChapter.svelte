@@ -11,10 +11,11 @@
 		chapterNumber: string;
 		title: string;
 		preview: string;
+		anchors?: string[];
 		load: () => Promise<ChapterModule>;
 	}
 
-	let { id, chapterNumber, title, preview, load }: Props = $props();
+	let { id, chapterNumber, title, preview, anchors = [], load }: Props = $props();
 
 	let started = $state(false);
 	let modulePromise = $state<Promise<ChapterModule> | null>(null);
@@ -28,7 +29,7 @@
 		if (!targetId) return;
 		// Only the chapter named by the hash may correct its own placeholder position.
 		// Without this guard, every later lazy chapter load re-scrolls to an older selected chapter.
-		if (targetId !== id) return;
+		if (targetId !== id && !anchors.includes(targetId)) return;
 
 		const target = document.getElementById(targetId);
 		if (target) {
@@ -67,7 +68,7 @@
 
 		const isNearViewportOrTargeted = () => {
 			const targetHash = decodeURIComponent(window.location.hash.slice(1));
-			if (targetHash === id) return true;
+			if (targetHash === id || anchors.includes(targetHash)) return true;
 
 			const rect = target.getBoundingClientRect();
 			return rect.top <= window.innerHeight + 800 && rect.bottom >= -800;

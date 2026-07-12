@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./screenshot.png" alt="Neocalculus — an interactive calculus book with animated curves and a ten-chapter table of contents" width="100%" />
+  <img src="./screenshot.png" alt="Neocalculus — an interactive calculus book with animated curves and an eleven-chapter table of contents" width="100%" />
 </p>
 
 <h1 align="center">Neocalculus</h1>
@@ -32,7 +32,7 @@ This is not a conventional textbook transferred onto a screen. It is a book desi
 - **An infinitesimal-first narrative.** Smoothness and first-order change provide the connective tissue from single-variable calculus to differential forms.
 - **Interactive figures with a purpose.** Sliders, movable points, vector fields, surfaces, and numerical experiments turn passive diagrams into mathematical objects you can interrogate.
 - **One visual language.** Curves, tangents, points, solutions, and errors keep consistent semantic colors throughout the book.
-- **A continuous path.** Ten chapters build from functions and local linearity to gradients, Jacobians, vector calculus, and Stokes-style unification.
+- **A continuous path.** Eleven chapters build from functions and local linearity to gradients, complex analysis, and Stokes-style unification.
 
 ## The journey
 

@@ -57,7 +57,7 @@
 	<meta property="og:image:height" content="630" />
 	<meta
 		property="og:image:alt"
-		content="The Neocalculus interactive textbook, with flowing curves and its ten-chapter table of contents"
+		content="The Neocalculus interactive textbook, with flowing curves and its eleven-chapter table of contents"
 	/>
 
 	<meta name="twitter:card" content="summary_large_image" />
@@ -66,7 +66,7 @@
 	<meta name="twitter:image" content={socialImageUrl} />
 	<meta
 		name="twitter:image:alt"
-		content="The Neocalculus interactive textbook, with flowing curves and its ten-chapter table of contents"
+		content="The Neocalculus interactive textbook, with flowing curves and its eleven-chapter table of contents"
 	/>
 </svelte:head>
 

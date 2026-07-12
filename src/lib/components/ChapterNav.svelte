@@ -135,7 +135,7 @@
 	<nav class="toc-card" aria-label="Table of contents">
 		<div class="toc-card-head">
 			<h3>Table of Contents</h3>
-			<p>Ten chapters. Jump directly to any chapter.</p>
+			<p>Eleven chapters. Jump directly to any chapter.</p>
 		</div>
 
 		<ol>
@@ -169,20 +169,44 @@
 				aria-expanded={!railCollapsed}
 			>
 				<span class="toc-rail-collapse-icon-wrap" aria-hidden="true">
-					<svg class="toc-rail-collapse-icon toc-rail-collapse-icon-list" viewBox="0 0 16 16" fill="none">
+					<svg
+						class="toc-rail-collapse-icon toc-rail-collapse-icon-list"
+						viewBox="0 0 16 16"
+						fill="none"
+					>
 						<circle cx="2.6" cy="3.8" r="1" fill="currentColor"></circle>
 						<circle cx="2.6" cy="8" r="1" fill="currentColor"></circle>
 						<circle cx="2.6" cy="12.2" r="1" fill="currentColor"></circle>
-						<path d="M5 3.8H13M5 8H13M5 12.2H13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path>
+						<path
+							d="M5 3.8H13M5 8H13M5 12.2H13"
+							stroke="currentColor"
+							stroke-width="1.4"
+							stroke-linecap="round"
+						></path>
 					</svg>
-					<svg class="toc-rail-collapse-icon toc-rail-collapse-icon-close" viewBox="0 0 16 16" fill="none">
-						<path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+					<svg
+						class="toc-rail-collapse-icon toc-rail-collapse-icon-close"
+						viewBox="0 0 16 16"
+						fill="none"
+					>
+						<path
+							d="M4 4L12 12M12 4L4 12"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+						></path>
 					</svg>
 				</span>
 			</button>
 		</header>
 		<div class="toc-rail-body" aria-hidden={railCollapsed}>
-			<div class="toc-rail-meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={progressPercent}>
+			<div
+				class="toc-rail-meter"
+				role="progressbar"
+				aria-valuemin="0"
+				aria-valuemax="100"
+				aria-valuenow={progressPercent}
+			>
 				<div class="toc-rail-meter-fill" style={`width: ${progressPercent}%`}></div>
 			</div>
 			<ol>
@@ -219,13 +243,24 @@
 {/if}
 
 {#if mode === 'floating' && isPastHero && isOpen}
-	<button class="toc-mobile-backdrop" type="button" aria-label="Close chapter navigator" onclick={() => (isOpen = false)}></button>
+	<button
+		class="toc-mobile-backdrop"
+		type="button"
+		aria-label="Close chapter navigator"
+		onclick={() => (isOpen = false)}
+	></button>
 	<nav class="toc-mobile-drawer" aria-label="Chapter navigator drawer">
 		<header>
 			<p class="toc-card-eyebrow">Chapter Navigator</p>
 			<strong>{progressText}</strong>
 		</header>
-		<div class="toc-rail-meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={progressPercent}>
+		<div
+			class="toc-rail-meter"
+			role="progressbar"
+			aria-valuemin="0"
+			aria-valuemax="100"
+			aria-valuenow={progressPercent}
+		>
 			<div class="toc-rail-meter-fill" style={`width: ${progressPercent}%`}></div>
 		</div>
 		<ol>
@@ -255,7 +290,11 @@
 		border: 1px solid color-mix(in srgb, var(--color-border) 82%, var(--plot-blue) 18%);
 		border-radius: 0.9rem;
 		background:
-			radial-gradient(circle at 90% 6%, color-mix(in srgb, var(--plot-blue) 8%, transparent), transparent 36%),
+			radial-gradient(
+				circle at 90% 6%,
+				color-mix(in srgb, var(--plot-blue) 8%, transparent),
+				transparent 36%
+			),
 			linear-gradient(165deg, var(--color-surface-raised) 0%, var(--color-surface) 100%);
 		text-align: left;
 		animation: float-down 1.2s var(--ease-out-expo);
@@ -392,7 +431,11 @@
 		border-radius: 0.95rem;
 		background:
 			radial-gradient(circle at 94% 6%, var(--color-d-glow), transparent 45%),
-			linear-gradient(172deg, color-mix(in srgb, var(--color-surface-raised) 97%, transparent), color-mix(in srgb, var(--color-surface) 95%, transparent));
+			linear-gradient(
+				172deg,
+				color-mix(in srgb, var(--color-surface-raised) 97%, transparent),
+				color-mix(in srgb, var(--color-surface) 95%, transparent)
+			);
 		box-shadow: 0 14px 30px var(--color-shadow);
 		backdrop-filter: blur(2px);
 		overflow: clip;
@@ -715,5 +758,4 @@
 	.toc-mobile-drawer li.active .toc-title {
 		color: var(--color-d);
 	}
-
 </style>

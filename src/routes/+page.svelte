@@ -66,6 +66,12 @@
 		{
 			id: 'ch10',
 			number: '10',
+			title: 'Complex Analysis: Calculus in the Plane',
+			subtitle: 'Complex functions, derivatives, and contour integrals'
+		},
+		{
+			id: 'ch11',
+			number: '11',
 			title: 'Differential Forms and Unification',
 			subtitle: 'Exterior derivative and Stokes unification'
 		}
@@ -196,6 +202,14 @@
 	<LazyChapter
 		id="ch10"
 		chapterNumber="10"
+		title="Complex Analysis: Calculus in the Plane"
+		preview="Complex functions reshape the plane; complex derivatives and contour integrals reveal a rigid geometry."
+		anchors={['complex-mapping-lab', 'complex-derivative-picture', 'complex-contour-lab']}
+		load={() => import('$lib/chapters/Ch10ComplexAnalysis.svelte')}
+	/>
+	<LazyChapter
+		id="ch11"
+		chapterNumber="11"
 		title="Differential Forms and Unification"
 		preview="Exterior derivative, Stokes-style unification, and topological scope notes."
 		load={() => import('$lib/chapters/Ch10LanguageOfForms.svelte')}

@@ -19,7 +19,9 @@
 			<span class="chapter-number">Chapter 9</span>
 			<h2 class="chapter-title">Multivariable and Vector Calculus</h2>
 			<div class="chapter-epigraph">
-				<blockquote>“When an input can move in many directions, what replaces a single slope?”</blockquote>
+				<blockquote>
+					“When an input can move in many directions, what replaces a single slope?”
+				</blockquote>
 				<p class="epigraph-attr">The question behind the multivariable derivative</p>
 			</div>
 			<hr class="chapter-divider" />
@@ -27,14 +29,15 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				A height map assigns an altitude to every point <Katex math={r`(x,y)`} /> on a map. At one
-				location you can walk east, north, or in any diagonal direction. The altitude may change at a
-				different rate along each path. One number can no longer describe every possible response.
+				A height map assigns an altitude to every point <Katex math={r`(x,y)`} /> on a map. At one location
+				you can walk east, north, or in any diagonal direction. The altitude may change at a different
+				rate along each path. One number can no longer describe every possible response.
 			</p>
 			<p>
 				The replacement is a <strong>linear map</strong>. It accepts a small change in all input
 				coordinates at once and returns the corresponding first-order change in the output. Partial
-				derivatives, gradients, and Jacobian matrices are different ways of reading that one local map.
+				derivatives, gradients, and Jacobian matrices are different ways of reading that one local
+				map.
 			</p>
 		</div>
 
@@ -43,8 +46,8 @@
 			<p>
 				A scalar-valued function of two variables has the form
 				<Katex math={r`f:\mathbb R^2\to\mathbb R`} />. Its graph is a surface
-				<Katex math={r`z=f(x,y)`} />. A second useful picture is a <strong>level curve</strong>:
-				the set of points where <Katex math="f" /> has one fixed value.
+				<Katex math={r`z=f(x,y)`} />. A second useful picture is a <strong>level curve</strong>: the
+				set of points where <Katex math="f" /> has one fixed value.
 			</p>
 			<p>
 				The partial derivative <Katex math={r`f_x`} /> measures change in the
@@ -68,24 +71,19 @@
 			</p>
 
 			<h3>The derivative is a linear map</h3>
-			<p>
-				For first-order changes in two coordinates, use the infinitesimal neighborhood
-			</p>
+			<p>For first-order changes in two coordinates, use the infinitesimal neighborhood</p>
 		</div>
 
 		<div class="key-equation" use:reveal>
-			<Katex
-				math={r`D(2)=\{(d_1,d_2):d_i d_j=0\text{ for every }i,j\in\{1,2\}\}`}
-				display
-			/>
+			<Katex math={r`D(2)=\{(d_1,d_2):d_i d_j=0\text{ for every }i,j\in\{1,2\}\}`} display />
 		</div>
 
 		<div class="neo-prose" use:reveal>
 			<p>
 				Thus <Katex math={r`d_1^2=d_1d_2=d_2^2=0`} />. This is not merely the union of the two
-				coordinate axes. If <Katex math={r`d^2=0`} /> and <Katex math={r`\mathbf v=(v_1,v_2)`} /> is
-				an ordinary vector, then <Katex math={r`(dv_1,dv_2)\in D(2)`} /> describes a diagonal
-				first-order motion.
+				coordinate axes. If <Katex math={r`d^2=0`} /> and <Katex math={r`\mathbf v=(v_1,v_2)`} /> is an
+				ordinary vector, then <Katex math={r`(dv_1,dv_2)\in D(2)`} /> describes a diagonal first-order
+				motion.
 			</p>
 			<p>
 				The multivariable Kock–Lawvere principle says that a smooth scalar function has a unique
@@ -94,10 +92,7 @@
 		</div>
 
 		<div class="key-equation" use:reveal>
-			<Katex
-				math={r`f(x+d_1,y+d_2)=f(x,y)+f_x(x,y)d_1+f_y(x,y)d_2`}
-				display
-			/>
+			<Katex math={r`f(x+d_1,y+d_2)=f(x,y)+f_x(x,y)d_1+f_y(x,y)d_2`} display />
 		</div>
 
 		<div class="neo-prose" use:reveal>
@@ -135,9 +130,9 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				For example, an ordinary move <Katex math={r`(h,k)=(0.02,-0.01)`} /> predicts an output
-				change of <Katex math={r`4(0.02)-0.01=0.07`} />. This is an approximation because the move is
-				an ordinary real vector, not an element of <Katex math={r`D(2)`} />.
+				For example, an ordinary move <Katex math={r`(h,k)=(0.02,-0.01)`} /> predicts an output change
+				of <Katex math={r`4(0.02)-0.01=0.07`} />. This is an approximation because the move is an
+				ordinary real vector, not an element of <Katex math={r`D(2)`} />.
 			</p>
 		</div>
 
@@ -162,16 +157,16 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				If <Katex math={r`\mathbf v=(v_1,v_2)`} /> is a unit vector, the rate of change in that
-				direction is
+				If <Katex math={r`\mathbf v=(v_1,v_2)`} /> is a unit vector, the rate of change in that direction
+				is
 				<Katex math={r`D_{\mathbf v}f=\nabla f\cdot\mathbf v`} />. This is the same linear map as
 				before, now written as a dot product.
 			</p>
 			<p>
-				Use the explorer below. Keep the point fixed and rotate the blue direction. The left view looks
-				down on the level curves; the right view lifts the same data onto the surface. Watch the vertical
-				blue plane cut out a curve on the bowl. At which angle is that cross-section steepest at the marked
-				point? At which angles is its tangent horizontal?
+				Use the explorer below. Keep the point fixed and rotate the blue direction. The left view
+				looks down on the level curves; the right view lifts the same data onto the surface. Watch
+				the vertical blue plane cut out a curve on the bowl. At which angle is that cross-section
+				steepest at the marked point? At which angles is its tangent horizontal?
 			</p>
 		</div>
 
@@ -186,26 +181,26 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				<strong>Takeaway.</strong> The directional derivative is largest when the chosen unit vector
-				points with the gradient, smallest when it points against the gradient, and zero when it is
-				perpendicular to the gradient. In the 3D view, these are exactly the steepest upward, steepest
-				downward, and horizontal tangent lines among all vertical cross-sections through the point.
+				<strong>Takeaway.</strong> The directional derivative is largest when the chosen unit vector points
+				with the gradient, smallest when it points against the gradient, and zero when it is perpendicular
+				to the gradient. In the 3D view, these are exactly the steepest upward, steepest downward, and
+				horizontal tangent lines among all vertical cross-sections through the point.
 			</p>
 			<p>
 				The geometry follows from two short facts. First,
-				<Katex math={r`\nabla f\cdot\mathbf v\le\|\nabla f\|`} /> for every unit vector, with
-				equality when the vectors point together. Second, if a curve <Katex math={r`\gamma(t)`} /> lies
-				on a level set, then <Katex math={r`f(\gamma(t))`} /> is constant. The chain rule gives
-				<Katex math={r`\nabla f(\gamma(t))\cdot\gamma'(t)=0`} />, so the gradient is perpendicular to
-				the curve’s tangent direction.
+				<Katex math={r`\nabla f\cdot\mathbf v\le\|\nabla f\|`} /> for every unit vector, with equality
+				when the vectors point together. Second, if a curve <Katex math={r`\gamma(t)`} /> lies on a level
+				set, then <Katex math={r`f(\gamma(t))`} /> is constant. The chain rule gives
+				<Katex math={r`\nabla f(\gamma(t))\cdot\gamma'(t)=0`} />, so the gradient is perpendicular
+				to the curve’s tangent direction.
 			</p>
 		</div>
 
 		<DigDeeper title="Constrained optimization and parallel gradients">
 			<p>
 				Suppose <Katex math="f" /> is optimized along a smooth constraint
-				<Katex math={r`g(x,y)=c`} />, and suppose <Katex math={r`\nabla g\ne0`} /> at the candidate
-				point. Every allowed tangent direction is perpendicular to <Katex math={r`\nabla g`} />. At a
+				<Katex math={r`g(x,y)=c`} />, and suppose <Katex math={r`\nabla g\ne0`} /> at the candidate point.
+				Every allowed tangent direction is perpendicular to <Katex math={r`\nabla g`} />. At a
 				constrained extremum it must also be perpendicular to <Katex math={r`\nabla f`} />. In the
 				plane, the two gradients must therefore be parallel:
 				<Katex math={r`\nabla f=\lambda\nabla g`} />. This is the Lagrange multiplier condition; it
@@ -223,10 +218,7 @@
 		</div>
 
 		<div class="key-equation" use:reveal>
-			<Katex
-				math={r`J_F(u,v)=\begin{pmatrix}P_u&P_v\\Q_u&Q_v\end{pmatrix}`}
-				display
-			/>
+			<Katex math={r`J_F(u,v)=\begin{pmatrix}P_u&P_v\\Q_u&Q_v\end{pmatrix}`} display />
 		</div>
 
 		<div class="neo-prose" use:reveal>
@@ -234,7 +226,9 @@
 				For <Katex math={r`\mathbf d\in D(2)`} />, the SDG local equation is exact:
 				<Katex math={r`F(\mathbf p+\mathbf d)=F(\mathbf p)+J_F(\mathbf p)\mathbf d`} />. For an
 				ordinary real vector <Katex math={r`\mathbf h`} />, the same matrix gives the local
-				approximation <Katex math={r`F(\mathbf p+\mathbf h)\approx F(\mathbf p)+J_F(\mathbf p)\mathbf h`} />.
+				approximation <Katex
+					math={r`F(\mathbf p+\mathbf h)\approx F(\mathbf p)+J_F(\mathbf p)\mathbf h`}
+				/>.
 			</p>
 			<p>
 				The columns show what happens to the two coordinate directions. The determinant
@@ -243,9 +237,9 @@
 			</p>
 			<p>
 				The next explorer uses the nonlinear map <Katex math={r`F(u,v)=(u^2-v^2,2uv)`} />. The blue
-				boundary is the actual image of an ordinary square patch; the dashed purple parallelogram is the
-				Jacobian’s linear prediction. Shrink the patch. Both panels magnify the changing neighborhood so
-				the shapes remain readable. What happens to the visible gap between them?
+				boundary is the actual image of an ordinary square patch; the dashed purple parallelogram is
+				the Jacobian’s linear prediction. Shrink the patch. Both panels magnify the changing
+				neighborhood so the shapes remain readable. What happens to the visible gap between them?
 			</p>
 		</div>
 
@@ -260,9 +254,9 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				<strong>Takeaway.</strong> The matrix is not merely a table of four derivatives. It is the best
-				linear picture of what the map does near one point. Its columns are the transformed coordinate
-				directions, and <Katex math={r`|\det J_F|`} /> is the corresponding local area factor.
+				<strong>Takeaway.</strong> The matrix is not merely a table of four derivatives. It is the
+				best linear picture of what the map does near one point. Its columns are the transformed
+				coordinate directions, and <Katex math={r`|\det J_F|`} /> is the corresponding local area factor.
 			</p>
 
 			<h4>Example 2: a local map with two outputs</h4>
@@ -285,10 +279,7 @@
 			</div>
 			<div class="step step-result">
 				<div class="step-math">
-					<Katex
-						math={r`J_F(1,1)\binom{h}{k}=\binom{2h-2k}{2h+2k}`}
-						display
-					/>
+					<Katex math={r`J_F(1,1)\binom{h}{k}=\binom{2h-2k}{2h+2k}`} display />
 				</div>
 				<div class="step-note">predict both output changes at once</div>
 			</div>
@@ -306,8 +297,8 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				This is the multivariable chain rule: local linear maps compose by matrix multiplication. For a
-				scalar function along a curve <Katex math={r`\mathbf r(t)`} />, it becomes
+				This is the multivariable chain rule: local linear maps compose by matrix multiplication.
+				For a scalar function along a curve <Katex math={r`\mathbf r(t)`} />, it becomes
 				<Katex math={r`\frac{d}{dt}f(\mathbf r(t))=\nabla f(\mathbf r(t))\cdot\mathbf r'(t)`} />.
 			</p>
 
@@ -328,13 +319,13 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				For a continuous function on a simple bounded region, Fubini’s theorem lets us evaluate this as
-				an iterated integral. This is a classical accumulation principle. We do not construct a finite
-				region from <Katex math={r`1/(d_1d_2)`} /> nilpotent tiles.
+				For a continuous function on a simple bounded region, Fubini’s theorem lets us evaluate this
+				as an iterated integral. This is a classical accumulation principle. We do not construct a
+				finite region from <Katex math={r`1/(d_1d_2)`} /> nilpotent tiles.
 			</p>
 			<p>
-				A smooth one-to-one coordinate change <Katex math={r`T(u,v)=(x(u,v),y(u,v))`} /> with
-				nonzero Jacobian determinant transforms area according to the change-of-variables theorem:
+				A smooth one-to-one coordinate change <Katex math={r`T(u,v)=(x(u,v),y(u,v))`} /> with nonzero
+				Jacobian determinant transforms area according to the change-of-variables theorem:
 			</p>
 		</div>
 
@@ -349,9 +340,10 @@
 			<h4>Example 3: area of a disk</h4>
 			<p>
 				For polar coordinates <Katex math={r`x=r\cos\theta`} /> and
-				<Katex math={r`y=r\sin\theta`} />, the Jacobian determinant has magnitude <Katex math="r" />.
-				The origin and the duplicated boundary ray are exceptional sets of area zero, so the standard
-				polar change-of-variables formula still applies to the disk. A disk of radius
+				<Katex math={r`y=r\sin\theta`} />, the Jacobian determinant has magnitude <Katex
+					math="r"
+				/>. The origin and the duplicated boundary ray are exceptional sets of area zero, so the
+				standard polar change-of-variables formula still applies to the disk. A disk of radius
 				<Katex math="R" /> therefore has area
 			</p>
 		</div>
@@ -360,7 +352,10 @@
 			<div class="derivation-title">Use the polar area factor</div>
 			<div class="step">
 				<div class="step-math">
-					<Katex math={r`J_T=\begin{pmatrix}\cos\theta&-r\sin\theta\\\sin\theta&r\cos\theta\end{pmatrix}`} display />
+					<Katex
+						math={r`J_T=\begin{pmatrix}\cos\theta&-r\sin\theta\\\sin\theta&r\cos\theta\end{pmatrix}`}
+						display
+					/>
 				</div>
 				<div class="step-note"><Katex math={r`|\det J_T|=r`} /></div>
 			</div>
@@ -377,8 +372,8 @@
 			<p>
 				A vector field assigns a vector to each point:
 				<Katex math={r`\mathbf F(x,y)=(P(x,y),Q(x,y))`} />. If it represents force and a path is
-				parametrized by <Katex math={r`\mathbf r(t)`} /> for <Katex math={r`a\le t\le b`} />, the work
-				done along the path is the ordinary integral
+				parametrized by <Katex math={r`\mathbf r(t)`} /> for <Katex math={r`a\le t\le b`} />, the
+				work done along the path is the ordinary integral
 			</p>
 		</div>
 
@@ -392,17 +387,17 @@
 		<div class="neo-prose" use:reveal>
 			<p>
 				The notation <Katex math={r`d\mathbf r=\mathbf r'(t)\,dt`} /> records the derivative’s action
-				under the parametrization; it is not division by <Katex math="dt" />. Divergence, curl, and the
-				global theorems relating fields to boundaries belong to Chapter 10, where differential forms
-				provide the right unifying language.
+				under the parametrization; it is not division by <Katex math="dt" />. Divergence, curl, and
+				the global theorems relating fields to boundaries belong to Chapter 11, where differential
+				forms provide the right unifying language.
 			</p>
 		</div>
 
 		<DigDeeper title="Tangent vectors as infinitesimal paths">
 			<p>
 				In SDG, a tangent vector at a point <Katex math="p" /> of a smooth space <Katex math="M" />
-				can be represented by a map <Katex math={r`t:D\to M`} /> with <Katex math={r`t(0)=p`} />.
-				It is a first-order path based at <Katex math="p" />. The collection of all such paths over all
+				can be represented by a map <Katex math={r`t:D\to M`} /> with <Katex math={r`t(0)=p`} />. It
+				is a first-order path based at <Katex math="p" />. The collection of all such paths over all
 				base points is the tangent bundle <Katex math={r`M^D`} />; the tangent space at
 				<Katex math="p" /> is the fiber consisting only of paths based at <Katex math="p" />.
 			</p>
@@ -413,7 +408,11 @@
 			<p>Keep the base point, input direction, and resulting output change visibly separate.</p>
 
 			<Exercise number={1}>
-				<p>Find <Katex math={r`f_x`} /> and <Katex math={r`f_y`} /> for <Katex math={r`f(x,y)=x^3y+\sin y`} />.</p>
+				<p>
+					Find <Katex math={r`f_x`} /> and <Katex math={r`f_y`} /> for <Katex
+						math={r`f(x,y)=x^3y+\sin y`}
+					/>.
+				</p>
 				{#snippet solution()}
 					<p><Katex math={r`f_x=3x^2y`} /> and <Katex math={r`f_y=x^3+\cos y`} />.</p>
 				{/snippet}
@@ -462,8 +461,8 @@
 
 			<Exercise number={5}>
 				<p>
-					For <Katex math={r`F(u,v)=(u+v,uv)`} />, compute <Katex math={r`J_F(1,2)`} /> and find the
-					image of the vector <Katex math={r`(h,k)=(3,-1)`} /> under this derivative map.
+					For <Katex math={r`F(u,v)=(u+v,uv)`} />, compute <Katex math={r`J_F(1,2)`} /> and find the image
+					of the vector <Katex math={r`(h,k)=(3,-1)`} /> under this derivative map.
 				</p>
 				{#snippet solution()}
 					<p>
@@ -507,7 +506,9 @@
 					<p>
 						<Katex math={r`\mathbf F(\mathbf r(t))=(t^2,t)`} /> and
 						<Katex math={r`\mathbf r'(t)=(1,2t)`} />. Their dot product is
-						<Katex math={r`3t^2`} />, so the integral equals <Katex math={r`\int_0^1 3t^2\,dt=1`} />.
+						<Katex math={r`3t^2`} />, so the integral equals <Katex
+							math={r`\int_0^1 3t^2\,dt=1`}
+						/>.
 					</p>
 				{/snippet}
 			</Exercise>
@@ -515,19 +516,34 @@
 
 		<ChapterSummary>
 			<ul>
-				<li>In several variables, the derivative is a linear map from input changes to output changes.</li>
+				<li>
+					In several variables, the derivative is a linear map from input changes to output changes.
+				</li>
 				<li>Partial derivatives are the coordinate coefficients of that map.</li>
-				<li>The gradient represents a scalar-valued derivative as a vector and controls directional change.</li>
-				<li>A Jacobian matrix represents the derivative of a map with several outputs; chain rules become matrix products.</li>
-				<li>Double integrals accumulate over regions, and Jacobian determinants supply area factors in valid coordinate changes.</li>
-				<li>Vector-field line integrals accumulate the component of a field along a parametrized curve.</li>
+				<li>
+					The gradient represents a scalar-valued derivative as a vector and controls directional
+					change.
+				</li>
+				<li>
+					A Jacobian matrix represents the derivative of a map with several outputs; chain rules
+					become matrix products.
+				</li>
+				<li>
+					Double integrals accumulate over regions, and Jacobian determinants supply area factors in
+					valid coordinate changes.
+				</li>
+				<li>
+					Vector-field line integrals accumulate the component of a field along a parametrized
+					curve.
+				</li>
 			</ul>
 		</ChapterSummary>
 
 		<LookingAhead>
 			<p>
-				Chapter 10 introduces differential forms. They turn gradients, work integrals, circulation,
-				flux, and the theorems of Green, Gauss, and Stokes into one coherent language of boundaries.
+				Chapter 10 extends calculus to complex-valued functions. There, a derivative must agree from
+				every direction in a plane, and line integrals become contour integrals that can detect
+				enclosed singularities.
 			</p>
 		</LookingAhead>
 	</div>
