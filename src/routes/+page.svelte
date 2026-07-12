@@ -176,6 +176,7 @@
 		chapterNumber="6"
 		title="Integration Geometry and Techniques"
 		preview="Choose an antiderivative technique, then build areas, volumes, work, and averages from local contributions."
+		anchors={['volume-slicer']}
 		load={() => import('$lib/chapters/Ch06ApplicationsIntegration.svelte')}
 	/>
 	<LazyChapter

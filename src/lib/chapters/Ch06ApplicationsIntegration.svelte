@@ -28,8 +28,8 @@
 		<div class="neo-prose" use:reveal>
 			<p>
 				Chapter 5 gave integration a meaning: accumulate a rate over an interval. Real problems now
-				ask us to make two choices. First, what local quantity should be accumulated? Second, how can
-				we find an antiderivative when the basic table is not enough?
+				ask us to make two choices. First, what local quantity should be accumulated? Second, how
+				can we find an antiderivative when the basic table is not enough?
 			</p>
 			<p>
 				Consider a solid whose cross-sectional area at position <Katex math="x" /> is
@@ -48,10 +48,10 @@
 		<div class="neo-prose" use:reveal>
 			<h3>Start with the slice and its units</h3>
 			<p>
-				The picture of a thin slab is a modeling guide, not a claim that a finite slab is literally a
-				perfect cylinder. For an ordinary width, its volume is approximated by cross-sectional area
-				times width. The definite integral gives the accumulated volume under the usual continuity
-				conditions.
+				The picture of a thin slab is a modeling guide, not a claim that a finite slab is literally
+				a perfect cylinder. For an ordinary width, its volume is approximated by cross-sectional
+				area times width. The definite integral gives the accumulated volume under the usual
+				continuity conditions.
 			</p>
 			<p>
 				At first order, a displacement <Katex math="d" /> gives the exact local relation
@@ -65,7 +65,9 @@
 			<ol>
 				<li>Choose an input that moves through the object or process.</li>
 				<li>Write the contribution per unit of that input.</li>
-				<li>Check that multiplying the integrand’s units by the input units gives the desired total.</li>
+				<li>
+					Check that multiplying the integrand’s units by the input units gives the desired total.
+				</li>
 				<li>Set bounds that cover the physical interval, then evaluate the integral.</li>
 			</ol>
 		</Callout>
@@ -93,9 +95,8 @@
 		<Callout type="key-idea" title="Substitution Rule">
 			<p>
 				If <Katex math="F'=f" />, then
-				<Katex math={r`\int f(g(x))g'(x)\,dx=F(g(x))+C`} />.
-				For a definite integral, transform the bounds along with the variable or substitute back
-				before evaluating.
+				<Katex math={r`\int f(g(x))g'(x)\,dx=F(g(x))+C`} />. For a definite integral, transform the
+				bounds along with the variable or substitute back before evaluating.
 			</p>
 		</Callout>
 
@@ -148,8 +149,8 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				The choice of <Katex math="u" /> should become simpler when differentiated. The remaining
-				factor becomes <Katex math="dv" /> and must have an antiderivative we can find.
+				The choice of <Katex math="u" /> should become simpler when differentiated. The remaining factor
+				becomes <Katex math="dv" /> and must have an antiderivative we can find.
 			</p>
 			<h4>Example: integrate <Katex math={r`xe^x`} /></h4>
 		</div>
@@ -191,7 +192,7 @@
 			</p>
 		</div>
 
-		<div use:reveal>
+		<div id="volume-slicer" use:reveal>
 			<Figure
 				number="6.1"
 				caption="Each position x determines one circular cross-section. The volume from 0 to x is the accumulation of these varying areas, not the volume of one visibly thick disk."
@@ -211,14 +212,19 @@
 				<div class="step-note">cross-sectional area</div>
 			</div>
 			<div class="step step-result">
-				<div class="step-math"><Katex math={r`V=\int_0^4\pi x\,dx=\left[\frac{\pi x^2}{2}\right]_0^4=8\pi`} display /></div>
+				<div class="step-math">
+					<Katex math={r`V=\int_0^4\pi x\,dx=\left[\frac{\pi x^2}{2}\right]_0^4=8\pi`} display />
+				</div>
 				<div class="step-note">cubic units</div>
 			</div>
 		</div>
 
 		<Callout type="key-idea" title="Common Geometric Integrands">
 			<ul>
-				<li><strong>Area between curves:</strong> <Katex math={r`\int_a^b(\text{top}-\text{bottom})\,dx`} />.</li>
+				<li>
+					<strong>Area between curves:</strong>
+					<Katex math={r`\int_a^b(\text{top}-\text{bottom})\,dx`} />.
+				</li>
 				<li><strong>Disk:</strong> <Katex math={r`\int_a^b\pi R(x)^2\,dx`} />.</li>
 				<li><strong>Washer:</strong> <Katex math={r`\int_a^b\pi(R(x)^2-r(x)^2)\,dx`} />.</li>
 				<li><strong>Known cross-section:</strong> <Katex math={r`\int_a^b A(x)\,dx`} />.</li>
@@ -228,16 +234,15 @@
 		<div class="neo-prose" use:reveal>
 			<h3>A geometric surprise: gather the tangents</h3>
 			<p>
-				Rectangles and disks are not the only shapes that can reveal an accumulation. Fix a
-				line segment of length <Katex math="L" /> tangent to a smooth convex curve and sweep it
-				around the curve. Now translate every tangent segment—without rotating it—so that all
-				starting points coincide.
+				Rectangles and disks are not the only shapes that can reveal an accumulation. Fix a line
+				segment of length <Katex math="L" /> tangent to a smooth convex curve and sweep it around the
+				curve. Now translate every tangent segment—without rotating it—so that all starting points coincide.
 			</p>
 			<p>
 				Mamikon’s tangent-sweep theorem says that the swept region and the translated
-				<strong>tangent cluster</strong> have equal area. For one full turn with constant
-				length, the cluster is simply a disk of radius <Katex math="L" />. Change the curve
-				below; the sweep changes shape, while its total area does not.
+				<strong>tangent cluster</strong> have equal area. For one full turn with constant length,
+				the cluster is simply a disk of radius <Katex math="L" />. Change the curve below; the sweep
+				changes shape, while its total area does not.
 			</p>
 		</div>
 
@@ -252,9 +257,9 @@
 
 		<div class="neo-prose" use:reveal>
 			<p>
-				The equality can be understood locally: each tiny swept sliver is translated rigidly
-				into the cluster, so its area is preserved. The theorem is a geometric reorganization
-				of an accumulation—not a claim that the two regions have the same boundary.
+				The equality can be understood locally: each tiny swept sliver is translated rigidly into
+				the cluster, so its area is preserved. The theorem is a geometric reorganization of an
+				accumulation—not a claim that the two regions have the same boundary.
 			</p>
 		</div>
 
@@ -275,8 +280,8 @@
 			<p>
 				A constant force <Katex math="F" /> acting through distance <Katex math="L" /> does work
 				<Katex math="FL" />. When force varies with position, accumulate it:
-				<Katex math={r`W=\int_a^b F(x)\,dx`} />. The units confirm the model:
-				newtons times metres give joules.
+				<Katex math={r`W=\int_a^b F(x)\,dx`} />. The units confirm the model: newtons times metres
+				give joules.
 			</p>
 			<p>
 				For a spring obeying Hooke’s law <Katex math="F(x)=kx" />, the work required to stretch it
@@ -291,8 +296,8 @@
 		<div class="neo-prose" use:reveal>
 			<p>
 				An integral can also compress a changing quantity into one representative value. The
-				<strong>average value</strong> of <Katex math="f" /> on <Katex math="[a,b]" /> is the
-				constant height that has the same signed area as the graph:
+				<strong>average value</strong> of <Katex math="f" /> on <Katex math="[a,b]" /> is the constant
+				height that has the same signed area as the graph:
 			</p>
 		</div>
 
@@ -303,16 +308,16 @@
 		<div class="neo-prose" use:reveal>
 			<p>
 				For <Katex math="f(x)=x^2" /> on <Katex math="[0,3]" />, the average is
-				<Katex math={r`\frac13\int_0^3x^2\,dx=3`} />. The graph is below 3 for part of the
-				interval and above it for part, but the two constant-height rectangles have equal area.
+				<Katex math={r`\frac13\int_0^3x^2\,dx=3`} />. The graph is below 3 for part of the interval
+				and above it for part, but the two constant-height rectangles have equal area.
 			</p>
 		</div>
 
 		<Callout type="warning" title="Choose the Model Before the Technique">
 			<p>
 				Substitution and integration by parts help evaluate an integral; they do not decide which
-				integral represents a physical quantity. First identify the local contribution, bounds, sign,
-				and units. Only then choose an antiderivative technique.
+				integral represents a physical quantity. First identify the local contribution, bounds,
+				sign, and units. Only then choose an antiderivative technique.
 			</p>
 		</Callout>
 
@@ -321,14 +326,18 @@
 				<li>A slice model begins with a contribution per unit input and a units check.</li>
 				<li>Substitution reverses the chain rule.</li>
 				<li>Integration by parts reverses the product rule.</li>
-				<li>Volumes accumulate cross-sectional area; areas between curves accumulate top minus bottom.</li>
-				<li>Work accumulates force over distance, while average value spreads an integral evenly across its interval.</li>
+				<li>
+					Volumes accumulate cross-sectional area; areas between curves accumulate top minus bottom.
+				</li>
+				<li>
+					Work accumulates force over distance, while average value spreads an integral evenly
+					across its interval.
+				</li>
 			</ul>
 			<p>
-				For the opening solid, the cross-section <Katex math="A(x)" /> told us exactly what to
-				integrate, and the resulting units identified the answer as volume. Integration problems
-				become manageable when modeling and antiderivative technique are treated as two separate
-				decisions.
+				For the opening solid, the cross-section <Katex math="A(x)" /> told us exactly what to integrate,
+				and the resulting units identified the answer as volume. Integration problems become manageable
+				when modeling and antiderivative technique are treated as two separate decisions.
 			</p>
 		</ChapterSummary>
 
@@ -356,7 +365,11 @@
 			</Exercise>
 
 			<Exercise number={3}>
-				<p><strong>Core.</strong> Use integration by parts to find <Katex math={r`\int x\cos x\,dx`} />.</p>
+				<p>
+					<strong>Core.</strong> Use integration by parts to find <Katex
+						math={r`\int x\cos x\,dx`}
+					/>.
+				</p>
 				{#snippet solution()}
 					<p>
 						Choose <Katex math="u=x" /> and <Katex math={r`dv=\cos x\,dx`} />. Then
@@ -381,8 +394,8 @@
 
 			<Exercise number={5}>
 				<p>
-					<strong>Core.</strong> Rotating <Katex math="y=x" /> on <Katex math="[0,2]" /> around
-					the horizontal axis produces a cone. Find its volume using disks.
+					<strong>Core.</strong> Rotating <Katex math="y=x" /> on <Katex math="[0,2]" /> around the horizontal
+					axis produces a cone. Find its volume using disks.
 				</p>
 				{#snippet solution()}
 					<p>
@@ -410,9 +423,9 @@
 				</p>
 				{#snippet solution()}
 					<p>
-						<Katex math={r`f_{\mathrm{avg}}=\frac1\pi\int_0^\pi\sin x\,dx=2/\pi`} />. A rectangle
-						of width <Katex math="\pi" /> and height <Katex math="2/\pi" /> has the same area as the
-						sine arch.
+						<Katex math={r`f_{\mathrm{avg}}=\frac1\pi\int_0^\pi\sin x\,dx=2/\pi`} />. A rectangle of
+						width <Katex math="\pi" /> and height <Katex math="2/\pi" /> has the same area as the sine
+						arch.
 					</p>
 				{/snippet}
 			</Exercise>
